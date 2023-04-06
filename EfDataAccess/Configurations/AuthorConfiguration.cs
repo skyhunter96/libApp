@@ -13,8 +13,7 @@ namespace EfDataAccess.Configurations
             entity.ToTable("Authors", "lib");
 
             entity.Property(e => e.Name)
-                .HasMaxLength(100)
-                .IsRequired();
+                .HasMaxLength(100);
         }
     }
 }

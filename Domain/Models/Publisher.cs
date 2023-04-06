@@ -1,6 +1,9 @@
-﻿namespace Domain.Models;
+﻿using System.Security.AccessControl;
 
-public class Publisher
+namespace Domain.Models;
+
+public class Publisher : BaseEntity
 {
-    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Description { get; set; }
 }

@@ -4,13 +4,19 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EfDataAccess.Configurations
 {
-    public class PublisherConfiguration : IEntityTypeConfiguration<Publisher>
+    public class PublisherConfiguration : BaseEntityConfiguration<Publisher>
     {
-        public void Configure(EntityTypeBuilder<Publisher> entity)
+        public override void Configure(EntityTypeBuilder<Publisher> entity)
         {
+            base.Configure(entity);
+
             entity.ToTable("Publishers", "lib");
 
-            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name)
+                .HasMaxLength(100);
+
+            entity.Property(e => e.Description)
+                .HasMaxLength(100);
         }
     }
 }
