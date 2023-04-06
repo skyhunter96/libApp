@@ -4,13 +4,16 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EfDataAccess.Configurations
 {
-    public class RateConfiguration : IEntityTypeConfiguration<Rate>
+    public class RateConfiguration : BaseEntityConfiguration<Rate>
     {
-        public void Configure(EntityTypeBuilder<Rate> entity)
+        public override void Configure(EntityTypeBuilder<Rate> entity)
         {
+            base.Configure(entity);
+
             entity.ToTable("Rates", "lib");
 
-            entity.HasKey(e => e.Id);
+            entity.Property(e => e.RateFee)
+                .HasColumnType("decimal(10,2)");
         }
     }
 }

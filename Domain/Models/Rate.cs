@@ -1,6 +1,6 @@
 ﻿namespace Domain.Models;
 
-public class Rate
+public class Rate : BaseEntity
 {
-    public int Id { get; set; }
+    public decimal RateFee { get; set; }
 }
