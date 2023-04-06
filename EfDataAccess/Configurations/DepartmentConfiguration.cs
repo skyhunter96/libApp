@@ -8,7 +8,7 @@ namespace EfDataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<Department> entity)
         {
-            entity.ToTable("Categories", "lib");
+            entity.ToTable("Department", "lib");
 
             entity.HasKey(e => e.Id);
         }
