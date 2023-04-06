@@ -4,13 +4,20 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EfDataAccess.Configurations
 {
-    public class BookConfiguration : IEntityTypeConfiguration<Book>
+    public class BookConfiguration : BaseEntityConfiguration<Book>
     {
-        public void Configure(EntityTypeBuilder<Book> builder)
+        public override void Configure(EntityTypeBuilder<Book> entity)
         {
-            builder.ToTable("Books", "lib");
+            base.Configure(entity);
 
-            builder.HasKey(e => e.Id);
+            entity.ToTable("Books", "lib");
+
+            entity.Property(e => e.Title)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(e => e.Cost)
+                .HasColumnType("decimal(10,2)");
         }
     }
 }
