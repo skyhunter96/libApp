@@ -1,4 +1,5 @@
 ﻿using Domain.Models;
+using EfDataAccess.Configurations;
 using Microsoft.EntityFrameworkCore;
 
 namespace EfDataAccess;
@@ -39,73 +40,16 @@ public partial class LibraryContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Author>(entity =>
-        {
-            entity.ToTable("Authors", "lib");
-
-            entity.HasKey(e => e.Id);
-        });
-
-        modelBuilder.Entity<Book>(entity =>
-        {
-            entity.ToTable("Books", "lib");
-
-            entity.HasKey(e => e.Id);
-        });
-
-        modelBuilder.Entity<Category>(entity =>
-        {
-            entity.ToTable("Categories", "lib");
-
-            entity.HasKey(e => e.Id);
-        });
-
-        modelBuilder.Entity<Department>(entity =>
-        {
-            entity.ToTable("Departments", "lib");
-
-            entity.HasKey(e => e.Id);
-        });
-
-        modelBuilder.Entity<Language>(entity =>
-        {
-            entity.ToTable("Languages", "lib");
-
-            entity.HasKey(e => e.Id);
-        });
-
-        modelBuilder.Entity<Publisher>(entity =>
-        {
-            entity.ToTable("Publishers", "lib");
-
-            entity.HasKey(e => e.Id);
-        });
-
-        modelBuilder.Entity<Rate>(entity =>
-        {
-            entity.ToTable("Rates", "lib");
-
-            entity.HasKey(e => e.Id);
-        });
-
-        modelBuilder.Entity<Reservation>(entity =>
-        {
-            entity.ToTable("Reservations", "lib");
-
-            entity.HasKey(e => e.Id);
-        });
-
-        modelBuilder.Entity<User>(entity =>
-        {
-            entity.Property(e => e.Id).ValueGeneratedNever();
-        });
-
-        modelBuilder.Entity<Log>(entity =>
-        {
-            entity.ToTable("Log");
-
-            entity.HasKey(e => e.Id);
-        });
+        modelBuilder.ApplyConfiguration(new AuthorConfiguration());
+        modelBuilder.ApplyConfiguration(new BookConfiguration());
+        modelBuilder.ApplyConfiguration(new CategoryConfiguration());
+        modelBuilder.ApplyConfiguration(new DepartmentConfiguration());
+        modelBuilder.ApplyConfiguration(new LanguageConfiguration());
+        modelBuilder.ApplyConfiguration(new PublisherConfiguration());
+        modelBuilder.ApplyConfiguration(new RateConfiguration());
+        modelBuilder.ApplyConfiguration(new ReservationConfiguration());
+        modelBuilder.ApplyConfiguration(new UserConfiguration());
+        modelBuilder.ApplyConfiguration(new LogConfiguration());
 
         OnModelCreatingPartial(modelBuilder);
     }
