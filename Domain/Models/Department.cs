@@ -1,0 +1,6 @@
+﻿namespace Domain.Models;
+
+public class Department
+{
+    public int Id { get; set; }
+}
