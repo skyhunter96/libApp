@@ -1,6 +1,8 @@
-﻿namespace Domain.Models;
+﻿using Domain.Models.Common;
 
-public class User
+namespace Domain.Models;
+
+public class User : BaseEntity
 {
-    public int Id { get; set; }
+    public virtual ICollection<Reservation> Reservations { get; set; }
 }

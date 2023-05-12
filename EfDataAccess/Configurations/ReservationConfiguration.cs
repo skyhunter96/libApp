@@ -4,13 +4,22 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EfDataAccess.Configurations
 {
-    public class ReservationConfiguration : IEntityTypeConfiguration<Reservation>
+    public class ReservationConfiguration : BaseEntityConfiguration<Reservation>
     {
-        public void Configure(EntityTypeBuilder<Reservation> entity)
+        public override void Configure(EntityTypeBuilder<Reservation> entity)
         {
+            base.Configure(entity);
+
             entity.ToTable("Reservations", "lib");
 
-            entity.HasKey(e => e.Id);
+            //TODO: Check if good behaviour
+
+            //TODO: mozda restrict
+            entity.HasOne(r => r.ReservedByUser)
+                .WithMany(u => u.Reservations)
+                .HasForeignKey(r => r.ReservedByUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }

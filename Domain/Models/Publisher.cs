@@ -1,4 +1,4 @@
-﻿using System.Security.AccessControl;
+﻿using Domain.Models.Common;
 
 namespace Domain.Models;
 

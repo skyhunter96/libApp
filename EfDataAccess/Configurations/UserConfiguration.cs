@@ -8,7 +8,13 @@ namespace EfDataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<User> entity)
         {
-            entity.Property(e => e.Id).ValueGeneratedNever();
+            //TODO: mozda treba i createdAt i modifiedAt
+
+            entity.HasMany(u => u.Reservations)
+                .WithOne(r => r.ReservedByUser)
+                .HasForeignKey(r => r.ReservedByUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }
