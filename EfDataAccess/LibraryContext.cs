@@ -35,6 +35,8 @@ public partial class LibraryContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
+    public DbSet<BookReservation> BookReservations { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=LibApp;Integrated Security=True");
 
@@ -50,6 +52,17 @@ public partial class LibraryContext : DbContext
         modelBuilder.ApplyConfiguration(new ReservationConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new LogConfiguration());
+        modelBuilder.ApplyConfiguration(new BookReservationConfiguration());
+
+        //TODO: Also maybe in bookConfig?
+        modelBuilder.Entity<Book>()
+            .HasMany(b => b.Authors)
+            .WithMany(a => a.Books)
+            .UsingEntity<Dictionary<string, object>>(
+                "BookAuthor",
+                r => r.HasOne<Author>().WithMany().HasForeignKey("AuthorId"),
+                l => l.HasOne<Book>().WithMany().HasForeignKey("BookId")
+            );
 
         OnModelCreatingPartial(modelBuilder);
     }

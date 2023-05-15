@@ -24,4 +24,6 @@ public class Book : BaseEntity
     public virtual Category Category { get; set; }
     public virtual Department Department { get; set; }
     public virtual Language Language { get; set; }
+    public virtual ICollection<Author> Authors { get; set; }
+    public ICollection<BookReservation> BookReservations { get; set; }
 }

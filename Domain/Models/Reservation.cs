@@ -11,4 +11,5 @@ public class Reservation : BaseEntity
     public int ReservedByUserId { get; set; }
 
     public virtual User ReservedByUser { get; set; }
+    public ICollection<BookReservation> BookReservations { get; set; }
 }
