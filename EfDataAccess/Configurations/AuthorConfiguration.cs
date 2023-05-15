@@ -1,4 +1,5 @@
 ﻿using Domain.Models;
+using EfDataAccess.Configurations.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,7 +14,8 @@ namespace EfDataAccess.Configurations
             entity.ToTable("Authors", "lib");
 
             entity.Property(e => e.Name)
-                .HasMaxLength(100);
+                .HasMaxLength(100)
+                .IsRequired();
         }
     }
 }

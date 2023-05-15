@@ -1,4 +1,5 @@
 ﻿using Domain.Models;
+using EfDataAccess.Configurations.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

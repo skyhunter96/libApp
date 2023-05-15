@@ -1,20 +1,19 @@
 ﻿using Domain.Models;
+using EfDataAccess.Configurations.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EfDataAccess.Configurations
 {
-    public class UserConfiguration : IEntityTypeConfiguration<User>
+    public class UserConfiguration : BaseEntityConfiguration<User>
     {
-        public void Configure(EntityTypeBuilder<User> entity)
+        public override void Configure(EntityTypeBuilder<User> entity)
         {
-            //TODO: mozda treba i createdAt i modifiedAt
+            base.Configure(entity);
 
             entity.HasMany(u => u.Reservations)
                 .WithOne(r => r.ReservedByUser)
-                .HasForeignKey(r => r.ReservedByUserId)
                 .OnDelete(DeleteBehavior.Cascade);
-
         }
     }
 }

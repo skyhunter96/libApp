@@ -11,6 +11,14 @@ namespace EfDataAccess.Configurations
             entity.ToTable("Languages", "lib");
 
             entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Name)
+                .HasMaxLength(50)
+                .IsRequired();
+
+            entity.HasMany(d => d.Books)
+                .WithOne(b => b.Language)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

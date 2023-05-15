@@ -1,16 +1,29 @@
 ﻿using Domain.Models;
+using EfDataAccess.Configurations.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EfDataAccess.Configurations
 {
-    public class CategoryConfiguration : IEntityTypeConfiguration<Category>
+    public class CategoryConfiguration : BaseEntityConfiguration<Category>
     {
-        public void Configure(EntityTypeBuilder<Category> entity)
+        public override void Configure(EntityTypeBuilder<Category> entity)
         {
+            base.Configure(entity);
+
             entity.ToTable("Categories", "lib");
 
-            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name)
+                .HasMaxLength(50)
+                .IsRequired();
+
+            entity.Property(e => e.Description)
+                .HasMaxLength(1000)
+                .IsRequired(false);
+
+            entity.HasMany(c => c.Books)
+                .WithOne(b => b.Category)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

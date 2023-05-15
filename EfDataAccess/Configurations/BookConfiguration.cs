@@ -1,4 +1,5 @@
 ﻿using Domain.Models;
+using EfDataAccess.Configurations.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,19 +14,44 @@ namespace EfDataAccess.Configurations
             entity.ToTable("Books", "lib");
 
             entity.Property(e => e.Title)
-                .HasMaxLength(100);
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(e => e.Description)
+                .HasMaxLength(1000)
+                .IsRequired(false);
+
+            entity.Property(e => e.Isbn)
+                .HasColumnType("char(50)")
+                .IsRequired();
+
+            entity.Property(e => e.Edition)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.Property(e => e.ImagePath)
+                .HasMaxLength(250)
+                .IsRequired();
 
             entity.Property(e => e.Cost)
                 .HasColumnType("decimal(10,2)");
 
-            entity.Property(e => e.Description)
-                .HasMaxLength(1000);
+            entity.HasOne(b => b.Publisher)
+                .WithMany(p => p.Books)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            entity.Property(e => e.Edition)
-                .HasMaxLength(100);
+            entity.HasOne(b => b.Category)
+                .WithMany(p => p.Books)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            entity.Property(e => e.Isbn)
-                .HasColumnType("char(50)");
+            entity.HasOne(b => b.Department)
+                .WithMany(p => p.Books)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(b => b.Language)
+                .WithMany(p => p.Books)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
