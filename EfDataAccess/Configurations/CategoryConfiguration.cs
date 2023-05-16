@@ -14,8 +14,7 @@ namespace EfDataAccess.Configurations
             entity.ToTable("Categories", "lib");
 
             entity.Property(e => e.Name)
-                .HasMaxLength(50)
-                .IsRequired();
+                .HasMaxLength(50);
 
             entity.Property(e => e.Description)
                 .HasMaxLength(1000)

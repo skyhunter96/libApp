@@ -11,6 +11,27 @@ namespace EfDataAccess.Configurations
             entity.ToTable("Log");
 
             entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Name)
+                .HasMaxLength(50);
+
+            entity.Property(e => e.Description)
+                .HasMaxLength(1000)
+                .IsRequired(false);
+
+            entity.Property(e => e.DateTime)
+                .HasDefaultValueSql("SYSDATETIME()");
+
+            entity.Property(e => e.StackTrace)
+                .HasMaxLength(500)
+                .IsRequired(false);
+
+            //TODO: Might not be needed at all
+            entity.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
