@@ -8,8 +8,6 @@ namespace EfDataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<Log> entity)
         {
-            entity.ToTable("Log");
-
             entity.HasKey(e => e.Id);
 
             entity.Property(e => e.Name)

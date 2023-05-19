@@ -8,7 +8,7 @@ namespace EfDataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<Role> builder)
         {
-            builder.ToTable("Roles");
+            builder.ToTable("Roles", "lib");
 
             builder.HasKey(r => r.Id);
 
