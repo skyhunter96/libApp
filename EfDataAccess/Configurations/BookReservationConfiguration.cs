@@ -8,8 +8,6 @@ namespace EfDataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<BookReservation> builder)
         {
-            builder.ToTable("BookReservation", "lib");
-
             builder.HasKey(br => new { br.ReservationId, br.BookId });
 
             builder.HasOne(br => br.Reservation)

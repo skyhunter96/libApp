@@ -11,6 +11,8 @@ namespace EfDataAccess.Configurations
         {
             base.Configure(entity);
 
+            entity.ToTable("User");
+
             entity.HasMany(u => u.Reservations)
                 .WithOne(r => r.ReservedByUser)
                 .OnDelete(DeleteBehavior.Cascade);

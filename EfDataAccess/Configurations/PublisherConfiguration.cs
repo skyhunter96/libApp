@@ -11,8 +11,6 @@ namespace EfDataAccess.Configurations
         {
             base.Configure(entity);
 
-            entity.ToTable("Publishers", "lib");
-
             entity.Property(e => e.Name)
                 .HasMaxLength(50)
                 .IsRequired();

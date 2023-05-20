@@ -11,8 +11,6 @@ namespace EfDataAccess.Configurations
         {
             base.Configure(entity);
 
-            entity.ToTable("Rates", "lib");
-
             entity.Property(e => e.RateFee)
                 .HasColumnType("decimal(10,2)");
         }

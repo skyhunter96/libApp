@@ -11,8 +11,6 @@ namespace EfDataAccess.Configurations
         {
             base.Configure(entity);
 
-            entity.ToTable("Reservations", "lib");
-
             entity.Property(r => r.LoanDate)
                 .HasColumnType("date");
 
