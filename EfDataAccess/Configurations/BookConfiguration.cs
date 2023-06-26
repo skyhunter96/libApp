@@ -2,7 +2,6 @@
 using EfDataAccess.Configurations.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Reflection.Emit;
 
 namespace EfDataAccess.Configurations
 {
@@ -21,7 +20,7 @@ namespace EfDataAccess.Configurations
                 .IsRequired(false);
 
             entity.Property(e => e.Isbn)
-                .HasColumnType("char(50)")
+                .HasColumnType("" + "char" + "(50)")
                 .IsRequired();
 
             entity.Property(e => e.Edition)
