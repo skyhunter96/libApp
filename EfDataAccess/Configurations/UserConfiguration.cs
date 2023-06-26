@@ -13,6 +13,9 @@ namespace EfDataAccess.Configurations
 
             entity.ToTable("User");
 
+            entity.Property(u => u.Role)
+                .IsRequired();
+
             entity.HasMany(u => u.Reservations)
                 .WithOne(r => r.ReservedByUser)
                 .OnDelete(DeleteBehavior.Cascade);

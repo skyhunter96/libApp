@@ -1,11 +1,9 @@
 ﻿namespace Domain.Models
 {
-    public class Role
+    public enum Role
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-
-        public virtual ICollection<User> Users { get; set; }
+        Admin = 1,
+        Librarian = 2,
+        Regular = 3
     }
 }
