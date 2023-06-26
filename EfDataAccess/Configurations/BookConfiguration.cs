@@ -2,6 +2,7 @@
 using EfDataAccess.Configurations.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Reflection.Emit;
 
 namespace EfDataAccess.Configurations
 {
@@ -50,6 +51,14 @@ namespace EfDataAccess.Configurations
             entity.HasOne(b => b.Language)
                 .WithMany(p => p.Books)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasMany(b => b.Authors)
+                .WithMany(a => a.Books)
+                .UsingEntity<Dictionary<string, object>>(
+                    "BookAuthor",
+                    r => r.HasOne<Author>().WithMany().HasForeignKey("AuthorId"),
+                    l => l.HasOne<Book>().WithMany().HasForeignKey("BookId")
+                );
         }
     }
 }
