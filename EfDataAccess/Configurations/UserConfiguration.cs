@@ -20,11 +20,11 @@ namespace EfDataAccess.Configurations
                 .HasMaxLength(50);
 
             entity.Property(e => e.Email)
-                .HasColumnType("" + "char" + "(50)")
+                .HasColumnType("char(50)")
                 .IsRequired();
 
             entity.Property(e => e.VerificationToken)
-                .HasColumnType("" + "char" + "(50)")
+                .HasColumnType("char(50)")
                 .IsRequired(false);
 
             entity.Property(u => u.VerificationSentAt)

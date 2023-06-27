@@ -20,7 +20,7 @@ namespace EfDataAccess.Configurations
                 .IsRequired(false);
 
             entity.Property(e => e.Isbn)
-                .HasColumnType("" + "char" + "(50)")
+                .HasColumnType("char(50)")
                 .IsRequired();
 
             entity.Property(e => e.Edition)
