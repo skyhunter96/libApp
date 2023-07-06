@@ -20,7 +20,7 @@ namespace EfDataAccess.Configurations
                 .IsRequired(false);
 
             entity.Property(e => e.Isbn)
-                .HasColumnType("char(50)")
+                .HasColumnType("char(17)")
                 .IsRequired();
 
             entity.Property(e => e.Edition)
@@ -28,7 +28,8 @@ namespace EfDataAccess.Configurations
                 .IsRequired();
 
             entity.Property(e => e.ImagePath)
-                .HasMaxLength(250)
+                .HasColumnType("char(255)")
+
                 .IsRequired();
 
             entity.Property(e => e.Cost)
