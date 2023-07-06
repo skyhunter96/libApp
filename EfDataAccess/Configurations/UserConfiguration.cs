@@ -19,19 +19,27 @@ namespace EfDataAccess.Configurations
             entity.Property(u => u.LastName)
                 .HasMaxLength(50);
 
+            entity.Property(e => e.Username)
+                .HasColumnType("char(50)")
+                .IsRequired();
+
+            entity.Property(e => e.Password)
+                .HasColumnType("char(100)")
+                .IsRequired();
+
             entity.Property(e => e.Email)
                 .HasColumnType("char(50)")
                 .IsRequired();
 
             entity.Property(e => e.VerificationToken)
-                .HasColumnType("char(50)")
+                .HasColumnType("char(128)")
                 .IsRequired(false);
 
             entity.Property(u => u.VerificationSentAt)
                 .IsRequired(false);
 
             entity.Property(e => e.ImagePath)
-                .HasMaxLength(250)
+                .HasColumnType("char(255)")
                 .IsRequired(false);
 
             entity.Property(u => u.City)
@@ -49,7 +57,7 @@ namespace EfDataAccess.Configurations
                 .HasColumnType("decimal(10,2)");
 
             entity.Property(u => u.Currency)
-                .HasMaxLength(3);
+                .HasColumnType("char(3)");
 
             entity.Property(u => u.Notes)
                 .HasMaxLength(1000)

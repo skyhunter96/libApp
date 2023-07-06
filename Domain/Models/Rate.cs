@@ -4,5 +4,6 @@ namespace Domain.Models;
 
 public class Rate : BaseEntity
 {
-    public virtual decimal RateFee { get; set; }
+    public decimal RateFee { get; set; }
+    public int? ApplyAfterDays { get; set; }
 }

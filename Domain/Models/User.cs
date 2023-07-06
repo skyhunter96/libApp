@@ -10,7 +10,7 @@ public class User : BaseEntity
     public string Password { get; set; }
     public string Email { get; set; }
     public DateTime RegistrationDateTime { get; set; }
-    public bool Verified { get; set; }
+    public bool IsVerified { get; set; }
     public string VerificationToken { get; set; }
     public DateTime? VerificationSentAt { get; set; }
     public DateTime? LastLoginDateTime { get; set; }

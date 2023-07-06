@@ -157,7 +157,7 @@ namespace EfDataAccess.Migrations
                 defaultValue: "");
 
             migrationBuilder.AddColumn<bool>(
-                name: "Verified",
+                name: "IsVerified",
                 table: "User",
                 type: "bit",
                 nullable: false,
@@ -252,7 +252,7 @@ namespace EfDataAccess.Migrations
                 table: "User");
 
             migrationBuilder.DropColumn(
-                name: "Verified",
+                name: "IsVerified",
                 table: "User");
         }
     }
