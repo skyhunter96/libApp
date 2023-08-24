@@ -4,8 +4,6 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
-
 <h4>Book</h4>
 <hr />
 <div class="row">
@@ -58,11 +56,12 @@
                 <input asp-for="Cost" class="form-control" />
                 <span asp-validation-for="Cost" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
+            <div>
+                <span style="visibility: hidden;">Tes</span>
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsAvailable" /> @Html.DisplayNameFor(model => model.IsAvailable)
+                    <input class="form-check-input" asp-for="IsAvailable"/> @Html.DisplayNameFor(model => model.IsAvailable)
                 </label>
-            </div>
+            </div><br />
             <div class="form-group">
                 <label asp-for="Quantity" class="control-label"></label>
                 <input asp-for="Quantity" class="form-control" />
