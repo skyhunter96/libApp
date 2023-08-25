@@ -5,9 +5,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<LibraryContext>(options =>
-    options.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=LibApp;Integrated Security=True"));
+    options.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=LibApp;Integrated Security=True",
+        b => b.MigrationsAssembly("LibApp.EfDataAccess")));
 builder.Services.AddControllersWithViews();
-
 
 var app = builder.Build();
 
