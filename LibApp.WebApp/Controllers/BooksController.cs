@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
-namespace LibApp.WebApp.Views.Home
+namespace LibApp.WebApp.Controllers
 {
     public class BooksController : Controller
     {
@@ -65,12 +65,27 @@ namespace LibApp.WebApp.Views.Home
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Title,Description,Isbn,Edition,PublisherId,CategoryId,DepartmentId,LanguageId,ImagePath,Cost,IsAvailable,Quantity,AvailableQuantity,ReservedQuantity,Id,CreatedDateTime,ModifiedDateTime,CreatedByUserId,ModifiedByUserId")] Book book)
         {
+            //TODO: Image path not required, BookReservations not req
+
             if (ModelState.IsValid)
             {
                 _context.Add(book);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
+            foreach (var entry in ModelState)
+            {
+                if (entry.Value.Errors.Any())
+                {
+                    foreach (var error in entry.Value.Errors)
+                    {
+                        // Log or display the error message
+                        Console.WriteLine($"Property: {entry.Key}, Error: {error.ErrorMessage}");
+                    }
+                }
+            }
+
             ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", book.CategoryId);
             ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name", book.DepartmentId);
             ViewData["LanguageId"] = new SelectList(_context.Languages, "Id", "Name", book.LanguageId);
@@ -173,14 +188,14 @@ namespace LibApp.WebApp.Views.Home
             {
                 _context.Books.Remove(book);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool BookExists(int id)
         {
-          return (_context.Books?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Books?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
