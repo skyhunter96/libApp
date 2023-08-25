@@ -29,11 +29,11 @@ namespace EfDataAccess.Configurations
 
             entity.Property(e => e.ImagePath)
                 .HasColumnType("char(255)")
-
-                .IsRequired();
+                .IsRequired(false);
 
             entity.Property(e => e.Cost)
-                .HasColumnType("decimal(10,2)");
+                .HasColumnType("decimal(10,2)")
+                .IsRequired(false);
 
             entity.HasOne(b => b.Publisher)
                 .WithMany(p => p.Books)

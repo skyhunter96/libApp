@@ -13,7 +13,7 @@ public class Book : BaseEntity
     public int? DepartmentId { get; set; }
     public int LanguageId { get; set; }
     public string ImagePath { get; set; }
-    public decimal Cost { get; set; }
+    public decimal? Cost { get; set; }
     public bool IsAvailable { get; set; }
     public int Quantity { get; set; }
     public int AvailableQuantity { get; set; }
