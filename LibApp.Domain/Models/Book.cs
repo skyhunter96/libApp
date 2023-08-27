@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Common;
+using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Models;
 
@@ -14,9 +15,12 @@ public class Book : BaseEntity
     public int LanguageId { get; set; }
     public string ImagePath { get; set; }
     public decimal? Cost { get; set; }
+    [Display(Name = "Available")]
     public bool IsAvailable { get; set; }
     public int Quantity { get; set; }
+    [Display(Name = "Available Quantity")]
     public int AvailableQuantity { get; set; }
+    [Display(Name = "Reserved Quantity")]
     public int ReservedQuantity { get; set; }
 
     public virtual Publisher Publisher { get; set; }
