@@ -4,6 +4,7 @@ using EfDataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EfDataAccess.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    partial class LibraryContextModelSnapshot : ModelSnapshot
+    [Migration("20230829172930_user-roleId-fix")]
+    partial class userroleIdfix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,18 +38,6 @@ namespace EfDataAccess.Migrations
                     b.HasIndex("BookId");
 
                     b.ToTable("BookAuthor", "lib");
-
-                    b.HasData(
-                        new
-                        {
-                            AuthorId = 1,
-                            BookId = 1
-                        },
-                        new
-                        {
-                            AuthorId = 2,
-                            BookId = 2
-                        });
                 });
 
             modelBuilder.Entity("Domain.Models.Author", b =>
@@ -85,26 +76,6 @@ namespace EfDataAccess.Migrations
                     b.HasIndex("ModifiedByUserId");
 
                     b.ToTable("Author", "lib");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedByUserId = 1,
-                            CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedByUserId = 1,
-                            ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Ivo Andrić"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedByUserId = 1,
-                            CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedByUserId = 1,
-                            ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Fridrih Niče"
-                        });
                 });
 
             modelBuilder.Entity("Domain.Models.Book", b =>
@@ -197,50 +168,6 @@ namespace EfDataAccess.Migrations
                     b.HasIndex("PublisherId");
 
                     b.ToTable("Book", "lib");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AvailableQuantity = 10,
-                            CategoryId = 1,
-                            CreatedByUserId = 1,
-                            CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DepartmentId = 1,
-                            Description = "Najpoznatije delo Ive Andrića",
-                            Edition = "Second",
-                            IsAvailable = true,
-                            Isbn = "978-86-6249-252-4",
-                            LanguageId = 1,
-                            ModifiedByUserId = 1,
-                            ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PublisherId = 1,
-                            Quantity = 10,
-                            ReleaseYear = 2021,
-                            ReservedQuantity = 0,
-                            Title = "Na Drini Ćuprija"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            AvailableQuantity = 15,
-                            CategoryId = 1,
-                            CreatedByUserId = 1,
-                            CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DepartmentId = 1,
-                            Description = "A dystopian novel by George Orwell",
-                            Edition = "First",
-                            IsAvailable = true,
-                            Isbn = "978-0-452-28423-4",
-                            LanguageId = 2,
-                            ModifiedByUserId = 1,
-                            ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PublisherId = 1,
-                            Quantity = 15,
-                            ReleaseYear = 1949,
-                            ReservedQuantity = 0,
-                            Title = "1984"
-                        });
                 });
 
             modelBuilder.Entity("Domain.Models.BookReservation", b =>
@@ -317,18 +244,6 @@ namespace EfDataAccess.Migrations
                     b.HasIndex("ModifiedByUserId");
 
                     b.ToTable("Category", "lib");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedByUserId = 1,
-                            CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Klasici svetske književnosti",
-                            ModifiedByUserId = 1,
-                            ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Klasici"
-                        });
                 });
 
             modelBuilder.Entity("Domain.Models.Department", b =>
@@ -383,19 +298,6 @@ namespace EfDataAccess.Migrations
                     b.HasIndex("ParentDepartmentId");
 
                     b.ToTable("Department", "lib");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Budget = 100000m,
-                            CreatedByUserId = 1,
-                            CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Departman klasika svetske književnosti",
-                            ModifiedByUserId = 1,
-                            ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Klasici"
-                        });
                 });
 
             modelBuilder.Entity("Domain.Models.Language", b =>
@@ -507,18 +409,6 @@ namespace EfDataAccess.Migrations
                     b.HasIndex("ModifiedByUserId");
 
                     b.ToTable("Publisher", "lib");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedByUserId = 1,
-                            CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Delfi knjižare",
-                            ModifiedByUserId = 1,
-                            ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Delfi"
-                        });
                 });
 
             modelBuilder.Entity("Domain.Models.Rate", b =>
@@ -558,18 +448,6 @@ namespace EfDataAccess.Migrations
                     b.HasIndex("ModifiedByUserId");
 
                     b.ToTable("Rate", "lib");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ApplyAfterDays = 21,
-                            CreatedByUserId = 1,
-                            CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ModifiedByUserId = 1,
-                            ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            RateFee = 50m
-                        });
                 });
 
             modelBuilder.Entity("Domain.Models.Reservation", b =>
@@ -732,80 +610,6 @@ namespace EfDataAccess.Migrations
                     b.HasIndex("ModifiedByUserId");
 
                     b.ToTable("User", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Active = true,
-                            Address = "nema ulice bb",
-                            CardCode = "123-456-789",
-                            City = "Belgrade",
-                            CreatedByUserId = 1,
-                            CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DateOfBirth = new DateTime(1996, 2, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "misteryx96@yahoo.com",
-                            FirstName = "Mladen",
-                            IsCardActive = true,
-                            IsVerified = true,
-                            LastName = "Karic",
-                            ModifiedByUserId = 1,
-                            ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Password = "giomlly",
-                            Phone = "0611234567",
-                            RegistrationDateTime = new DateTime(2023, 8, 29, 23, 31, 29, 685, DateTimeKind.Local).AddTicks(4700),
-                            RoleId = 1,
-                            TotalFee = 0m,
-                            Username = "giomlly"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Active = true,
-                            Address = "nema ulice bb",
-                            CardCode = "111-456-789",
-                            City = "Belgrade",
-                            CreatedByUserId = 1,
-                            CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DateOfBirth = new DateTime(1996, 2, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "mirko@yahoo.com",
-                            FirstName = "Mirko",
-                            IsCardActive = true,
-                            IsVerified = true,
-                            LastName = "Cvetkovic",
-                            ModifiedByUserId = 1,
-                            ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Password = "mirko",
-                            Phone = "0621234567",
-                            RegistrationDateTime = new DateTime(2023, 8, 29, 23, 31, 29, 685, DateTimeKind.Local).AddTicks(4768),
-                            RoleId = 2,
-                            TotalFee = 0m,
-                            Username = "mirko"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Active = true,
-                            Address = "nema ulice bb",
-                            CardCode = "222-456-789",
-                            City = "Belgrade",
-                            CreatedByUserId = 1,
-                            CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DateOfBirth = new DateTime(1996, 2, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "marko@yahoo.com",
-                            FirstName = "Marko",
-                            IsCardActive = true,
-                            IsVerified = true,
-                            LastName = "Nikolic",
-                            ModifiedByUserId = 1,
-                            ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Password = "marko",
-                            Phone = "0631234567",
-                            RegistrationDateTime = new DateTime(2023, 8, 29, 23, 31, 29, 685, DateTimeKind.Local).AddTicks(4772),
-                            RoleId = 3,
-                            TotalFee = 0m,
-                            Username = "marko"
-                        });
                 });
 
             modelBuilder.Entity("BookAuthor", b =>

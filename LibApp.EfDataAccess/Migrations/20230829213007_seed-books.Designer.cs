@@ -4,6 +4,7 @@ using EfDataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EfDataAccess.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    partial class LibraryContextModelSnapshot : ModelSnapshot
+    [Migration("20230829213007_seed-books")]
+    partial class seedbooks
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,18 +38,6 @@ namespace EfDataAccess.Migrations
                     b.HasIndex("BookId");
 
                     b.ToTable("BookAuthor", "lib");
-
-                    b.HasData(
-                        new
-                        {
-                            AuthorId = 1,
-                            BookId = 1
-                        },
-                        new
-                        {
-                            AuthorId = 2,
-                            BookId = 2
-                        });
                 });
 
             modelBuilder.Entity("Domain.Models.Author", b =>
@@ -753,7 +744,7 @@ namespace EfDataAccess.Migrations
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Password = "giomlly",
                             Phone = "0611234567",
-                            RegistrationDateTime = new DateTime(2023, 8, 29, 23, 31, 29, 685, DateTimeKind.Local).AddTicks(4700),
+                            RegistrationDateTime = new DateTime(2023, 8, 29, 23, 30, 7, 456, DateTimeKind.Local).AddTicks(1615),
                             RoleId = 1,
                             TotalFee = 0m,
                             Username = "giomlly"
@@ -777,7 +768,7 @@ namespace EfDataAccess.Migrations
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Password = "mirko",
                             Phone = "0621234567",
-                            RegistrationDateTime = new DateTime(2023, 8, 29, 23, 31, 29, 685, DateTimeKind.Local).AddTicks(4768),
+                            RegistrationDateTime = new DateTime(2023, 8, 29, 23, 30, 7, 456, DateTimeKind.Local).AddTicks(1688),
                             RoleId = 2,
                             TotalFee = 0m,
                             Username = "mirko"
@@ -801,7 +792,7 @@ namespace EfDataAccess.Migrations
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Password = "marko",
                             Phone = "0631234567",
-                            RegistrationDateTime = new DateTime(2023, 8, 29, 23, 31, 29, 685, DateTimeKind.Local).AddTicks(4772),
+                            RegistrationDateTime = new DateTime(2023, 8, 29, 23, 30, 7, 456, DateTimeKind.Local).AddTicks(1697),
                             RoleId = 3,
                             TotalFee = 0m,
                             Username = "marko"
