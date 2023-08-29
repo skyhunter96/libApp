@@ -57,14 +57,18 @@ namespace EfDataAccess.Configurations
                 .HasColumnType("decimal(10,2)");
 
             entity.Property(u => u.Currency)
-                .HasColumnType("char(3)");
+                .HasColumnType("char(3)")
+                .IsRequired(false);
 
             entity.Property(u => u.Notes)
                 .HasMaxLength(1000)
                 .IsRequired(false);
 
-            entity.Property(u => u.Role)
+            entity.Property(u => u.RoleId)
+                .HasColumnName("RoleId")
                 .IsRequired();
+
+            entity.Ignore(u => u.Role);
 
             entity.HasMany(u => u.Reservations)
                 .WithOne(r => r.ReservedByUser)

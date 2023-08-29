@@ -28,5 +28,5 @@ public class User : BaseEntity
     public string Notes { get; set; }
 
     public virtual ICollection<Reservation> Reservations { get; set; }
-    public Role Role { get; set; }
+    public virtual Role Role { get; set; }
 }

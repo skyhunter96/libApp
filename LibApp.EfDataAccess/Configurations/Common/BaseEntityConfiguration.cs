@@ -20,6 +20,16 @@ namespace EfDataAccess.Configurations.Common
 
             builder.Property(e => e.ModifiedDateTime)
                 .HasDefaultValueSql("SYSDATETIME()");
+
+            builder.HasOne(e => e.CreatedByUser)
+                .WithMany()
+                .HasForeignKey(e => e.CreatedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(e => e.ModifiedByUser)
+                .WithMany()
+                .HasForeignKey(e => e.ModifiedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
