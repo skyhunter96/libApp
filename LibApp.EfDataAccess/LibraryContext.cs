@@ -226,6 +226,7 @@ public partial class LibraryContext : DbContext
         var bookAuthors = new List<object>
         {
             new { BookId = book1.Id, AuthorId = author1.Id },
+            new { BookId = book2.Id, AuthorId = author1.Id },
             new { BookId = book2.Id, AuthorId = author2.Id }
         };
 
