@@ -1,5 +1,7 @@
 ﻿using Domain.Models;
 using EfDataAccess;
+using LibApp.Services.Interfaces;
+using LibApp.WebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -9,21 +11,37 @@ namespace LibApp.WebApp.Controllers
     public class BooksController : Controller
     {
         private readonly LibraryContext _context;
+        private readonly IBookService _bookService;
 
-        public BooksController(LibraryContext context)
+        public BooksController(LibraryContext context, IBookService bookService)
         {
             _context = context;
+            _bookService = bookService;
         }
 
         // GET: Books
         public async Task<IActionResult> Index()
         {
-            var libraryContext = _context.Books
-                .Include(b => b.Category)
-                .Include(b => b.Department)
-                .Include(b => b.Language)
-                .Include(b => b.Publisher);
-            return View(await libraryContext.ToListAsync());
+            var books = await _bookService.GetBooksAsync();
+            var bookViewModels = books.Select(book => new BookViewModel
+            {
+                Title = book.Title,
+                Authors = book.Authors
+                    .Select(author => (AuthorId: author.Id, AuthorName: author.Name)),
+                Edition = book.Edition,
+                ReleaseYear = book.ReleaseYear,
+                IsAvailable = book.IsAvailable,
+                Quantity = book.Quantity,
+                AvailableQuantity = book.AvailableQuantity,
+                ReservedQuantity = book.ReservedQuantity,
+                Publisher = book.Publisher.Name,
+                Category = book.Category.Name,
+                Department = book.Department.Name,
+                Language = book.Language.Name,
+                CreatedDateTime = book.CreatedDateTime,
+                ModifiedDateTime = book.ModifiedDateTime,
+            });
+            return View(bookViewModels);
         }
 
         // GET: Books/Details/5
@@ -118,7 +136,7 @@ namespace LibApp.WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Title,Description,Isbn,Edition,PublisherId,CategoryId,DepartmentId,LanguageId,ImagePath,Cost,IsAvailable,Quantity,AvailableQuantity,ReservedQuantity,Id,CreatedDateTime,ModifiedDateTime,CreatedByUserId,ModifiedByUserId")] Book book)
+        public async Task<IActionResult> Edit(int id, [Bind("Title,Description,Isbn,Edition,ReleaseYear,PublisherId,CategoryId,DepartmentId,LanguageId,ImagePath,Cost,IsAvailable,Quantity,AvailableQuantity,ReservedQuantity,Id,CreatedDateTime,ModifiedDateTime,CreatedByUserId,ModifiedByUserId")] Book book)
         {
             if (id != book.Id)
             {
@@ -195,7 +213,7 @@ namespace LibApp.WebApp.Controllers
 
         private bool BookExists(int id)
         {
-            return (_context.Books?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.Books?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
