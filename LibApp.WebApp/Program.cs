@@ -1,4 +1,6 @@
 using EfDataAccess;
+using LibApp.Services;
+using LibApp.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +10,8 @@ builder.Services.AddDbContext<LibraryContext>(options =>
     options.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=LibApp;Integrated Security=True",
         b => b.MigrationsAssembly("LibApp.EfDataAccess")));
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<IBookService, BookService>();
 
 var app = builder.Build();
 
