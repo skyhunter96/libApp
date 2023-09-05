@@ -11,6 +11,7 @@ namespace LibApp.WebApp.ViewModels
         public string Isbn { get; set; }
         public string Edition { get; set; }
         [DataType(DataType.Date)]
+        [Display(Name = "Released")]
         [DisplayFormat(DataFormatString = "{0}", ApplyFormatInEditMode = true)]
         public int ReleaseYear { get; set; }
         public int? PublisherId { get; set; }
@@ -26,9 +27,9 @@ namespace LibApp.WebApp.ViewModels
         [Display(Name = "Available")]
         public bool IsAvailable { get; set; }
         public int Quantity { get; set; }
-        [Display(Name = "Available Quantity")]
+        [Display(Name = "Available")]
         public int AvailableQuantity { get; set; }
-        [Display(Name = "Reserved Quantity")]
+        [Display(Name = "Reserved")]
         public int ReservedQuantity { get; set; }
 
         public SelectList Publishers { get; set; }
