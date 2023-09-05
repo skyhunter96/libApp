@@ -30,6 +30,9 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+app.UseExceptionHandler("/Home/Error"); // Handles exceptions and redirects to the ErrorController
+app.UseStatusCodePagesWithReExecute("/Error/StatusCode/{0}"); // Handles status codes and redirects to the ErrorController
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
