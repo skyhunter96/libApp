@@ -26,5 +26,17 @@ namespace LibApp.Services
 
             return books;
         }
+
+        public async Task<Book> GetBookAsync(int id)
+        {
+            var book = await _context.Books
+                .Include(b => b.Category)
+                .Include(b => b.Department)
+                .Include(b => b.Language)
+                .Include(b => b.Publisher)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            return book;
+        }
     }
 }

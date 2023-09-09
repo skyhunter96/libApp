@@ -22,48 +22,54 @@ namespace LibApp.WebApp.Controllers
         // GET: Books
         public async Task<IActionResult> Index()
         {
-            var books = await _bookService.GetBooksAsync();
-            var bookViewModels = books.Select(book => new BookViewModel
+            try
             {
-                Title = book.Title,
-                Authors = book.Authors
-                    .Select(author => (AuthorId: author.Id, AuthorName: author.Name)),
-                Edition = book.Edition,
-                ReleaseYear = book.ReleaseYear,
-                IsAvailable = book.IsAvailable,
-                Quantity = book.Quantity,
-                AvailableQuantity = book.AvailableQuantity,
-                ReservedQuantity = book.ReservedQuantity,
-                Publisher = book.Publisher.Name,
-                Category = book.Category.Name,
-                Department = book.Department.Name,
-                Language = book.Language.Name,
-                CreatedDateTime = book.CreatedDateTime,
-                ModifiedDateTime = book.ModifiedDateTime,
-            });
-            return View(bookViewModels);
+                var books = await _bookService.GetBooksAsync();
+                var bookViewModels = books.Select(book => new BookViewModel
+                {
+                    Id = book.Id,
+                    Title = book.Title,
+                    Authors = book.Authors
+                        .Select(author => (AuthorId: author.Id, AuthorName: author.Name)),
+                    Edition = book.Edition,
+                    ReleaseYear = book.ReleaseYear,
+                    IsAvailable = book.IsAvailable,
+                    Quantity = book.Quantity,
+                    AvailableQuantity = book.AvailableQuantity,
+                    ReservedQuantity = book.ReservedQuantity,
+                    Publisher = book.Publisher.Name,
+                    Category = book.Category.Name,
+                    Department = book.Department.Name,
+                    Language = book.Language.Name,
+                    CreatedDateTime = book.CreatedDateTime,
+                    ModifiedDateTime = book.ModifiedDateTime,
+                });
+                return View(bookViewModels);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
 
         // GET: Books/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null || _context.Books == null)
+            try
             {
-                return NotFound();
-            }
+                var book = await _bookService.GetBookAsync(id);
 
-            var book = await _context.Books
-                .Include(b => b.Category)
-                .Include(b => b.Department)
-                .Include(b => b.Language)
-                .Include(b => b.Publisher)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (book == null)
+                if (book == null)
+                {
+                    return NotFound();
+                }
+
+                return View(book);
+            }
+            catch (Exception ex)
             {
-                return NotFound();
+                return RedirectToAction("ServerError", "Error");
             }
-
-            return View(book);
         }
 
         // GET: Books/Create
