@@ -8,12 +8,12 @@ public class ErrorController : Controller
     [Route("ServerError")]
     public IActionResult ServerError()
     {
-        return View();
+        return View("Error/ServerError");
     }
 
     [Route("StatusCode/{statusCode}")]
     public IActionResult StatusCode(int statusCode)
     {
-        return View(statusCode == 404 ? "NotFound" : "ServerError");
+        return View(statusCode == 404 ? "Error/NotFound" : "Error/ServerError");
     }
 }

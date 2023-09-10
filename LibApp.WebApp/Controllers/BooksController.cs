@@ -63,6 +63,7 @@ namespace LibApp.WebApp.Controllers
         {
             try
             {
+                //TODO: Process image
                 var book = await _bookService.GetBookAsync(id);
 
                 if (book == null)
@@ -95,8 +96,6 @@ namespace LibApp.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Title,Description,Isbn,Edition,PublisherId,CategoryId,DepartmentId,LanguageId,ImagePath,Cost,IsAvailable,Quantity,AvailableQuantity,ReservedQuantity,Id,CreatedDateTime,ModifiedDateTime,CreatedByUserId,ModifiedByUserId")] Book book)
         {
-            //TODO: Image path not required, BookReservations not req
-
             if (ModelState.IsValid)
             {
                 _context.Add(book);
