@@ -1,4 +1,4 @@
-﻿@model Domain.Models.Book
+﻿@model LibApp.WebApp.ViewModels.BookViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -19,7 +19,6 @@
             </div>
 
             @*TODO: Authors if not exist create, select list with more*@
-
             <div class="form-group">
                 <label asp-for="Authors" class="control-label"></label>
                 <input asp-for="Authors" class="form-control" />
@@ -61,11 +60,12 @@
                 <label asp-for="LanguageId" class="control-label"></label>
                 <select asp-for="LanguageId" class ="form-control" asp-items="ViewBag.LanguageId"></select>
             </div>
-            <div class="form-group">
+            @*TODO: Image file upload*@
+            @*<div class="form-group">
                 <label asp-for="ImagePath" class="control-label"></label>
                 <input asp-for="ImagePath" class="form-control" />
                 <span asp-validation-for="ImagePath" class="text-danger"></span>
-            </div>
+            </div>*@
             <div class="form-group">
                 <label asp-for="Cost" class="control-label"></label>
                 <input asp-for="Cost" class="form-control" />
@@ -91,16 +91,6 @@
                 <label asp-for="ReservedQuantity" class="control-label"></label>
                 <input asp-for="ReservedQuantity" class="form-control" />
                 <span asp-validation-for="ReservedQuantity" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedByUserId" class="control-label"></label>
-                <input asp-for="CreatedByUserId" class="form-control" />
-                <span asp-validation-for="CreatedByUserId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ModifiedByUserId" class="control-label"></label>
-                <input asp-for="ModifiedByUserId" class="form-control" />
-                <span asp-validation-for="ModifiedByUserId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
