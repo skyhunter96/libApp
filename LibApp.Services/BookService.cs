@@ -14,6 +14,18 @@ namespace LibApp.Services
             _context = context;
         }
 
+        public IEnumerable<Book> GetBooks()
+        {
+            var books = _context.Books
+                .Include(b => b.Authors)
+                .Include(b => b.Category)
+                .Include(b => b.Department)
+                .Include(b => b.Language)
+                .Include(b => b.Publisher);
+                
+            return books;
+        }
+
         public async Task<IEnumerable<Book>> GetBooksAsync()
         {
             var books = await _context.Books

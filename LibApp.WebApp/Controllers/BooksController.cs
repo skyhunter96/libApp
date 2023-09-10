@@ -5,6 +5,7 @@ using LibApp.WebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace LibApp.WebApp.Controllers
 {
@@ -22,9 +23,11 @@ namespace LibApp.WebApp.Controllers
         // GET: Books
         public async Task<IActionResult> Index()
         {
+            //var stopwatch = new Stopwatch();
+            //stopwatch.Start();
             try
             {
-                var books = await _bookService.GetBooksAsync();
+                var books = _bookService.GetBooks();
                 var bookViewModels = books.Select(book => new BookViewModel
                 {
                     Id = book.Id,
@@ -44,10 +47,13 @@ namespace LibApp.WebApp.Controllers
                     CreatedDateTime = book.CreatedDateTime,
                     ModifiedDateTime = book.ModifiedDateTime,
                 });
+                //stopwatch.Stop();
+                //var executionTime = stopwatch.ElapsedMilliseconds;
                 return View(bookViewModels);
             }
             catch (Exception ex)
             {
+                //stopwatch.Stop();
                 return RedirectToAction("ServerError", "Error");
             }
         }
