@@ -14,15 +14,19 @@ namespace LibApp.WebApp.ViewModels
         [Display(Name = "Released")]
         [DisplayFormat(DataFormatString = "{0}", ApplyFormatInEditMode = true)]
         public int ReleaseYear { get; set; }
+        [Display(Name = "Publisher")]
         public int? PublisherId { get; set; }
+        [Display(Name = "CategoryId")]
         public int? CategoryId { get; set; }
+        [Display(Name = "DepartmentId")]
         public int? DepartmentId { get; set; }
+        [Display(Name = "LanguageId")]
         public int? LanguageId { get; set; }
         public string Publisher { get; set; }
         public string Category { get; set; }
         public string Department { get; set; }
         public string Language { get; set; }
-        public ICollection<int> AuthorIds { get; set; }
+        public IEnumerable<int> AuthorIds { get; set; }
         public decimal? Cost { get; set; }
         [Display(Name = "Available")]
         public bool IsAvailable { get; set; }

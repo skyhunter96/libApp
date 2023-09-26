@@ -86,6 +86,7 @@ namespace LibApp.WebApp.Controllers
             ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name");
             ViewData["LanguageId"] = new SelectList(_context.Languages, "Id", "Name");
             ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name");
+            ViewData["Authors"] = new MultiSelectList(_context.Authors, "Id", "Name");
             return View();
         }
 
