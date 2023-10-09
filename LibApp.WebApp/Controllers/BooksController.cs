@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace LibApp.WebApp.Controllers
 {
@@ -73,7 +74,35 @@ namespace LibApp.WebApp.Controllers
                     return NotFound();
                 }
 
-                return View(book);
+                //TODO: Authors shouldn't be in format (1, Ivo Andrić)(2, Fridrih Niče) 
+                //TODO: Check when not exist
+
+                var bookViewModel = new BookViewModel
+                {
+                    Id = book.Id,
+                    Title = book.Title,
+                    Description = book.Description,
+                    Isbn = book.Isbn,
+                    Authors = book.Authors?
+                        .Select(author => (AuthorId: author.Id, AuthorName: author.Name)),
+                    Edition = book.Edition,
+                    ReleaseYear = book.ReleaseYear,
+                    Cost = book?.Cost,
+                    IsAvailable = book.IsAvailable,
+                    Quantity = book.Quantity,
+                    AvailableQuantity = book.AvailableQuantity,
+                    ReservedQuantity = book.ReservedQuantity,
+                    Publisher = book.Publisher?.Name,
+                    Category = book.Category?.Name,
+                    Department = book.Department?.Name,
+                    Language = book.Language?.Name,
+                    CreatedDateTime = book.CreatedDateTime,
+                    ModifiedDateTime = book.ModifiedDateTime,
+                    CreatedByUser = book.CreatedByUser?.Username,
+                    ModifiedByUser = book.ModifiedByUser?.Username,
+                };
+
+                return View(bookViewModel);
             }
             catch (Exception exception)
             {
@@ -86,12 +115,19 @@ namespace LibApp.WebApp.Controllers
         {
             //TODO: Insert image
 
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
-            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name");
-            ViewData["LanguageId"] = new SelectList(_context.Languages, "Id", "Name");
-            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name");
-            ViewData["Authors"] = new MultiSelectList(_context.Authors, "Id", "Name");
-            return View();
+            try
+            {
+                ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
+                ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name");
+                ViewData["LanguageId"] = new SelectList(_context.Languages, "Id", "Name");
+                ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name");
+                ViewData["Authors"] = new MultiSelectList(_context.Authors, "Id", "Name");
+                return View();
+            }
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
 
         // POST: Books/Create
@@ -99,32 +135,45 @@ namespace LibApp.WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title,Description,Isbn,Edition,PublisherId,CategoryId,DepartmentId,LanguageId,ImagePath,Cost,IsAvailable,Quantity,AvailableQuantity,ReservedQuantity,Id,CreatedDateTime,ModifiedDateTime,CreatedByUserId,ModifiedByUserId")] Book book)
+        public async Task<IActionResult> Create(
+            [Bind(
+                "Title,Description,Isbn,Edition,PublisherId,CategoryId,DepartmentId,LanguageId,ImagePath,Cost,IsAvailable,Quantity,AvailableQuantity,ReservedQuantity,Id,CreatedDateTime,ModifiedDateTime,CreatedByUserId,ModifiedByUserId")]
+            Book book)
+        //TODO: No BookDomain but rather bookViewModel
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(book);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-
-            foreach (var entry in ModelState)
-            {
-                if (entry.Value.Errors.Any())
+                if (ModelState.IsValid)
                 {
-                    foreach (var error in entry.Value.Errors)
+                    _context.Add(book);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                
+                //TODO: Validate?
+                foreach (var entry in ModelState)
+                {
+                    if (entry.Value.Errors.Any())
                     {
-                        // Log or display the error message
-                        Console.WriteLine($"Property: {entry.Key}, Error: {error.ErrorMessage}");
+                        foreach (var error in entry.Value.Errors)
+                        {
+                            var errorMessagesListList = new List<string>();
+                            errorMessagesListList.Add(error.ErrorMessage);
+                            return RedirectToAction("ServerError", "Error");
+                        }
                     }
                 }
-            }
 
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", book.CategoryId);
-            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name", book.DepartmentId);
-            ViewData["LanguageId"] = new SelectList(_context.Languages, "Id", "Name", book.LanguageId);
-            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", book.PublisherId);
-            return View(book);
+                ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", book.CategoryId);
+                ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name", book.DepartmentId);
+                ViewData["LanguageId"] = new SelectList(_context.Languages, "Id", "Name", book.LanguageId);
+                ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", book.PublisherId);
+                return View(book);
+            }
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
 
         // GET: Books/Edit/5

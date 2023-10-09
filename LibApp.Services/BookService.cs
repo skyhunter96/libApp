@@ -42,6 +42,9 @@ namespace LibApp.Services
         public async Task<Book> GetBookAsync(int id)
         {
             var book = await _context.Books
+                .Include(b => b.Authors)
+                .Include(b => b.CreatedByUser)
+                .Include(b => b.ModifiedByUser)
                 .Include(b => b.Category)
                 .Include(b => b.Department)
                 .Include(b => b.Language)

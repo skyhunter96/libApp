@@ -5,6 +5,8 @@ namespace LibApp.WebApp.ViewModels
 {
     public class BookViewModel
     {
+        //TODO: Maybe create a constructor
+
         public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
