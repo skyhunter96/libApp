@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 
 namespace LibApp.WebApp.Controllers
 {
@@ -51,7 +52,7 @@ namespace LibApp.WebApp.Controllers
                 //var executionTime = stopwatch.ElapsedMilliseconds;
                 return View(bookViewModels);
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
                 //stopwatch.Stop();
                 return RedirectToAction("ServerError", "Error");
@@ -63,7 +64,8 @@ namespace LibApp.WebApp.Controllers
         {
             try
             {
-                //TODO: Process image
+                //TODO: Process image - prerequisite create
+
                 var book = await _bookService.GetBookAsync(id);
 
                 if (book == null)
@@ -73,7 +75,7 @@ namespace LibApp.WebApp.Controllers
 
                 return View(book);
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
                 return RedirectToAction("ServerError", "Error");
             }
@@ -82,6 +84,8 @@ namespace LibApp.WebApp.Controllers
         // GET: Books/Create
         public IActionResult Create()
         {
+            //TODO: Insert image
+
             ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
             ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name");
             ViewData["LanguageId"] = new SelectList(_context.Languages, "Id", "Name");

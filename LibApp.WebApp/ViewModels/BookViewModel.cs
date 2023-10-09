@@ -16,11 +16,11 @@ namespace LibApp.WebApp.ViewModels
         public int ReleaseYear { get; set; }
         [Display(Name = "Publisher")]
         public int? PublisherId { get; set; }
-        [Display(Name = "CategoryId")]
+        [Display(Name = "Category")]
         public int? CategoryId { get; set; }
-        [Display(Name = "DepartmentId")]
+        [Display(Name = "Department")]
         public int? DepartmentId { get; set; }
-        [Display(Name = "LanguageId")]
+        [Display(Name = "Language")]
         public int? LanguageId { get; set; }
         public string Publisher { get; set; }
         public string Category { get; set; }
