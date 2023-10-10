@@ -1,6 +1,8 @@
+using AutoMapper;
 using EfDataAccess;
 using LibApp.Services;
 using LibApp.Services.Interfaces;
+using LibApp.WebApp.Mappings;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +12,9 @@ builder.Services.AddDbContext<LibraryContext>(options =>
     options.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=LibApp;Integrated Security=True",
         b => b.MigrationsAssembly("LibApp.EfDataAccess")));
 builder.Services.AddControllersWithViews();
+
+// Register AutoMapper
+builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddScoped<IBookService, BookService>();
 
