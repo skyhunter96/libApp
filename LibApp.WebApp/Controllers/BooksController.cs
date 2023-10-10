@@ -1,4 +1,5 @@
-﻿using Domain.Models;
+﻿using AutoMapper;
+using Domain.Models;
 using EfDataAccess;
 using LibApp.Services.Interfaces;
 using LibApp.WebApp.ViewModels;
@@ -6,8 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
-using Microsoft.EntityFrameworkCore.Migrations.Operations;
-using static System.Reflection.Metadata.BlobBuilder;
 
 namespace LibApp.WebApp.Controllers
 {
@@ -15,11 +14,13 @@ namespace LibApp.WebApp.Controllers
     {
         private readonly LibraryContext _context;
         private readonly IBookService _bookService;
+        private readonly IMapper _mapper;
 
-        public BooksController(LibraryContext context, IBookService bookService)
+        public BooksController(LibraryContext context, IBookService bookService, IMapper mapper)
         {
             _context = context;
             _bookService = bookService;
+            _mapper = mapper;
         }
 
         // GET: Books
@@ -30,25 +31,8 @@ namespace LibApp.WebApp.Controllers
             try
             {
                 var books = _bookService.GetBooks();
-                var bookViewModels = books.Select(book => new BookViewModel
-                {
-                    Id = book.Id,
-                    Title = book.Title,
-                    Authors = book.Authors
-                        .Select(author => (AuthorId: author.Id, AuthorName: author.Name)),
-                    Edition = book.Edition,
-                    ReleaseYear = book.ReleaseYear,
-                    IsAvailable = book.IsAvailable,
-                    Quantity = book.Quantity,
-                    AvailableQuantity = book.AvailableQuantity,
-                    ReservedQuantity = book.ReservedQuantity,
-                    Publisher = book.Publisher.Name,
-                    Category = book.Category.Name,
-                    Department = book.Department.Name,
-                    Language = book.Language.Name,
-                    CreatedDateTime = book.CreatedDateTime,
-                    ModifiedDateTime = book.ModifiedDateTime,
-                });
+                var bookViewModels = _mapper.Map<IEnumerable<BookViewModel>>(books);
+
                 //stopwatch.Stop();
                 //var executionTime = stopwatch.ElapsedMilliseconds;
                 return View(bookViewModels);
