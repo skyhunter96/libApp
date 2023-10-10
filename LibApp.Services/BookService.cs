@@ -18,11 +18,13 @@ namespace LibApp.Services
         {
             var books = _context.Books
                 .Include(b => b.Authors)
+                .Include(b => b.CreatedByUser)
+                .Include(b => b.ModifiedByUser)
                 .Include(b => b.Category)
                 .Include(b => b.Department)
                 .Include(b => b.Language)
                 .Include(b => b.Publisher);
-                
+
             return books;
         }
 

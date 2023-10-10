@@ -10,6 +10,8 @@ namespace LibApp.WebApp.Mappings
         {
             CreateMap<Book, BookViewModel>()
                 .ForMember(dest => dest.Authors, opt => opt.MapFrom(src => MapAuthors(src.Authors)))
+                .ForMember(dest => dest.CreatedByUser, opt => opt.MapFrom(src => src.CreatedByUser.Username))
+                .ForMember(dest => dest.ModifiedByUser, opt => opt.MapFrom(src => src.ModifiedByUser.Username))
                 .ForMember(dest => dest.Publisher, opt => opt.MapFrom(src => src.Publisher.Name))
                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category.Name))
                 .ForMember(dest => dest.Department, opt => opt.MapFrom(src => src.Department.Name))
