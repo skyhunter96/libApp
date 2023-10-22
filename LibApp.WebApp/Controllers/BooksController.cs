@@ -6,7 +6,6 @@ using LibApp.WebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
 
 namespace LibApp.WebApp.Controllers
 {
@@ -105,6 +104,9 @@ namespace LibApp.WebApp.Controllers
                 ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name");
                 ViewData["LanguageId"] = new SelectList(_context.Languages, "Id", "Name");
                 ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name");
+
+                //TODO: Authors if not exist create, new select list, both inputs present
+
                 ViewData["Authors"] = new MultiSelectList(_context.Authors, "Id", "Name");
                 return View();
             }
@@ -123,6 +125,7 @@ namespace LibApp.WebApp.Controllers
             [Bind(
                 "Title,Description,Isbn,Edition,PublisherId,CategoryId,DepartmentId,LanguageId,ImagePath,Cost,IsAvailable,Quantity,AvailableQuantity,ReservedQuantity,Id,CreatedDateTime,ModifiedDateTime,CreatedByUserId,ModifiedByUserId")]
             Book book)
+        //TODO: Maybe remove bind?
         //TODO: No BookDomain but rather bookViewModel
         {
             try
@@ -141,8 +144,8 @@ namespace LibApp.WebApp.Controllers
                     {
                         foreach (var error in entry.Value.Errors)
                         {
-                            var errorMessagesListList = new List<string>();
-                            errorMessagesListList.Add(error.ErrorMessage);
+                            var errorMessageList = new List<string>();
+                            errorMessageList.Add(error.ErrorMessage);
                             return RedirectToAction("ServerError", "Error");
                         }
                     }

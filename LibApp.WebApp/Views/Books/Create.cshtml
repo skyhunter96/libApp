@@ -18,10 +18,10 @@
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
 
-            @*TODO: Authors if not exist create, select list with more*@
+            @*TODO: Authors if not exist create, new select list, both inputs present*@
             <div class="form-group">
                 <label asp-for="Authors" class="control-label"></label>
-                <input asp-for="Authors" class="form-control" />
+                <select asp-for="Authors" class="form-control" asp-items="ViewBag.Authors" multiple="multiple"></select>
                 <span asp-validation-for="Authors" class="text-danger"></span>
             </div>
             <div class="form-group">
