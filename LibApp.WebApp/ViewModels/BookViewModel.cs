@@ -8,14 +8,20 @@ namespace LibApp.WebApp.ViewModels
         //TODO: Maybe create a constructor
 
         public int Id { get; set; }
+
+        [Required]
         public string Title { get; set; }
+
         public string Description { get; set; }
+
+        [Required]
         public string Isbn { get; set; }
+
+        [Required]
         public string Edition { get; set; }
-        [DataType(DataType.Date)]
-        [Display(Name = "Released")]
-        [DisplayFormat(DataFormatString = "{0}", ApplyFormatInEditMode = true)]
-        public int ReleaseYear { get; set; }
+
+        [Display(Name = "Released")] 
+        public int ReleaseYear { get; set; } = DateTime.Now.Year;
         [Display(Name = "Publisher")]
         public int? PublisherId { get; set; }
         [Display(Name = "Category")]
@@ -28,6 +34,8 @@ namespace LibApp.WebApp.ViewModels
         public string Category { get; set; }
         public string Department { get; set; }
         public string Language { get; set; }
+        [Display(Name = "New Author")]
+        public string NewAuthor { get; set; }
         public IEnumerable<int> AuthorIds { get; set; }
         public decimal? Cost { get; set; }
         [Display(Name = "Available")]
