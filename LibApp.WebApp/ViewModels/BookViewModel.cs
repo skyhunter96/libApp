@@ -35,8 +35,7 @@ namespace LibApp.WebApp.ViewModels
         public string Department { get; set; }
         public string Language { get; set; }
         [Display(Name = "New Author")]
-        public string NewAuthor { get; set; }
-        public IEnumerable<int> AuthorIds { get; set; }
+        public string? NewAuthor { get; set; }
         public decimal? Cost { get; set; }
         [Display(Name = "Available")]
         public bool IsAvailable { get; set; }

@@ -24,6 +24,14 @@
                 <select asp-for="Authors" class="form-control" asp-items="ViewBag.Authors" multiple="multiple"></select>
                 <span asp-validation-for="Authors" class="text-danger"></span>
             </div>
+            <br/>
+            <p>If author doesn't exist, enter new author:</p>
+
+            <div class="form-group">
+                <label asp-for="NewAuthor" class="control-label"></label>
+                <input asp-for="NewAuthor" class="form-control" />
+                <span asp-validation-for="NewAuthor" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
                 <textarea asp-for="Description" class="form-control" rows="6"></textarea>
