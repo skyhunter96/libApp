@@ -17,7 +17,8 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Title)
         </dd>
-
+        
+        @*TODO: Bad format: (1, Ivo Andrić) *@
         @if (Model.Authors.Any())
         {
             <dt class="col-sm-2">
@@ -52,6 +53,7 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.ReleaseYear)
         </dd>
+        
 
         @if (Model.Cost.HasValue)
         {
@@ -87,7 +89,8 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.ReservedQuantity)
         </dd>
-
+        
+        @*TODO: shouldn't really be in if block since shouldn't be null but I guess*@
         @if (!Model.Publisher.IsNullOrEmpty())
         {
             <dt class = "col-sm-2">

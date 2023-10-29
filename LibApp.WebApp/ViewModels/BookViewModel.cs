@@ -91,7 +91,7 @@ namespace LibApp.WebApp.ViewModels
         [Display(Name = "ModifiedBy")]
         public string? ModifiedByUser { get; set; }
 
-        //TODO: ISBN isti ne sme postoji
+        //TODO: ISBN isti ne sme postoji, isbn format validacija
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             var validationResults = new List<ValidationResult>();
