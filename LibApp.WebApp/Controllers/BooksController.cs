@@ -59,6 +59,7 @@ namespace LibApp.WebApp.Controllers
 
                 //TODO: Authors shouldn't be in format (1, Ivo Andrić)(2, Fridrih Niče) 
                 //TODO: Check when not exist
+                //TODO: Use automapper
 
                 var bookViewModel = new BookViewModel
                 {
@@ -106,8 +107,8 @@ namespace LibApp.WebApp.Controllers
                 ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name");
 
                 //TODO: Authors if not exist create, new select list, both inputs present
-
                 ViewData["Authors"] = new MultiSelectList(_context.Authors, "Id", "Name");
+
                 return View();
             }
             catch (Exception exception)
@@ -121,22 +122,21 @@ namespace LibApp.WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind(
-                "Title,Description,Isbn,Edition,PublisherId,CategoryId,DepartmentId,LanguageId,ImagePath,Cost,IsAvailable,Quantity,AvailableQuantity,ReservedQuantity,Id,CreatedDateTime,ModifiedDateTime,CreatedByUserId,ModifiedByUserId")]
-            Book book)
+        public async Task<IActionResult> Create(BookViewModel model)
         //TODO: Maybe remove bind?
-        //TODO: No BookDomain but rather bookViewModel
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    _context.Add(book);
+                    _context.Add(model);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
-                
+
+                var errorMessageList = new List<string>();
+                var selectedAuthors = Request.Form["Authors"].ToArray();
+
                 //TODO: Validate?
                 foreach (var entry in ModelState)
                 {
@@ -144,18 +144,19 @@ namespace LibApp.WebApp.Controllers
                     {
                         foreach (var error in entry.Value.Errors)
                         {
-                            var errorMessageList = new List<string>();
                             errorMessageList.Add(error.ErrorMessage);
-                            return RedirectToAction("ServerError", "Error");
+                            Console.WriteLine($"Property: {entry.Key}, Error: {error.ErrorMessage}");
                         }
                     }
                 }
 
-                ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", book.CategoryId);
-                ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name", book.DepartmentId);
-                ViewData["LanguageId"] = new SelectList(_context.Languages, "Id", "Name", book.LanguageId);
-                ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", book.PublisherId);
-                return View(book);
+                ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", model.CategoryId);
+                ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name", model.DepartmentId);
+                ViewData["LanguageId"] = new SelectList(_context.Languages, "Id", "Name", model.LanguageId);
+                ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", model.PublisherId);
+                ViewData["Authors"] = new MultiSelectList(_context.Authors, "Id", "Name", model.Authors);
+
+                return View(model);
             }
             catch (Exception exception)
             {
