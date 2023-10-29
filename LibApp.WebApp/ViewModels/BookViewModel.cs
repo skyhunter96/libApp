@@ -1,26 +1,33 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
+using Microsoft.IdentityModel.Tokens;
 
 namespace LibApp.WebApp.ViewModels
 {
-    public class BookViewModel
+    public class BookViewModel : IValidatableObject
     {
         //TODO: Maybe create a constructor
 
         public int Id { get; set; }
 
         [Required]
+        [MaxLength(100)]
         public string Title { get; set; }
 
+        [MaxLength(1000)]
         public string? Description { get; set; }
 
         [Required]
+        [MaxLength(17)]
         public string Isbn { get; set; }
 
         [Required]
+        [MaxLength(100)]
         public string Edition { get; set; }
 
-        [Display(Name = "Released")] 
+        [Display(Name = "Released")]
+        [Range(-3000, 3000)]
         public int ReleaseYear { get; set; }
 
         [Display(Name = "Publisher")]
@@ -37,32 +44,40 @@ namespace LibApp.WebApp.ViewModels
 
         [Display(Name = "Authors")]
         public IEnumerable<(int AuthorId, string AuthorName)>? Authors { get; set; }
+        [Display(Name = "Authors")]
+        public IEnumerable<int>? AuthorIds { get; set; }
 
-        public string Publisher { get; set; }
-        public string Category { get; set; }
+        //TODO: these have to be null cuz validation for create fails, best would be to split vms for diff actions but have no time
+        public string? Publisher { get; set; }
+        public string? Category { get; set; }
         public string? Department { get; set; }
-        public string Language { get; set; }
+        public string? Language { get; set; }
 
         [Display(Name = "New Author")]
+        [MaxLength(100)]
         public string? NewAuthor { get; set; }
 
-        public IEnumerable<int>? AuthorIds { get; set; }
+        [Range(0, Double.MaxValue)]
         public decimal? Cost { get; set; }
 
         [Display(Name = "Available")]
         public bool IsAvailable { get; set; }
+
+        [Range(0, 1000)]
         public int Quantity { get; set; }
 
         [Display(Name = "Available")]
+        [Range(0, 1000)]
         public int AvailableQuantity { get; set; }
 
         [Display(Name = "Reserved")]
+        [Range(0, 1000)]
         public int ReservedQuantity { get; set; }
 
-        public SelectList Publishers { get; set; }
-        public SelectList Categories { get; set; }
-        public SelectList? Departments { get; set; }
-        public SelectList Languages { get; set; }
+        //public SelectList Publishers { get; set; }
+        //public SelectList Categories { get; set; }
+        //public SelectList? Departments { get; set; }
+        //public SelectList Languages { get; set; }
 
         [Display(Name = "Created")]
         public DateTime CreatedDateTime { get; set; }
@@ -71,9 +86,25 @@ namespace LibApp.WebApp.ViewModels
         public DateTime ModifiedDateTime { get; set; }
 
         [Display(Name = "CreatedBy")]
-        public string CreatedByUser { get; set; }
+        public string? CreatedByUser { get; set; }
 
         [Display(Name = "ModifiedBy")]
-        public string ModifiedByUser { get; set; }
+        public string? ModifiedByUser { get; set; }
+
+        //TODO: ISBN isti ne sme postoji
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            var validationResults = new List<ValidationResult>();
+
+            //TODO: DoesNot show error under input field
+            if (NewAuthor.IsNullOrEmpty() && AuthorIds.IsNullOrEmpty())
+            {
+                validationResults.Add(new ValidationResult(
+                    "Both Author and New Author fields are empty. Chose Authors from the list or enter a new one",
+                    new[] { nameof(AuthorIds) }));
+            }
+
+            return validationResults;
+        }
     }
 }

@@ -6,6 +6,7 @@ using LibApp.WebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace LibApp.WebApp.Controllers
 {
@@ -107,7 +108,7 @@ namespace LibApp.WebApp.Controllers
                 ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name");
 
                 //TODO: Authors if not exist create, new select list, both inputs present
-                ViewData["Authors"] = new MultiSelectList(_context.Authors, "Id", "Name");
+                ViewData["AuthorIds"] = new MultiSelectList(_context.Authors, "Id", "Name");
 
                 return View();
             }
@@ -135,9 +136,7 @@ namespace LibApp.WebApp.Controllers
                 }
 
                 var errorMessageList = new List<string>();
-                var selectedAuthors = Request.Form["Authors"].ToArray();
 
-                //TODO: Validate?
                 foreach (var entry in ModelState)
                 {
                     if (entry.Value.Errors.Any())
@@ -154,7 +153,7 @@ namespace LibApp.WebApp.Controllers
                 ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name", model.DepartmentId);
                 ViewData["LanguageId"] = new SelectList(_context.Languages, "Id", "Name", model.LanguageId);
                 ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", model.PublisherId);
-                ViewData["Authors"] = new MultiSelectList(_context.Authors, "Id", "Name", model.Authors);
+                ViewData["AuthorIds"] = new MultiSelectList(_context.Authors, "Id", "Name", model.AuthorIds);
 
                 return View(model);
             }
