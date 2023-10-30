@@ -55,5 +55,12 @@ namespace LibApp.Services
 
             return book;
         }
+
+        public bool IsbnExists(string isbn)
+        {
+            var book = _context.Books.FirstOrDefault(b => b.Isbn == isbn);
+
+            return book != null;
+        }
     }
 }

@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
+﻿using LibApp.Services.Interfaces;
 using Microsoft.IdentityModel.Tokens;
+using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
 namespace LibApp.WebApp.ViewModels
@@ -92,10 +91,13 @@ namespace LibApp.WebApp.ViewModels
         [Display(Name = "ModifiedBy")]
         public string? ModifiedByUser { get; set; }
 
+        public bool IsbnExists { get; set; }
 
-        private const string ISBNPattern = @"^(97(8|9))?\d{9}(\d|X)$";
 
-        //TODO: ISBN isti ne sme postoji, isbn format validacija
+        private readonly IBookService _bookService;
+
+        private const string ISBNPattern = @"^(?=.*\d)(?=.*-).+$";
+
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             var validationResults = new List<ValidationResult>();
@@ -112,8 +114,10 @@ namespace LibApp.WebApp.ViewModels
                 validationResults.Add(new ValidationResult(
                     "Invalid ISBN format.",
                     new[] { nameof(Isbn) }));
+
+                return validationResults;
             }
-                
+
             return validationResults;
         }
     }

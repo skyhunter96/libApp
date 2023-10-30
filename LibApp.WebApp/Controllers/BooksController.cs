@@ -128,6 +128,11 @@ namespace LibApp.WebApp.Controllers
         {
             try
             {
+                if (_bookService.IsbnExists(model.Isbn))
+                {
+                    ModelState.AddModelError("Isbn", "A book with this ISBN already exists.");
+                }
+
                 if (ModelState.IsValid)
                 {
                     _context.Add(model);
