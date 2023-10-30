@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.IdentityModel.Tokens;
+using System.Text.RegularExpressions;
 
 namespace LibApp.WebApp.ViewModels
 {
@@ -91,12 +92,14 @@ namespace LibApp.WebApp.ViewModels
         [Display(Name = "ModifiedBy")]
         public string? ModifiedByUser { get; set; }
 
+
+        private const string ISBNPattern = @"^(97(8|9))?\d{9}(\d|X)$";
+
         //TODO: ISBN isti ne sme postoji, isbn format validacija
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             var validationResults = new List<ValidationResult>();
 
-            //TODO: DoesNot show error under input field
             if (NewAuthor.IsNullOrEmpty() && AuthorIds.IsNullOrEmpty())
             {
                 validationResults.Add(new ValidationResult(
@@ -104,6 +107,13 @@ namespace LibApp.WebApp.ViewModels
                     new[] { nameof(AuthorIds) }));
             }
 
+            if (!Regex.IsMatch(Isbn, ISBNPattern))
+            {
+                validationResults.Add(new ValidationResult(
+                    "Invalid ISBN format.",
+                    new[] { nameof(Isbn) }));
+            }
+                
             return validationResults;
         }
     }
