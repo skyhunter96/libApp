@@ -6,7 +6,6 @@ using LibApp.WebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
 
 namespace LibApp.WebApp.Controllers
 {
@@ -58,34 +57,7 @@ namespace LibApp.WebApp.Controllers
                     return NotFound();
                 }
 
-                //TODO: Authors shouldn't be in format (1, Ivo Andrić)(2, Fridrih Niče) 
-                //TODO: Check when not exist
-                //TODO: Use automapper
-
-                var bookViewModel = new BookViewModel
-                {
-                    Id = book.Id,
-                    Title = book.Title,
-                    Description = book.Description,
-                    Isbn = book.Isbn,
-                    Authors = book.Authors?
-                        .Select(author => (AuthorId: author.Id, AuthorName: author.Name)),
-                    Edition = book.Edition,
-                    ReleaseYear = book.ReleaseYear,
-                    Cost = book?.Cost,
-                    IsAvailable = book.IsAvailable,
-                    Quantity = book.Quantity,
-                    AvailableQuantity = book.AvailableQuantity,
-                    ReservedQuantity = book.ReservedQuantity,
-                    Publisher = book.Publisher?.Name,
-                    Category = book.Category?.Name,
-                    Department = book.Department?.Name,
-                    Language = book.Language?.Name,
-                    CreatedDateTime = book.CreatedDateTime,
-                    ModifiedDateTime = book.ModifiedDateTime,
-                    CreatedByUser = book.CreatedByUser?.Username,
-                    ModifiedByUser = book.ModifiedByUser?.Username,
-                };
+                var bookViewModel = _mapper.Map<BookViewModel>(book);
 
                 return View(bookViewModel);
             }

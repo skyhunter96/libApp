@@ -25,7 +25,10 @@
                 @Html.DisplayNameFor(model => model.Authors)
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Authors)
+                @foreach (var author in Model.Authors)
+                {
+                    <span>@author.AuthorName</span><br />
+                }
             </dd>
         }
 
@@ -90,7 +93,6 @@
             @Html.DisplayFor(model => model.ReservedQuantity)
         </dd>
         
-        @*TODO: shouldn't really be in if block since shouldn't be null but I guess*@
         @if (!Model.Publisher.IsNullOrEmpty())
         {
             <dt class = "col-sm-2">
