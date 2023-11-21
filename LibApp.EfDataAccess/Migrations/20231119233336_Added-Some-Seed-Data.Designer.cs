@@ -4,6 +4,7 @@ using EfDataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EfDataAccess.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    partial class LibraryContextModelSnapshot : ModelSnapshot
+    [Migration("20231119233336_Added-Some-Seed-Data")]
+    partial class AddedSomeSeedData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -229,10 +232,10 @@ namespace EfDataAccess.Migrations
                         {
                             Id = 2,
                             AvailableQuantity = 15,
-                            CategoryId = 2,
+                            CategoryId = 1,
                             CreatedByUserId = 1,
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DepartmentId = 2,
+                            DepartmentId = 1,
                             Description = "A dystopian novel by George Orwell",
                             Edition = "First",
                             IsAvailable = true,
@@ -240,7 +243,7 @@ namespace EfDataAccess.Migrations
                             LanguageId = 2,
                             ModifiedByUserId = 1,
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PublisherId = 2,
+                            PublisherId = 1,
                             Quantity = 15,
                             ReleaseYear = 1949,
                             ReservedQuantity = 0,
@@ -789,7 +792,7 @@ namespace EfDataAccess.Migrations
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Password = "giomlly",
                             Phone = "0611234567",
-                            RegistrationDateTime = new DateTime(2023, 11, 20, 0, 38, 34, 755, DateTimeKind.Local).AddTicks(4808),
+                            RegistrationDateTime = new DateTime(2023, 11, 20, 0, 33, 35, 900, DateTimeKind.Local).AddTicks(9400),
                             RoleId = 1,
                             TotalFee = 0m,
                             Username = "giomlly"
@@ -813,7 +816,7 @@ namespace EfDataAccess.Migrations
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Password = "mirko",
                             Phone = "0621234567",
-                            RegistrationDateTime = new DateTime(2023, 11, 20, 0, 38, 34, 755, DateTimeKind.Local).AddTicks(4880),
+                            RegistrationDateTime = new DateTime(2023, 11, 20, 0, 33, 35, 900, DateTimeKind.Local).AddTicks(9464),
                             RoleId = 2,
                             TotalFee = 0m,
                             Username = "mirko"
@@ -837,7 +840,7 @@ namespace EfDataAccess.Migrations
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Password = "marko",
                             Phone = "0631234567",
-                            RegistrationDateTime = new DateTime(2023, 11, 20, 0, 38, 34, 755, DateTimeKind.Local).AddTicks(4885),
+                            RegistrationDateTime = new DateTime(2023, 11, 20, 0, 33, 35, 900, DateTimeKind.Local).AddTicks(9468),
                             RoleId = 3,
                             TotalFee = 0m,
                             Username = "marko"
