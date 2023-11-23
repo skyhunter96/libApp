@@ -26,7 +26,7 @@
             <dd class="col-sm-10">
                 @foreach (var author in Model.Authors)
                 {
-                    <a href="@Url.Action("Index", "Authors", new { id = author.AuthorId })">
+                    <a href="@Url.Action("Details", "Authors", new { id = author.AuthorId })">
                         <span>@author.AuthorName</span><br />
                     </a>
                 }
@@ -100,7 +100,9 @@
                 @Html.DisplayNameFor(model => model.Publisher)
             </dt>
             <dd class = "col-sm-10">
-                @Html.DisplayFor(model => model.Publisher)
+                <a href="@Url.Action("Details", "Publishers", new { id = Model.PublisherId })">
+                    @Model.Publisher
+                </a>
             </dd>
         }
 
@@ -110,7 +112,9 @@
                 @Html.DisplayNameFor(model => model.Category)
             </dt>
             <dd class = "col-sm-10">
-                @Html.DisplayFor(model => model.Category)
+                <a href="@Url.Action("Details", "Categories", new { id = Model.CategoryId })">
+                    @Model.Category
+                </a>
             </dd>
         }
         
@@ -120,7 +124,9 @@
                 @Html.DisplayNameFor(model => model.Department)
             </dt>
             <dd class = "col-sm-10">
-                @Html.DisplayFor(model => model.Department)
+                <a href="@Url.Action("Details", "Departments", new { id = Model.DepartmentId })">
+                    @Model.Department
+                </a>
             </dd>
         }
         
@@ -130,7 +136,9 @@
                 @Html.DisplayNameFor(model => model.Language)
             </dt>
             <dd class = "col-sm-10">
-                @Html.DisplayFor(model => model.Language)
+                <a href="@Url.Action("Details", "Languages", new { id = Model.LanguageId })">
+                    @Model.Language
+                </a>
             </dd>
         }
 
