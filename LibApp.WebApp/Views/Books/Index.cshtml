@@ -76,7 +76,7 @@
                     <td>
                         @foreach (var author in item.Authors)
                         {
-                            <a href="@Url.Action("Index", "Authors", new { id = author.AuthorId })">
+                            <a href="@Url.Action("Details", "Authors", new { id = author.AuthorId })">
                                 @author.AuthorName
                             </a>
                             @if (author != item.Authors.Last())
@@ -104,16 +104,24 @@
                         @Html.DisplayFor(modelItem => item.ReservedQuantity)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Publisher)
+                        <a href="@Url.Action("Details", "Publishers", new { id = item.PublisherId })">
+                            @item.Publisher
+                        </a>
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Category)
+                        <a href="@Url.Action("Details", "Categories", new { id = item.CategoryId })">
+                            @item.Category
+                        </a>
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Department)
+                        <a href="@Url.Action("Details", "Departments", new { id = item.DepartmentId })">
+                            @item.Department
+                        </a>
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Language)
+                        <a href="@Url.Action("Details", "Language", new { id = item.LanguageId })">
+                            @item.Language
+                        </a>
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.CreatedDateTime)
