@@ -141,8 +141,13 @@ public class LibraryContext : DbContext
             Id = 2,
             Name = "Fridrih Niče",
         };
+        var author3 = new Author
+        {
+            Id = 3,
+            Name = "Laza Kostić",
+        };
 
-        var authors = new List<Author> { author1, author2 };
+        var authors = new List<Author> { author1, author2, author3 };
 
         foreach (var author in authors)
         {
