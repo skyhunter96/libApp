@@ -70,8 +70,6 @@ namespace LibApp.WebApp.Controllers
         // GET: Books/Create
         public IActionResult Create()
         {
-            //TODO: Insert image
-
             try
             {
                 ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
@@ -79,7 +77,6 @@ namespace LibApp.WebApp.Controllers
                 ViewData["LanguageId"] = new SelectList(_context.Languages, "Id", "Name");
                 ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name");
 
-                //TODO: Authors if not exist create, new select list, both inputs present
                 ViewData["AuthorIds"] = new MultiSelectList(_context.Authors, "Id", "Name");
 
                 return View();
@@ -96,10 +93,12 @@ namespace LibApp.WebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(BookViewModel model)
-        //TODO: Maybe remove bind?
         {
             try
             {
+                //TODO: Authors if not exist create, new select list, both inputs present
+                //TODO: Insert image
+
                 if (_bookService.IsbnExists(model.Isbn))
                 {
                     ModelState.AddModelError("Isbn", "A book with this ISBN already exists.");
@@ -107,8 +106,14 @@ namespace LibApp.WebApp.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    _context.Add(model);
-                    await _context.SaveChangesAsync();
+                    //TODO: Move to service
+                    //TODO: CreatedByUserId and UpdatedByUserId need to get from session
+                    //TODO: When saved needs to success or warning element when fail
+
+                    var book = _mapper.Map<Book>(model);
+
+                    await _bookService.AddBookAsync(book, model.AuthorIds, model.NewAuthor);
+
                     return RedirectToAction(nameof(Index));
                 }
 

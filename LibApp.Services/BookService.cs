@@ -62,5 +62,25 @@ namespace LibApp.Services
 
             return book != null;
         }
+
+        public async Task AddBookAsync(Book book, IEnumerable<int>? existingAuthorIds, string? newAuthor)
+        {
+            //TODO: Handle newAuthor
+            //TODO: Modified dateTime and createdDateTime? prolly not
+
+            book.CreatedByUserId = 1;
+            book.ModifiedByUserId = 1;
+
+            if (existingAuthorIds != null)
+            {
+                var existingAuthors = await _context.Authors.Where(a => existingAuthorIds.Contains(a.Id)).ToListAsync();
+
+                book.Authors = existingAuthors;
+            }
+
+            _context.Add(book);
+
+            await _context.SaveChangesAsync();
+        }
     }
 }
