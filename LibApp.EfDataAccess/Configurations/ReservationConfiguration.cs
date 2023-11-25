@@ -24,10 +24,9 @@ namespace EfDataAccess.Configurations
                 .HasColumnType("decimal(10,2)");
 
             //TODO: Check if good behaviour
-            //TODO: mozda restrict onDelete
             entity.HasOne(r => r.ReservedByUser)
                 .WithMany(u => u.Reservations)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
