@@ -46,9 +46,6 @@
                     @Html.DisplayNameFor(model => model.Category)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Department)
-                </th>
-                <th>
                     @Html.DisplayNameFor(model => model.Language)
                 </th>
                 <th>
@@ -111,11 +108,6 @@
                     <td>
                         <a href="@Url.Action("Details", "Categories", new { id = item.CategoryId })">
                             @item.Category
-                        </a>
-                    </td>
-                    <td>
-                        <a href="@Url.Action("Details", "Departments", new { id = item.DepartmentId })">
-                            @item.Department
                         </a>
                     </td>
                     <td>
