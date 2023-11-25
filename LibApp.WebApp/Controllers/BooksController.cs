@@ -25,6 +25,8 @@ namespace LibApp.WebApp.Controllers
         // GET: Books
         public async Task<IActionResult> Index()
         {
+            //TODO: Pagination
+
             //var stopwatch = new Stopwatch();
             //stopwatch.Start();
             try
@@ -49,6 +51,8 @@ namespace LibApp.WebApp.Controllers
             try
             {
                 //TODO: Process image - prerequisite create
+                //TODO: No search on landing page
+                //TODO: Dashboard on sidebar? prolly not
 
                 var book = await _bookService.GetBookAsync(id);
 
@@ -96,7 +100,6 @@ namespace LibApp.WebApp.Controllers
         {
             try
             {
-                //TODO: Authors if not exist create, new select list, both inputs present
                 //TODO: Insert image
 
                 if (_bookService.IsbnExists(model.Isbn))
@@ -106,13 +109,13 @@ namespace LibApp.WebApp.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    //TODO: Move to service
                     //TODO: CreatedByUserId and UpdatedByUserId need to get from session
-                    //TODO: When saved needs to success or warning element when fail
 
                     var book = _mapper.Map<Book>(model);
 
                     await _bookService.AddBookAsync(book, model.AuthorIds, model.NewAuthor);
+
+                    TempData["SuccessMessage"] = "Book added successfully.";
 
                     return RedirectToAction(nameof(Index));
                 }
@@ -125,6 +128,7 @@ namespace LibApp.WebApp.Controllers
                     {
                         foreach (var error in entry.Value.Errors)
                         {
+                            //TODO: to check if to log somewhere
                             errorMessageList.Add(error.ErrorMessage);
                             Console.WriteLine($"Property: {entry.Key}, Error: {error.ErrorMessage}");
                         }
@@ -141,6 +145,7 @@ namespace LibApp.WebApp.Controllers
             }
             catch (Exception exception)
             {
+                //TempData["ErrorMessage"] = "An error occurred while processing your request.";
                 return RedirectToAction("ServerError", "Error");
             }
         }
@@ -203,6 +208,8 @@ namespace LibApp.WebApp.Controllers
             ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", book.PublisherId);
             return View(book);
         }
+
+        //TODO: prolly delete with a popup, not this in a new view
 
         // GET: Books/Delete/5
         public async Task<IActionResult> Delete(int? id)
