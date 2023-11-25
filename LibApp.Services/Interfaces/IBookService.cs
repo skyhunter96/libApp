@@ -9,5 +9,5 @@ public interface IBookService
     Task<Book> GetBookAsync(int id);
 
     bool IsbnExists(string isbn);
-    Task AddBookAsync(Book book, IEnumerable<int>? existingAuthorIds, string? newAuthor);
+    Task AddBookAsync(Book book, IEnumerable<int>? existingAuthorIds, string? newAuthorName);
 }

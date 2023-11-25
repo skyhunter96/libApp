@@ -2,6 +2,7 @@
 using EfDataAccess;
 using LibApp.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.ObjectModel;
 
 namespace LibApp.Services
 {
@@ -63,20 +64,35 @@ namespace LibApp.Services
             return book != null;
         }
 
-        public async Task AddBookAsync(Book book, IEnumerable<int>? existingAuthorIds, string? newAuthor)
+        public async Task AddBookAsync(Book book, IEnumerable<int>? existingAuthorIds, string? newAuthorName)
         {
-            //TODO: Handle newAuthor
             //TODO: Modified dateTime and createdDateTime? prolly not
 
-            book.CreatedByUserId = 1;
-            book.ModifiedByUserId = 1;
+            var newAuthor = new Author();
+
+            book.CreatedByUserId = book.ModifiedByUserId = newAuthor.CreatedByUserId = newAuthor.ModifiedByUserId = 1;
+
+            if (newAuthorName != null)
+            {
+                newAuthor.Name = newAuthorName;
+
+                _context.Authors.Add(newAuthor);
+                await _context.SaveChangesAsync();
+            }
+
+            var existingAuthors = new List<Author>();
 
             if (existingAuthorIds != null)
             {
-                var existingAuthors = await _context.Authors.Where(a => existingAuthorIds.Contains(a.Id)).ToListAsync();
-
-                book.Authors = existingAuthors;
+                existingAuthors = await _context.Authors.Where(a => existingAuthorIds.Contains(a.Id)).ToListAsync();
             }
+
+            if (newAuthor.Id != 0)
+            {
+                existingAuthors.Add(newAuthor);
+            }
+
+            book.Authors = existingAuthors;
 
             _context.Add(book);
 
