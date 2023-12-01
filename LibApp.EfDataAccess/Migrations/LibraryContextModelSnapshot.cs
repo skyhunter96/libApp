@@ -798,7 +798,7 @@ namespace EfDataAccess.Migrations
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Password = "giomlly",
                             Phone = "0611234567",
-                            RegistrationDateTime = new DateTime(2023, 11, 24, 20, 15, 14, 985, DateTimeKind.Local).AddTicks(5819),
+                            RegistrationDateTime = new DateTime(2023, 11, 25, 17, 12, 24, 965, DateTimeKind.Local).AddTicks(6263),
                             RoleId = 1,
                             TotalFee = 0m,
                             Username = "giomlly"
@@ -822,7 +822,7 @@ namespace EfDataAccess.Migrations
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Password = "mirko",
                             Phone = "0621234567",
-                            RegistrationDateTime = new DateTime(2023, 11, 24, 20, 15, 14, 985, DateTimeKind.Local).AddTicks(5888),
+                            RegistrationDateTime = new DateTime(2023, 11, 25, 17, 12, 24, 965, DateTimeKind.Local).AddTicks(6328),
                             RoleId = 2,
                             TotalFee = 0m,
                             Username = "mirko"
@@ -846,7 +846,7 @@ namespace EfDataAccess.Migrations
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Password = "marko",
                             Phone = "0631234567",
-                            RegistrationDateTime = new DateTime(2023, 11, 24, 20, 15, 14, 985, DateTimeKind.Local).AddTicks(5899),
+                            RegistrationDateTime = new DateTime(2023, 11, 25, 17, 12, 24, 965, DateTimeKind.Local).AddTicks(6333),
                             RoleId = 3,
                             TotalFee = 0m,
                             Username = "marko"
@@ -1066,7 +1066,7 @@ namespace EfDataAccess.Migrations
                     b.HasOne("Domain.Models.User", "ReservedByUser")
                         .WithMany("Reservations")
                         .HasForeignKey("ReservedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("CreatedByUser");

@@ -2,7 +2,6 @@
 using EfDataAccess;
 using LibApp.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.ObjectModel;
 
 namespace LibApp.Services
 {
@@ -66,8 +65,6 @@ namespace LibApp.Services
 
         public async Task AddBookAsync(Book book, IEnumerable<int>? existingAuthorIds, string? newAuthorName)
         {
-            //TODO: Modified dateTime and createdDateTime? prolly not
-
             var newAuthor = new Author();
 
             book.CreatedByUserId = book.ModifiedByUserId = newAuthor.CreatedByUserId = newAuthor.ModifiedByUserId = 1;

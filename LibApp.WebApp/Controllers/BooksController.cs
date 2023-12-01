@@ -22,6 +22,8 @@ namespace LibApp.WebApp.Controllers
             _mapper = mapper;
         }
 
+        //TODO: Authorize actions
+
         // GET: Books
         public async Task<IActionResult> Index()
         {
@@ -51,8 +53,6 @@ namespace LibApp.WebApp.Controllers
             try
             {
                 //TODO: Process image - prerequisite create
-                //TODO: No search on landing page
-                //TODO: Dashboard on sidebar? prolly not
 
                 var book = await _bookService.GetBookAsync(id);
 
@@ -101,6 +101,7 @@ namespace LibApp.WebApp.Controllers
             try
             {
                 //TODO: Insert image
+                //TODO: CreatedByUserId and UpdatedByUserId need to get from session
 
                 if (_bookService.IsbnExists(model.Isbn))
                 {
@@ -109,8 +110,6 @@ namespace LibApp.WebApp.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    //TODO: CreatedByUserId and UpdatedByUserId need to get from session
-
                     var book = _mapper.Map<Book>(model);
 
                     await _bookService.AddBookAsync(book, model.AuthorIds, model.NewAuthor);
@@ -211,45 +210,25 @@ namespace LibApp.WebApp.Controllers
 
         //TODO: prolly delete with a popup, not this in a new view
 
-        // GET: Books/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Books == null)
-            {
-                return NotFound();
-            }
-
-            var book = await _context.Books
-                .Include(b => b.Category)
-                .Include(b => b.Department)
-                .Include(b => b.Language)
-                .Include(b => b.Publisher)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (book == null)
-            {
-                return NotFound();
-            }
-
-            return View(book);
-        }
-
         // POST: Books/Delete/5
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        //TODO: validate anti-forgery?
+        public async Task<IActionResult> Delete(int id)
         {
             if (_context.Books == null)
             {
-                return Problem("Entity set 'LibraryContext.Books'  is null.");
+                return Json(new { success = false, message = "Entity set 'LibraryContext.Books' is null." });
             }
+
             var book = await _context.Books.FindAsync(id);
             if (book != null)
             {
                 _context.Books.Remove(book);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true, message = "Book deleted successfully." });
             }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return Json(new { success = false, message = "Book not found." });
         }
 
         private bool BookExists(int id)
