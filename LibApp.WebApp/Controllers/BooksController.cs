@@ -144,7 +144,6 @@ namespace LibApp.WebApp.Controllers
             }
             catch (Exception exception)
             {
-                //TempData["ErrorMessage"] = "An error occurred while processing your request.";
                 return RedirectToAction("ServerError", "Error");
             }
         }
@@ -208,6 +207,11 @@ namespace LibApp.WebApp.Controllers
             return View(book);
         }
 
+        private bool BookExists(int id)
+        {
+            return (_context.Books?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
         //TODO: prolly delete with a popup, not this in a new view
 
         // POST: Books/Delete/5
@@ -215,25 +219,28 @@ namespace LibApp.WebApp.Controllers
         //TODO: validate anti-forgery?
         public async Task<IActionResult> Delete(int id)
         {
-            if (_context.Books == null)
+            try
             {
-                return Json(new { success = false, message = "Entity set 'LibraryContext.Books' is null." });
-            }
+                if (_context.Books == null)
+                {
+                    return RedirectToAction("ServerError", "Error");
+                }
 
-            var book = await _context.Books.FindAsync(id);
-            if (book != null)
+                var book = await _bookService.GetBookAsync(id);
+                if (book != null)
+                {
+                    await _bookService.RemoveBookAsync(book);
+                    TempData["SuccessMessage"] = "Book added successfully.";
+                    return Json(new { success = true, message = "Book deleted successfully." });
+                }
+
+                TempData["ErrorMessage"] = "Book was not deleted. An error occurred while processing your request.";
+                return Json(new { success = false, message = "Book not found." });
+            }
+            catch (Exception exception)
             {
-                _context.Books.Remove(book);
-                await _context.SaveChangesAsync();
-                return Json(new { success = true, message = "Book deleted successfully." });
+                return RedirectToAction("ServerError", "Error");
             }
-
-            return Json(new { success = false, message = "Book not found." });
-        }
-
-        private bool BookExists(int id)
-        {
-          return (_context.Books?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

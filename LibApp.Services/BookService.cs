@@ -56,13 +56,6 @@ namespace LibApp.Services
             return book;
         }
 
-        public bool IsbnExists(string isbn)
-        {
-            var book = _context.Books.FirstOrDefault(b => b.Isbn == isbn);
-
-            return book != null;
-        }
-
         public async Task AddBookAsync(Book book, IEnumerable<int>? existingAuthorIds, string? newAuthorName)
         {
             var newAuthor = new Author();
@@ -94,6 +87,19 @@ namespace LibApp.Services
             _context.Add(book);
 
             await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveBookAsync(Book book)
+        {
+            _context.Books.Remove(book);
+            await _context.SaveChangesAsync();
+        }
+
+        public bool IsbnExists(string isbn)
+        {
+            var book = _context.Books.FirstOrDefault(b => b.Isbn == isbn);
+
+            return book != null;
         }
     }
 }
