@@ -11,6 +11,8 @@
 
         <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport'/>
 
+    @* <meta name="RequestVerificationToken" content="your-token-value" /> *@
+
         <!--     Fonts and icons     -->
         <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700,200" rel="stylesheet"/>
         <link href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
@@ -37,28 +39,33 @@
                 <!-- End Navbar -->
 
                 <div class="content">
+
+                    <!-- Success & Error -->
+
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            @TempData["SuccessMessage"]
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    }
+
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @TempData["ErrorMessage"]
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    }
+
+                    <!-- Success & Error End -->
+
                     @RenderBody()
                 </div>
-                
-                @if (TempData["SuccessMessage"] != null)
-                {
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        @TempData["SuccessMessage"]
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                }
-
-                @if (TempData["ErrorMessage"] != null)
-                {
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        @TempData["ErrorMessage"]
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                }
 
                 @Html.Partial("Partials/_FooterPartial")
 
@@ -133,13 +140,16 @@
                         url: '@Url.Action("Delete", "Books")',
                         data: { id: bookId },
                         type: 'POST',
+                        // headers: {
+                        //     RequestVerificationToken: $('meta[name="RequestVerificationToken"]').attr('content')
+                        // },
                         success: function (data) {
-                            console.log('success');
+                            // console.log('success');
 
                             location.reload();
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
-                            console.log('error');
+                            // console.log('error');
                             alert('Error: ' + xhr.responseText);
                         }
                     });
