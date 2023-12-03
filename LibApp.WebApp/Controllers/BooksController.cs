@@ -23,6 +23,7 @@ namespace LibApp.WebApp.Controllers
         }
 
         //TODO: Authorize actions
+        //TODO: Reservation timer
 
         // GET: Books
         public async Task<IActionResult> Index()
@@ -80,7 +81,6 @@ namespace LibApp.WebApp.Controllers
                 ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name");
                 ViewData["LanguageId"] = new SelectList(_context.Languages, "Id", "Name");
                 ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name");
-
                 ViewData["AuthorIds"] = new MultiSelectList(_context.Authors, "Id", "Name");
 
                 return View();
@@ -149,23 +149,31 @@ namespace LibApp.WebApp.Controllers
         }
 
         // GET: Books/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
             if (id == null || _context.Books == null)
             {
                 return NotFound();
             }
 
-            var book = await _context.Books.FindAsync(id);
+            var book = await _bookService.GetBookAsync(id);
+
             if (book == null)
             {
                 return NotFound();
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", book.CategoryId);
-            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name", book.DepartmentId);
-            ViewData["LanguageId"] = new SelectList(_context.Languages, "Id", "Name", book.LanguageId);
-            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", book.PublisherId);
-            return View(book);
+
+            var bookViewModel = _mapper.Map<BookViewModel>(book);
+
+            //TODO: Check behaviour of authorIds
+
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", bookViewModel.CategoryId);
+            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name", bookViewModel.DepartmentId);
+            ViewData["LanguageId"] = new SelectList(_context.Languages, "Id", "Name", bookViewModel.LanguageId);
+            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", bookViewModel.PublisherId);
+            ViewData["AuthorIds"] = new MultiSelectList(_context.Authors, "Id", "Name", bookViewModel.AuthorIds);
+
+            return View(bookViewModel);
         }
 
         // POST: Books/Edit/5
@@ -175,6 +183,9 @@ namespace LibApp.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Title,Description,Isbn,Edition,ReleaseYear,PublisherId,CategoryId,DepartmentId,LanguageId,ImagePath,Cost,IsAvailable,Quantity,AvailableQuantity,ReservedQuantity,Id,CreatedDateTime,ModifiedDateTime,CreatedByUserId,ModifiedByUserId")] Book book)
         {
+            //TODO: Edit image
+            //TODO: CreatedByUserId and UpdatedByUserId need to get from session
+
             if (id != book.Id)
             {
                 return NotFound();

@@ -1,7 +1,4 @@
-﻿@*TODO:
-@model IEnumerable<LibApp.WebApp.ViewModels.BookViewModel>
-*@
-@model Domain.Models.Book
+﻿@model LibApp.WebApp.ViewModels.BookViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -20,6 +17,31 @@
                 <input asp-for="Title" class="form-control" />
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
+            
+            <div class="form-group">
+                <label asp-for="AuthorIds" class="control-label"></label>
+                <select asp-for="AuthorIds" name="AuthorIds" class="form-control" asp-items="ViewBag.AuthorIds" multiple="multiple"></select>
+                @{
+                    var modelErrorCollection = ViewData.ModelState["AuthorIds"]?.Errors;
+                }
+                @if (modelErrorCollection != null)
+                {
+                    foreach (var error in modelErrorCollection)
+                    {
+                        <span class="text-danger">@error.ErrorMessage</span>
+                    }
+                }
+            </div>
+            
+            <br/>
+            <p>If author doesn't exist, enter new author:</p>
+
+            <div class="form-group">
+                <label asp-for="NewAuthor" class="control-label"></label>
+                <input asp-for="NewAuthor" class="form-control" />
+                <span asp-validation-for="NewAuthor" class="text-danger"></span>
+            </div>
+
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
                 <input asp-for="Description" class="form-control" />
@@ -60,19 +82,22 @@
                 <select asp-for="LanguageId" class="form-control" asp-items="ViewBag.LanguageId"></select>
                 <span asp-validation-for="LanguageId" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            @*TODO: Image file upload*@
+            @*<div class="form-group">
                 <label asp-for="ImagePath" class="control-label"></label>
                 <input asp-for="ImagePath" class="form-control" />
                 <span asp-validation-for="ImagePath" class="text-danger"></span>
-            </div>
+            </div> *@
             <div class="form-group">
                 <label asp-for="Cost" class="control-label"></label>
                 <input asp-for="Cost" class="form-control" />
                 <span asp-validation-for="Cost" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
+            <div>
+                @* Span is here to push the input further to the right *@
+                <span style="visibility: hidden;">Tes</span>
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsAvailable" /> @Html.DisplayNameFor(model => model.IsAvailable)
+                    <input class="form-check-input" asp-for="IsAvailable"/> @Html.DisplayNameFor(model => model.IsAvailable)
                 </label>
             </div>
             <div class="form-group">
@@ -91,26 +116,6 @@
                 <span asp-validation-for="ReservedQuantity" class="text-danger"></span>
             </div>
             <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="CreatedDateTime" class="control-label"></label>
-                <input asp-for="CreatedDateTime" class="form-control" />
-                <span asp-validation-for="CreatedDateTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ModifiedDateTime" class="control-label"></label>
-                <input asp-for="ModifiedDateTime" class="form-control" />
-                <span asp-validation-for="ModifiedDateTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedByUserId" class="control-label"></label>
-                <input asp-for="CreatedByUserId" class="form-control" />
-                <span asp-validation-for="CreatedByUserId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ModifiedByUserId" class="control-label"></label>
-                <input asp-for="ModifiedByUserId" class="form-control" />
-                <span asp-validation-for="ModifiedByUserId" class="text-danger"></span>
-            </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

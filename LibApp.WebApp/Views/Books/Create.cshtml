@@ -18,7 +18,6 @@
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
 
-            @*TODO: Authors if not exist create, new select list, both inputs present*@
             <div class="form-group">
                 <label asp-for="AuthorIds" class="control-label"></label>
                 <select asp-for="AuthorIds" name="AuthorIds" class="form-control" asp-items="ViewBag.AuthorIds" multiple="multiple"></select>
@@ -90,6 +89,7 @@
                 <span asp-validation-for="Cost" class="text-danger"></span>
             </div>
             <div>
+                @* Span is here to push the input further to the right *@
                 <span style="visibility: hidden;">Tes</span>
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="IsAvailable"/> @Html.DisplayNameFor(model => model.IsAvailable)
