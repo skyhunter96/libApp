@@ -89,6 +89,12 @@ namespace LibApp.Services
             await _context.SaveChangesAsync();
         }
 
+        public async Task UpdateBookAsync(Book book, IEnumerable<int>? selectedAuthorIds, string? newAuthor)
+        {
+            _context.Update(book);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task RemoveBookAsync(Book book)
         {
             _context.Books.Remove(book);
@@ -100,6 +106,12 @@ namespace LibApp.Services
             var book = _context.Books.FirstOrDefault(b => b.Isbn == isbn);
 
             return book != null;
+        }
+
+        public bool IsbnExistsInOtherBooks(int id, string isbn)
+        {
+            var exists = _context.Books.Any(b => b.Id != id && b.Isbn == isbn);
+            return exists;
         }
     }
 }

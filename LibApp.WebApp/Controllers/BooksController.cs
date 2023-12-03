@@ -5,7 +5,6 @@ using LibApp.Services.Interfaces;
 using LibApp.WebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 
 namespace LibApp.WebApp.Controllers
 {
@@ -151,29 +150,35 @@ namespace LibApp.WebApp.Controllers
         // GET: Books/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            if (id == null || _context.Books == null)
+            try
             {
-                return NotFound();
+                if (id == null || _context.Books == null)
+                {
+                    return NotFound();
+                }
+
+                var book = await _bookService.GetBookAsync(id);
+
+                if (book == null)
+                {
+                    return NotFound();
+                }
+
+                var bookViewModel = _mapper.Map<BookViewModel>(book);
+
+                ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", bookViewModel.CategoryId);
+                ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name", bookViewModel.DepartmentId);
+                ViewData["LanguageId"] = new SelectList(_context.Languages, "Id", "Name", bookViewModel.LanguageId);
+                ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", bookViewModel.PublisherId);
+                ViewData["AuthorIds"] = new MultiSelectList(_context.Authors, "Id", "Name", bookViewModel.AuthorIds);
+
+                return View(bookViewModel);
             }
-
-            var book = await _bookService.GetBookAsync(id);
-
-            if (book == null)
+            catch (Exception exception)
             {
-                return NotFound();
+                return RedirectToAction("ServerError", "Error");
             }
-
-            var bookViewModel = _mapper.Map<BookViewModel>(book);
-
-            //TODO: Check behaviour of authorIds
-
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", bookViewModel.CategoryId);
-            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name", bookViewModel.DepartmentId);
-            ViewData["LanguageId"] = new SelectList(_context.Languages, "Id", "Name", bookViewModel.LanguageId);
-            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", bookViewModel.PublisherId);
-            ViewData["AuthorIds"] = new MultiSelectList(_context.Authors, "Id", "Name", bookViewModel.AuthorIds);
-
-            return View(bookViewModel);
+            
         }
 
         // POST: Books/Edit/5
@@ -181,49 +186,50 @@ namespace LibApp.WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Title,Description,Isbn,Edition,ReleaseYear,PublisherId,CategoryId,DepartmentId,LanguageId,ImagePath,Cost,IsAvailable,Quantity,AvailableQuantity,ReservedQuantity,Id,CreatedDateTime,ModifiedDateTime,CreatedByUserId,ModifiedByUserId")] Book book)
+        public async Task<IActionResult> Edit(int id, BookViewModel bookViewModel)
         {
             //TODO: Edit image
             //TODO: CreatedByUserId and UpdatedByUserId need to get from session
 
-            if (id != book.Id)
+            if (id != bookViewModel.Id)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            try
             {
-                try
+                if (_bookService.IsbnExistsInOtherBooks(bookViewModel.Id, bookViewModel.Isbn))
                 {
-                    _context.Update(book);
-                    await _context.SaveChangesAsync();
+                    ModelState.AddModelError("Isbn", "A book with this ISBN already exists.");
                 }
-                catch (DbUpdateConcurrencyException)
+
+                if (ModelState.IsValid)
                 {
-                    if (!BookExists(book.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+
+                    var book = _mapper.Map<Book>(bookViewModel);
+
+                    await _bookService.UpdateBookAsync(book, bookViewModel.AuthorIds, bookViewModel.NewAuthor);
+
+                    TempData["SuccessMessage"] = "Book added successfully.";
+
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
+
+                //TODO: Check behaviour of authorIds
+
+                ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", bookViewModel.CategoryId);
+                ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name", bookViewModel.DepartmentId);
+                ViewData["LanguageId"] = new SelectList(_context.Languages, "Id", "Name", bookViewModel.LanguageId);
+                ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", bookViewModel.PublisherId);
+                ViewData["AuthorIds"] = new MultiSelectList(_context.Authors, "Id", "Name", bookViewModel.AuthorIds);
+
+                return View(bookViewModel);
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", book.CategoryId);
-            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name", book.DepartmentId);
-            ViewData["LanguageId"] = new SelectList(_context.Languages, "Id", "Name", book.LanguageId);
-            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", book.PublisherId);
-            return View(book);
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
-
-        private bool BookExists(int id)
-        {
-            return (_context.Books?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
-
-        //TODO: prolly delete with a popup, not this in a new view
 
         // POST: Books/Delete/5
         [HttpPost, ActionName("Delete")]
