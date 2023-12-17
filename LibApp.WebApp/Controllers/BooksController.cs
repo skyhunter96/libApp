@@ -205,17 +205,14 @@ namespace LibApp.WebApp.Controllers
 
                 if (ModelState.IsValid)
                 {
-
                     var book = _mapper.Map<Book>(bookViewModel);
 
                     await _bookService.UpdateBookAsync(book, bookViewModel.AuthorIds, bookViewModel.NewAuthor);
 
-                    TempData["SuccessMessage"] = "Book added successfully.";
+                    TempData["SuccessMessage"] = "Book updated successfully.";
 
                     return RedirectToAction(nameof(Index));
                 }
-
-                //TODO: Check behaviour of authorIds
 
                 ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", bookViewModel.CategoryId);
                 ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name", bookViewModel.DepartmentId);
