@@ -2,12 +2,15 @@
 using EfDataAccess;
 using LibApp.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Packaging;
+using System;
 
 namespace LibApp.Services
 {
     public class BookService : IBookService
     {
         private readonly LibraryContext _context;
+
 
         public BookService(LibraryContext context)
         {
@@ -51,6 +54,7 @@ namespace LibApp.Services
                 .Include(b => b.Department)
                 .Include(b => b.Language)
                 .Include(b => b.Publisher)
+                .Include(b => b.BookReservations)
                 .FirstOrDefaultAsync(b => b.Id == id);
 
             return book;
@@ -60,6 +64,7 @@ namespace LibApp.Services
         {
             var newAuthor = new Author();
 
+            //TODO: CreatedByUserId and UpdatedByUserId need to get from session
             book.CreatedByUserId = book.ModifiedByUserId = newAuthor.CreatedByUserId = newAuthor.ModifiedByUserId = 1;
 
             if (newAuthorName != null)
@@ -85,14 +90,91 @@ namespace LibApp.Services
             book.Authors = existingAuthors;
 
             _context.Add(book);
-
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateBookAsync(Book book, IEnumerable<int>? selectedAuthorIds, string? newAuthor)
+        public async Task UpdateBookAsync(Book book, IEnumerable<int>? selectedAuthorIds, string? newAuthorName)
         {
-            _context.Update(book);
+            var newAuthor = new Author();
+
+            // Like this cuz plain 'book' does not get authors loaded
+            var bookToUpdate = await GetBookAsync(book.Id);
+
+            // Detach the entity from the context
+            _context.Entry(bookToUpdate).State = EntityState.Detached;
+
+            // Attach the provided 'bookToUpdate' to the context
+            _context.Attach(bookToUpdate);
+
+            //TODO: UpdatedByUserId need to get from session for book and CreatedByUserId and ModifiedByUserId for author
+            bookToUpdate.ModifiedByUserId = newAuthor.CreatedByUserId = newAuthor.ModifiedByUserId = 1;
+
+            await MapBook(book, bookToUpdate, _context);
+
+            if (newAuthorName != null)
+            {
+                newAuthor.Name = newAuthorName;
+
+                _context.Authors.Add(newAuthor);
+                await _context.SaveChangesAsync();
+            }
+
+            var existingAuthors = new List<Author>();
+
+            if (selectedAuthorIds != null)
+            {
+                existingAuthors = await _context.Authors.Where(a => selectedAuthorIds.Contains(a.Id)).ToListAsync();
+            }
+
+            if (newAuthor.Id != 0)
+            {
+                existingAuthors.Add(newAuthor);
+            }
+
+            bookToUpdate.Authors = existingAuthors;
+            bookToUpdate.ModifiedDateTime = DateTime.Now;
+
+            _context.Update(bookToUpdate);
             await _context.SaveChangesAsync();
+        }
+
+        private static async Task MapBook(Book book, Book bookToUpdate, LibraryContext context)
+        {
+            bookToUpdate.Title = book.Title;
+            bookToUpdate.Description = book.Description;
+            bookToUpdate.Isbn = book.Isbn;
+            bookToUpdate.Edition = book.Edition;
+            bookToUpdate.ReleaseYear = book.ReleaseYear;
+
+            if (book.PublisherId != 0)
+            {
+                var newPublisher = await context.Publishers.FindAsync(book.CategoryId);
+                bookToUpdate.Publisher = newPublisher!;
+            }
+
+            if (book.CategoryId != 0)
+            {
+                var newCategory = await context.Categories.FindAsync(book.CategoryId);
+                bookToUpdate.Category = newCategory!;
+            }
+
+            if (book.DepartmentId != 0)
+            {
+                var newDepartment = await context.Departments.FindAsync(book.CategoryId);
+                bookToUpdate.Department = newDepartment!;
+            }
+
+            if (book.LanguageId != 0)
+            {
+                var newLanguage = await context.Languages.FindAsync(book.CategoryId);
+                bookToUpdate.Language = newLanguage!;
+            }
+
+            bookToUpdate.Cost = book.Cost;
+            bookToUpdate.IsAvailable = book.IsAvailable;
+            bookToUpdate.Quantity = book.Quantity;
+            bookToUpdate.AvailableQuantity = book.AvailableQuantity;
+            bookToUpdate.ReservedQuantity = book.ReservedQuantity;
         }
 
         public async Task RemoveBookAsync(Book book)
