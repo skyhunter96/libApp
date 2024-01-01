@@ -4,6 +4,7 @@ using EfDataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EfDataAccess.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    partial class LibraryContextModelSnapshot : ModelSnapshot
+    [Migration("20240101194758_identity-user-and-role-addition")]
+    partial class identityuserandroleaddition
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -829,7 +832,8 @@ namespace EfDataAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("RoleId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("RoleId");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -865,9 +869,6 @@ namespace EfDataAccess.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.HasIndex("RoleId")
-                        .IsUnique();
-
                     b.ToTable("User", (string)null);
 
                     b.HasData(
@@ -879,7 +880,7 @@ namespace EfDataAccess.Migrations
                             Address = "nema ulice bb",
                             CardCode = "123-456-789",
                             City = "Belgrade",
-                            ConcurrencyStamp = "b32988dc-d5aa-4b0a-86d2-fad1563ab723",
+                            ConcurrencyStamp = "773fb59b-5504-4b7b-87a9-a30bcb42bfbc",
                             CreatedByUserId = 1,
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DateOfBirth = new DateTime(1996, 2, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -894,7 +895,7 @@ namespace EfDataAccess.Migrations
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PhoneNumber = "0611234567",
                             PhoneNumberConfirmed = false,
-                            RegistrationDateTime = new DateTime(2024, 1, 1, 21, 1, 2, 603, DateTimeKind.Local).AddTicks(9956),
+                            RegistrationDateTime = new DateTime(2024, 1, 1, 20, 47, 57, 747, DateTimeKind.Local).AddTicks(779),
                             RoleId = 1,
                             TotalFee = 0m,
                             TwoFactorEnabled = false,
@@ -908,7 +909,7 @@ namespace EfDataAccess.Migrations
                             Address = "nema ulice bb",
                             CardCode = "111-456-789",
                             City = "Belgrade",
-                            ConcurrencyStamp = "119e29e3-cf7b-4300-92ea-10c316b2545d",
+                            ConcurrencyStamp = "a0eb6c72-fd6d-4d61-8117-cf1e70ca73e7",
                             CreatedByUserId = 1,
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DateOfBirth = new DateTime(1996, 2, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -923,7 +924,7 @@ namespace EfDataAccess.Migrations
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PhoneNumber = "0621234567",
                             PhoneNumberConfirmed = false,
-                            RegistrationDateTime = new DateTime(2024, 1, 1, 21, 1, 2, 604, DateTimeKind.Local).AddTicks(26),
+                            RegistrationDateTime = new DateTime(2024, 1, 1, 20, 47, 57, 747, DateTimeKind.Local).AddTicks(874),
                             RoleId = 2,
                             TotalFee = 0m,
                             TwoFactorEnabled = false,
@@ -937,7 +938,7 @@ namespace EfDataAccess.Migrations
                             Address = "nema ulice bb",
                             CardCode = "222-456-789",
                             City = "Belgrade",
-                            ConcurrencyStamp = "358a49c1-a12a-4087-be35-59964c3ce15b",
+                            ConcurrencyStamp = "37ef5437-6a5b-4e17-b410-620cbc65c19c",
                             CreatedByUserId = 1,
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DateOfBirth = new DateTime(1996, 2, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -952,7 +953,7 @@ namespace EfDataAccess.Migrations
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PhoneNumber = "0631234567",
                             PhoneNumberConfirmed = false,
-                            RegistrationDateTime = new DateTime(2024, 1, 1, 21, 1, 2, 604, DateTimeKind.Local).AddTicks(58),
+                            RegistrationDateTime = new DateTime(2024, 1, 1, 20, 47, 57, 747, DateTimeKind.Local).AddTicks(882),
                             RoleId = 3,
                             TotalFee = 0m,
                             TwoFactorEnabled = false,
@@ -1300,17 +1301,9 @@ namespace EfDataAccess.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Models.Role", "Role")
-                        .WithOne("User")
-                        .HasForeignKey("Domain.Models.User", "RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("ModifiedByUser");
-
-                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -1394,12 +1387,6 @@ namespace EfDataAccess.Migrations
             modelBuilder.Entity("Domain.Models.Reservation", b =>
                 {
                     b.Navigation("BookReservations");
-                });
-
-            modelBuilder.Entity("Domain.Models.Role", b =>
-                {
-                    b.Navigation("User")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Models.User", b =>

@@ -6,22 +6,22 @@ namespace EfDataAccess.Configurations
 {
     public class BookReservationConfiguration : IEntityTypeConfiguration<BookReservation>
     {
-        public void Configure(EntityTypeBuilder<BookReservation> builder)
+        public void Configure(EntityTypeBuilder<BookReservation> entity)
         {
-            builder.HasKey(br => new { br.ReservationId, br.BookId });
+            entity.HasKey(br => new { br.ReservationId, br.BookId });
 
-            builder.HasOne(br => br.Reservation)
+            entity.HasOne(br => br.Reservation)
                 .WithMany(r => r.BookReservations)
                 .HasForeignKey(br => br.ReservationId);
 
-            builder.HasOne(br => br.Book)
+            entity.HasOne(br => br.Book)
                 .WithMany(b => b.BookReservations)
                 .HasForeignKey(br => br.BookId);
 
-            builder.Property(e => e.CreatedDateTime)
+            entity.Property(e => e.CreatedDateTime)
                 .HasDefaultValueSql("SYSDATETIME()");
 
-            builder.Property(e => e.ModifiedDateTime)
+            entity.Property(e => e.ModifiedDateTime)
                 .HasDefaultValueSql("SYSDATETIME()");
         }
     }

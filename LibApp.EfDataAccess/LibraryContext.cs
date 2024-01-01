@@ -1,10 +1,13 @@
 ﻿using Domain.Models;
 using EfDataAccess.Configurations;
+using LibApp.EfDataAccess.Configurations;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace EfDataAccess;
 
-public class LibraryContext : DbContext
+public class LibraryContext : IdentityDbContext<User, Role, int>
 {
     public LibraryContext()
     {
@@ -43,6 +46,8 @@ public class LibraryContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.ApplyConfiguration(new AuthorConfiguration());
         modelBuilder.ApplyConfiguration(new BookConfiguration());
         modelBuilder.ApplyConfiguration(new CategoryConfiguration());
@@ -54,6 +59,10 @@ public class LibraryContext : DbContext
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new LogConfiguration());
         modelBuilder.ApplyConfiguration(new BookReservationConfiguration());
+        modelBuilder.ApplyConfiguration(new RoleConfiguration());
+
+        // Specify that you want to use int as the key for IdentityUser, IdentityRole
+        modelBuilder.Entity<Role>().Property(r => r.Id).ValueGeneratedOnAdd();
 
         // Seed your data here
         SeedData(modelBuilder);
@@ -68,17 +77,17 @@ public class LibraryContext : DbContext
             Id = 1,
             FirstName = "Mladen",
             LastName = "Karic",
-            Username = "giomlly",
-            Password = "giomlly",
+            UserName = "giomlly",
+            //Password = "giomlly",
             Email = "misteryx96@yahoo.com",
             RegistrationDateTime = DateTime.Now,
             IsVerified = true,
             Active = true,
-            RoleId = (int)Role.Admin,
+            RoleId = (int)RoleEnum.Admin,
             DateOfBirth = new DateTime(1996, 2, 7),
             City = "Belgrade",
             Address = "nema ulice bb",
-            Phone = "0611234567",
+            PhoneNumber = "0611234567",
             CardCode = "123-456-789",
             IsCardActive = true,
         };
@@ -87,17 +96,17 @@ public class LibraryContext : DbContext
             Id = 2,
             FirstName = "Mirko",
             LastName = "Cvetkovic",
-            Username = "mirko",
-            Password = "mirko",
+            UserName = "mirko",
+            //Password = "mirko",
             Email = "mirko@yahoo.com",
             RegistrationDateTime = DateTime.Now,
             IsVerified = true,
             Active = true,
-            RoleId = (int)Role.Librarian,
+            RoleId = (int)RoleEnum.Librarian,
             DateOfBirth = new DateTime(1996, 2, 7),
             City = "Belgrade",
             Address = "nema ulice bb",
-            Phone = "0621234567",
+            PhoneNumber = "0621234567",
             CardCode = "111-456-789",
             IsCardActive = true,
         };
@@ -106,17 +115,17 @@ public class LibraryContext : DbContext
             Id = 3,
             FirstName = "Marko",
             LastName = "Nikolic",
-            Username = "marko",
-            Password = "marko",
+            UserName = "marko",
+            //Password = "marko",
             Email = "marko@yahoo.com",
             RegistrationDateTime = DateTime.Now,
             IsVerified = true,
             Active = true,
-            RoleId = (int)Role.Regular,
+            RoleId = (int)RoleEnum.Regular,
             DateOfBirth = new DateTime(1996, 2, 7),
             City = "Belgrade",
             Address = "nema ulice bb",
-            Phone = "0631234567",
+            PhoneNumber = "0631234567",
             CardCode = "222-456-789",
             IsCardActive = true,
         };
