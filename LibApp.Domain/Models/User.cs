@@ -1,14 +1,22 @@
-﻿using Domain.Models.Common;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace Domain.Models;
 
-public class User : BaseEntity
+public class User : IdentityUser<int>
 {
+    //TODO: Role navigation config
+    //From BaseEntity:
+    public int Id { get; set; }
+    public DateTime CreatedDateTime { get; set; }
+    public DateTime ModifiedDateTime { get; set; }
+    public int CreatedByUserId { get; set; }
+    public int ModifiedByUserId { get; set; }
+
     public string FirstName { get; set; }
     public string LastName { get; set; }
-    public string Username { get; set; }
-    public string Password { get; set; }
-    public string Email { get; set; }
+    //public string Username { get; set; }
+    //public string Password { get; set; }
+    //public string Email { get; set; }
     public DateTime RegistrationDateTime { get; set; }
     public bool IsVerified { get; set; }
     public string VerificationToken { get; set; }
@@ -20,12 +28,16 @@ public class User : BaseEntity
     public DateTime DateOfBirth { get; set; }
     public string City { get; set; }
     public string Address { get; set; }
-    public string Phone { get; set; }
+    //public string Phone { get; set; }
     public string CardCode { get; set; }
     public bool IsCardActive { get; set; }
     public decimal TotalFee { get; set; }
     public string Currency { get; set; }
     public string Notes { get; set; }
+
+    //From BaseEntity:
+    public virtual User CreatedByUser { get; set; }
+    public virtual User ModifiedByUser { get; set; }
 
     public virtual ICollection<Reservation> Reservations { get; set; }
     public virtual Role Role { get; set; }

@@ -74,11 +74,6 @@ namespace LibApp.WebApp.ViewModels
         [Range(0, 1000)]
         public int ReservedQuantity { get; set; }
 
-        //public SelectList Publishers { get; set; }
-        //public SelectList Categories { get; set; }
-        //public SelectList? Departments { get; set; }
-        //public SelectList Languages { get; set; }
-
         [Display(Name = "Created")]
         public DateTime CreatedDateTime { get; set; }
 

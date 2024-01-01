@@ -22,7 +22,7 @@ namespace LibApp.WebApp.Controllers
         }
 
         //TODO: Authorize actions
-        //TODO: Reservation timer
+        //TODO: Reservation timer job
 
         // GET: Books
         public async Task<IActionResult> Index()

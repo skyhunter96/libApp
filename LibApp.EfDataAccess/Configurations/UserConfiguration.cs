@@ -1,15 +1,34 @@
 ﻿using Domain.Models;
-using EfDataAccess.Configurations.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace EfDataAccess.Configurations
 {
-    public class UserConfiguration : BaseEntityConfiguration<User>
+    public class UserConfiguration : IEntityTypeConfiguration<User>
     {
-        public override void Configure(EntityTypeBuilder<User> entity)
+        public void Configure(EntityTypeBuilder<User> entity)
         {
-            base.Configure(entity);
+            //From BaseEntityConfig
+            entity.HasKey(e => e.Id);
+
+            entity.Property(u => u.Id).ValueGeneratedOnAdd();
+
+            entity.Property(e => e.CreatedDateTime)
+                .HasDefaultValueSql("SYSDATETIME()");
+
+            entity.Property(e => e.ModifiedDateTime)
+                .HasDefaultValueSql("SYSDATETIME()");
+
+            entity.HasOne(e => e.CreatedByUser)
+                .WithMany()
+                .HasForeignKey(e => e.CreatedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(e => e.ModifiedByUser)
+                .WithMany()
+                .HasForeignKey(e => e.ModifiedByUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
 
             entity.ToTable("User");
 
@@ -19,13 +38,13 @@ namespace EfDataAccess.Configurations
             entity.Property(u => u.LastName)
                 .HasMaxLength(50);
 
-            entity.Property(e => e.Username)
+            entity.Property(e => e.UserName)
                 .HasColumnType("char(50)")
                 .IsRequired();
 
-            entity.Property(e => e.Password)
-                .HasColumnType("char(100)")
-                .IsRequired();
+            //entity.Property(e => e.Password)
+            //    .HasColumnType("char(100)")
+            //    .IsRequired();
 
             entity.Property(e => e.Email)
                 .HasColumnType("char(50)")
@@ -49,7 +68,7 @@ namespace EfDataAccess.Configurations
                 .HasMaxLength(100)
                 .IsRequired(false);
 
-            entity.Property(u => u.Phone)
+            entity.Property(u => u.PhoneNumber)
                 .HasColumnType("char(30)")
                 .IsRequired(false);
 
@@ -64,11 +83,9 @@ namespace EfDataAccess.Configurations
                 .HasMaxLength(1000)
                 .IsRequired(false);
 
-            entity.Property(u => u.RoleId)
-                .HasColumnName("RoleId")
-                .IsRequired();
-
-            entity.Ignore(u => u.Role);
+            entity.HasOne(u => u.Role)
+                .WithOne(r => r.User)
+                .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasMany(u => u.Reservations)
                 .WithOne(r => r.ReservedByUser)
