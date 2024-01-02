@@ -2,15 +2,12 @@
 using EfDataAccess;
 using LibApp.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using NuGet.Packaging;
-using System;
 
 namespace LibApp.Services
 {
     public class BookService : IBookService
     {
         private readonly LibraryContext _context;
-
 
         public BookService(LibraryContext context)
         {

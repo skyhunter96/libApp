@@ -4,7 +4,6 @@ namespace Domain.Models;
 
 public class User : IdentityUser<int>
 {
-    //TODO: Role navigation config
     //From BaseEntity:
     public int Id { get; set; }
     public DateTime CreatedDateTime { get; set; }

@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33424.131
@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibApp.Domain", "LibApp.Dom
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibApp.WebApp", "LibApp.WebApp\LibApp.WebApp.csproj", "{A3984C3D-2A36-4375-933D-755EFFE7006B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibApp.Services", "LibApp.Services\LibApp.Services.csproj", "{988EBEE1-1555-4D61-BAF0-8380C2C53E01}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibApp.Services", "LibApp.Services\LibApp.Services.csproj", "{988EBEE1-1555-4D61-BAF0-8380C2C53E01}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
