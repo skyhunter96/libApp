@@ -5,7 +5,6 @@ namespace Domain.Models;
 public class User : IdentityUser<int>
 {
     //From BaseEntity:
-    public int Id { get; set; }
     public DateTime CreatedDateTime { get; set; }
     public DateTime ModifiedDateTime { get; set; }
     public int CreatedByUserId { get; set; }
