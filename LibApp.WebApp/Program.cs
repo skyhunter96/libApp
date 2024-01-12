@@ -1,8 +1,9 @@
-using AutoMapper;
+using Domain.Models;
 using EfDataAccess;
 using LibApp.Services;
 using LibApp.Services.Interfaces;
-using LibApp.WebApp.Mappings;
+using Microsoft.AspNetCore.Identity;
+using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<LibraryContext>(options =>
     options.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=LibApp;Integrated Security=True",
         b => b.MigrationsAssembly("LibApp.EfDataAccess")));
+
+builder.Services.AddDefaultIdentity<User>(/*options => options.SignIn.RequireConfirmedAccount = true*/).AddEntityFrameworkStores<LibraryContext>();
 builder.Services.AddControllersWithViews();
 
 // Register AutoMapper
@@ -21,7 +24,11 @@ builder.Services.AddScoped<IBookService, BookService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage(); // Enable developer exception page
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
@@ -41,5 +48,7 @@ app.UseStatusCodePagesWithReExecute("/Error/StatusCode/{0}"); // Handles status 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.MapRazorPages();
 
 app.Run();
