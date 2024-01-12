@@ -23,6 +23,8 @@
             @*TODO: Buttons?: Profile, profile pic, dropdown actions*@
 
             <ul class="navbar-nav">
+                <partial name="_LoginPartial" />
+
                 @*<li class="nav-item">
                     <a class="nav-link btn-magnify" href="javascript:;">
                         <i class="nc-icon nc-layout-11"></i>
@@ -32,7 +34,7 @@
                     </a>
                 </li>*@
                 @*TODO: User controller not index action but like thisUser or smt*@
-                <li class="nav-item btn-rotate dropdown">
+                @* <li class="nav-item btn-rotate dropdown">
                     <a class="nav-link dropdown-toggle" asp-controller="User" asp-action="Index" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="nc-icon nc-settings-gear-65"></i>
                         <p>
@@ -44,7 +46,7 @@
                         <a class="dropdown-item" href="#">Another action</a>
                         <a class="dropdown-item" href="#">Something else here</a>
                     </div>
-                </li>
+                </li> *@
                 @*<li class="nav-item">
                     <a class="nav-link btn-rotate" asp-controller="User" asp-action="Index">
                         <i class="nc-icon nc-settings-gear-65"></i>
