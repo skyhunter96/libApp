@@ -12,12 +12,9 @@ public class User : IdentityUser<int>
 
     public string FirstName { get; set; }
     public string LastName { get; set; }
-    //public string Username { get; set; }
-    //public string Password { get; set; }
-    //public string Email { get; set; }
 
-    //TODO: This seems not needed
-    public DateTime RegistrationDateTime { get; set; }
+    //UserName, Pass, Email & Phone in Base Class
+
     public bool IsVerified { get; set; }
     public string VerificationToken { get; set; }
     public DateTime? VerificationSentAt { get; set; }
@@ -30,7 +27,6 @@ public class User : IdentityUser<int>
     public DateTime DateOfBirth { get; set; }
     public string City { get; set; }
     public string Address { get; set; }
-    //public string Phone { get; set; }
     public string CardCode { get; set; }
     public bool IsCardActive { get; set; }
     public decimal TotalFee { get; set; }

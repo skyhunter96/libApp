@@ -42,10 +42,6 @@ namespace EfDataAccess.Configurations
                 .HasColumnType("char(50)")
                 .IsRequired();
 
-            //entity.Property(e => e.Password)
-            //    .HasColumnType("char(100)")
-            //    .IsRequired();
-
             entity.Property(e => e.Email)
                 .HasColumnType("char(50)")
                 .IsRequired();
