@@ -15,6 +15,8 @@ public class User : IdentityUser<int>
     //public string Username { get; set; }
     //public string Password { get; set; }
     //public string Email { get; set; }
+
+    //TODO: This seems not needed
     public DateTime RegistrationDateTime { get; set; }
     public bool IsVerified { get; set; }
     public string VerificationToken { get; set; }
@@ -23,6 +25,8 @@ public class User : IdentityUser<int>
     public bool Active { get; set; }
     public int RoleId { get; set; }
     public string ImagePath { get; set; }
+
+    //TODO: Check during registering how is entered
     public DateTime DateOfBirth { get; set; }
     public string City { get; set; }
     public string Address { get; set; }
