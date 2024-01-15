@@ -19,6 +19,11 @@ namespace LibApp.WebApp.Mappings
                 .ForMember(dest => dest.Language, opt => opt.MapFrom(src => src.Language.Name));
 
             CreateMap<BookViewModel, Book>();
+
+            CreateMap<User, UserViewModel>()
+                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.Name));
+
+            CreateMap<UserViewModel, User>();
         }
 
         private IEnumerable<(int AuthorId, string AuthorName)> MapAuthors(IEnumerable<Author> authors)

@@ -1,5 +1,8 @@
-﻿using Domain.Models;
+﻿using AutoMapper;
+using Domain.Models;
 using EfDataAccess;
+using LibApp.Services.Interfaces;
+using LibApp.WebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -9,19 +12,30 @@ namespace LibApp.WebApp.Controllers
     public class UsersController : Controller
     {
         private readonly LibraryContext _context;
+        private readonly IUserService _userService;
+        private readonly IMapper _mapper;
 
-        public UsersController(LibraryContext context)
+        public UsersController(LibraryContext context, IUserService userService, IMapper mapper)
         {
             _context = context;
+            _userService = userService;
+            _mapper = mapper;
         }
 
         // GET: Users
         public async Task<IActionResult> Index()
         {
-            var libraryContext = _context.Users.Include(u => u.CreatedByUser)
-                .Include(u => u.ModifiedByUser)
-                .Include(u => u.Role);
-            return View(await libraryContext.ToListAsync());
+            try
+            {
+                var users = await _userService.GetUsersAsync();
+                var userViewModels = _mapper.Map<IEnumerable<UserViewModel>>(users);
+
+                return View(userViewModels);
+            }
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
 
         // GET: Users/Details/5

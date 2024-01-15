@@ -17,6 +17,8 @@ public class User : IdentityUser<int>
 
     public bool IsVerified { get; set; }
     public string VerificationToken { get; set; }
+
+    //TODO: Prolly not needed
     public DateTime? VerificationSentAt { get; set; }
     public DateTime? LastLoginDateTime { get; set; }
     public bool Active { get; set; }
