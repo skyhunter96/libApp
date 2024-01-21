@@ -10,10 +10,15 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+<p>
+    <a id="register" asp-area="Identity" asp-page="/Account/Register">Register</a>
+</p>
+@* <p>
+    <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
+</p> *@
 <table class="table">
     <thead>
         <tr>
-            @* TODO: FullName = FirsName + LastName *@
             <th>
                 @Html.DisplayNameFor(model => model.FullName)
             </th>

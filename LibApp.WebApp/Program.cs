@@ -3,8 +3,8 @@ using EfDataAccess;
 using LibApp.Services;
 using LibApp.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
-using Domain.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +41,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseExceptionHandler("/Home/Error"); // Handles exceptions and redirects to the ErrorController
