@@ -75,6 +75,7 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
         var admin = new User
         {
             Id = 1,
+            DocumentId = "0702995760010",
             FirstName = "Mladen",
             LastName = "Karic",
             UserName = "giomlly",
@@ -93,6 +94,7 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
         var librarian = new User
         {
             Id = 2,
+            DocumentId = "0702995760011",
             FirstName = "Mirko",
             LastName = "Cvetkovic",
             UserName = "mirko",
@@ -111,6 +113,7 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
         var regular = new User
         {
             Id = 3,
+            DocumentId = "0702995760012",
             FirstName = "Marko",
             LastName = "Nikolic",
             UserName = "marko",

@@ -10,6 +10,8 @@ public class User : IdentityUser<int>
     public int CreatedByUserId { get; set; }
     public int ModifiedByUserId { get; set; }
 
+    //TODO: Verify Id is not bigger than 13 and isUnique
+    public string DocumentId { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
 

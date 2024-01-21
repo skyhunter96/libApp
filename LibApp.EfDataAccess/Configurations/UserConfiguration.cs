@@ -32,6 +32,12 @@ namespace EfDataAccess.Configurations
 
             entity.ToTable("User");
 
+            entity.Property(u => u.DocumentId)
+                .HasMaxLength(13);
+
+            entity.HasIndex(u => u.DocumentId)
+                .IsUnique();
+
             entity.Property(u => u.FirstName)
                 .HasMaxLength(50);
 
@@ -43,8 +49,7 @@ namespace EfDataAccess.Configurations
                 .IsRequired();
 
             entity.Property(e => e.Email)
-                .HasColumnType("char(50)")
-                .IsRequired();
+                .HasColumnType("char(50)");
 
             entity.Property(e => e.VerificationToken)
                 .HasColumnType("char(128)")
