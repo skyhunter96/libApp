@@ -12,20 +12,17 @@ namespace EfDataAccess.Configurations
             base.Configure(entity);
 
             entity.Property(e => e.Title)
-                .HasMaxLength(100)
-                .IsRequired();
+                .HasMaxLength(100);
 
             entity.Property(e => e.Description)
                 .HasMaxLength(1000)
                 .IsRequired(false);
 
             entity.Property(e => e.Isbn)
-                .HasColumnType("char(17)")
-                .IsRequired();
+                .HasColumnType("char(17)");
 
             entity.Property(e => e.Edition)
-                .HasMaxLength(100)
-                .IsRequired();
+                .HasMaxLength(100);
 
             entity.Property(e => e.ImagePath)
                 .HasColumnType("char(255)")

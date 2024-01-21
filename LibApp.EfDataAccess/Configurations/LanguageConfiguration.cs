@@ -13,8 +13,7 @@ namespace EfDataAccess.Configurations
             entity.HasKey(e => e.Id);
 
             entity.Property(e => e.Name)
-                .HasMaxLength(50)
-                .IsRequired();
+                .HasMaxLength(50);
 
             entity.HasMany(d => d.Books)
                 .WithOne(b => b.Language)

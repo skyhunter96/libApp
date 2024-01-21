@@ -12,8 +12,7 @@ namespace EfDataAccess.Configurations
             base.Configure(entity);
 
             entity.Property(e => e.Name)
-                .HasMaxLength(50)
-                .IsRequired();
+                .HasMaxLength(50);
 
             entity.Property(e => e.Description)
                 .HasMaxLength(1000)

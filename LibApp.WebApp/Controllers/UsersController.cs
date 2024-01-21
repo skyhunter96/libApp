@@ -73,8 +73,6 @@ namespace LibApp.WebApp.Controllers
         }
 
         // POST: Users/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CreatedDateTime,ModifiedDateTime,CreatedByUserId,ModifiedByUserId,FirstName,LastName,RegistrationDateTime,IsVerified,VerificationToken,VerificationSentAt,LastLoginDateTime,Active,RoleId,ImagePath,DateOfBirth,City,Address,CardCode,IsCardActive,TotalFee,Currency,Notes,Id,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PasswordHash,SecurityStamp,ConcurrencyStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnd,LockoutEnabled,AccessFailedCount")] User user)
@@ -111,8 +109,6 @@ namespace LibApp.WebApp.Controllers
         }
 
         // POST: Users/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("CreatedDateTime,ModifiedDateTime,CreatedByUserId,ModifiedByUserId,FirstName,LastName,RegistrationDateTime,IsVerified,VerificationToken,VerificationSentAt,LastLoginDateTime,Active,RoleId,ImagePath,DateOfBirth,City,Address,CardCode,IsCardActive,TotalFee,Currency,Notes,Id,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PasswordHash,SecurityStamp,ConcurrencyStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnd,LockoutEnabled,AccessFailedCount")] User user)
