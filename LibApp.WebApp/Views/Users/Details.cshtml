@@ -1,5 +1,4 @@
-﻿@model Domain.Models.User
-
+﻿@model LibApp.WebApp.ViewModels.UserViewModel
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -7,22 +6,12 @@
 
 <h1>Details</h1>
 
+@* TODO: Image *@
+
 <div>
     <h4>User</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedDateTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedDateTime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ModifiedDateTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ModifiedDateTime)
-        </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.FirstName)
         </dt>
@@ -36,28 +25,28 @@
             @Html.DisplayFor(model => model.LastName)
         </dd>
         <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.UserName)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.UserName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Role)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Role)
+        </dd>
+        <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.IsVerified)
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.IsVerified)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.VerificationToken)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.VerificationToken)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.VerificationSentAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.VerificationSentAt)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LastLoginDateTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LastLoginDateTime)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Active)
@@ -66,10 +55,16 @@
             @Html.DisplayFor(model => model.Active)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImagePath)
+            @Html.DisplayNameFor(model => model.IsCardActive)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ImagePath)
+            @Html.DisplayFor(model => model.IsCardActive)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CardCode)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CardCode)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.DateOfBirth)
@@ -89,17 +84,11 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Address)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CardCode)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.PhoneNumber)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CardCode)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsCardActive)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsCardActive)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.PhoneNumber)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.TotalFee)
@@ -114,112 +103,40 @@
             @Html.DisplayFor(model => model.Currency)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Notes)
+            @Html.DisplayNameFor(model => model.CreatedDateTime)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Notes)
+            @Html.DisplayFor(model => model.CreatedDateTime)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ModifiedDateTime)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ModifiedDateTime)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.CreatedByUser)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedByUser.CardCode)
+            @Html.DisplayFor(model => model.CreatedByUser)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.ModifiedByUser)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ModifiedByUser.CardCode)
+            @Html.DisplayFor(model => model.ModifiedByUser)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Role)
+            @Html.DisplayNameFor(model => model.LastLoginDateTime)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Role.Name)
+            @Html.DisplayFor(model => model.LastLoginDateTime)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UserName)
+            @Html.DisplayNameFor(model => model.Notes)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UserName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NormalizedUserName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NormalizedUserName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NormalizedEmail)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NormalizedEmail)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EmailConfirmed)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EmailConfirmed)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PasswordHash)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PasswordHash)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SecurityStamp)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SecurityStamp)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ConcurrencyStamp)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ConcurrencyStamp)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PhoneNumber)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PhoneNumber)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PhoneNumberConfirmed)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PhoneNumberConfirmed)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TwoFactorEnabled)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TwoFactorEnabled)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LockoutEnd)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LockoutEnd)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LockoutEnabled)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LockoutEnabled)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AccessFailedCount)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AccessFailedCount)
+            @Html.DisplayFor(model => model.Notes)
         </dd>
     </dl>
 </div>

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Domain.Models;
 using EfDataAccess;
+using LibApp.Services;
 using LibApp.Services.Interfaces;
 using LibApp.WebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -39,24 +40,27 @@ namespace LibApp.WebApp.Controllers
         }
 
         // GET: Users/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                //TODO: Process image - prerequisite create
 
-            var user = await _context.Users
-                .Include(u => u.CreatedByUser)
-                .Include(u => u.ModifiedByUser)
-                .Include(u => u.Role)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
+                var user = await _userService.GetUserAsync(id);
+
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                var userViewModel = _mapper.Map<UserViewModel>(user);
+
+                return View(userViewModel);
+            }
+            catch (Exception exception)
             {
-                return NotFound();
+                return RedirectToAction("ServerError", "Error");
             }
-
-            return View(user);
         }
 
         // GET: Users/Create

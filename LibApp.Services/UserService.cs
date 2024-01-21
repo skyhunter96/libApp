@@ -14,11 +14,6 @@ namespace LibApp.Services
             _context = context;
         }
 
-        public IEnumerable<User> GetUsers()
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<IEnumerable<User>> GetUsersAsync()
         {
             var users = await _context.Users
@@ -32,7 +27,13 @@ namespace LibApp.Services
 
         public async Task<User> GetUserAsync(int id)
         {
-            throw new NotImplementedException();
+            var user = await _context.Users
+                .Include(u => u.CreatedByUser)
+                .Include(u => u.ModifiedByUser)
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            return user;
         }
 
         public async Task AddUserAsync(User User)

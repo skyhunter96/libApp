@@ -21,6 +21,8 @@ namespace LibApp.WebApp.Controllers
             _mapper = mapper;
         }
 
+        //TODO: Links from details and other pages
+        //TODO: CreatedBy User link
         //TODO: Authorize actions
         //TODO: Reservation timer job
 
