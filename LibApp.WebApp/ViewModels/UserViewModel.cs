@@ -1,4 +1,6 @@
-﻿namespace LibApp.WebApp.ViewModels
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace LibApp.WebApp.ViewModels
 {
     public class UserViewModel
     {
@@ -14,7 +16,9 @@
         public DateTime ModifiedDateTime { get; set; }
         public bool IsVerified { get; set; }
         public DateTime? LastLoginDateTime { get; set; }
-        public bool Active { get; set; }
+
+        [Display(Name = "Active")]
+        public bool IsActive { get; set; }
         public bool IsCardActive { get; set; }
         public string ImagePath { get; set; }
         public DateTime DateOfBirth { get; set; }

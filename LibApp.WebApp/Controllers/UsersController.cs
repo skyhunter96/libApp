@@ -75,7 +75,7 @@ namespace LibApp.WebApp.Controllers
         // POST: Users/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CreatedDateTime,ModifiedDateTime,CreatedByUserId,ModifiedByUserId,FirstName,LastName,RegistrationDateTime,IsVerified,VerificationToken,VerificationSentAt,LastLoginDateTime,Active,RoleId,ImagePath,DateOfBirth,City,Address,CardCode,IsCardActive,TotalFee,Currency,Notes,Id,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PasswordHash,SecurityStamp,ConcurrencyStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnd,LockoutEnabled,AccessFailedCount")] User user)
+        public async Task<IActionResult> Create([Bind("CreatedDateTime,ModifiedDateTime,CreatedByUserId,ModifiedByUserId,FirstName,LastName,RegistrationDateTime,IsVerified,VerificationToken,VerificationSentAt,LastLoginDateTime,IsActive,RoleId,ImagePath,DateOfBirth,City,Address,CardCode,IsCardActive,TotalFee,Currency,Notes,Id,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PasswordHash,SecurityStamp,ConcurrencyStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnd,LockoutEnabled,AccessFailedCount")] User user)
         {
             if (ModelState.IsValid)
             {
@@ -111,7 +111,7 @@ namespace LibApp.WebApp.Controllers
         // POST: Users/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CreatedDateTime,ModifiedDateTime,CreatedByUserId,ModifiedByUserId,FirstName,LastName,RegistrationDateTime,IsVerified,VerificationToken,VerificationSentAt,LastLoginDateTime,Active,RoleId,ImagePath,DateOfBirth,City,Address,CardCode,IsCardActive,TotalFee,Currency,Notes,Id,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PasswordHash,SecurityStamp,ConcurrencyStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnd,LockoutEnabled,AccessFailedCount")] User user)
+        public async Task<IActionResult> Edit(int id, [Bind("CreatedDateTime,ModifiedDateTime,CreatedByUserId,ModifiedByUserId,FirstName,LastName,RegistrationDateTime,IsVerified,VerificationToken,VerificationSentAt,LastLoginDateTime,IsActive,RoleId,ImagePath,DateOfBirth,City,Address,CardCode,IsCardActive,TotalFee,Currency,Notes,Id,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PasswordHash,SecurityStamp,ConcurrencyStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnd,LockoutEnabled,AccessFailedCount")] User user)
         {
             if (id != user.Id)
             {

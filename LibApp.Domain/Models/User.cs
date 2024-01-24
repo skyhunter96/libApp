@@ -23,7 +23,7 @@ public class User : IdentityUser<int>
     //TODO: Prolly not needed
     public DateTime? VerificationSentAt { get; set; }
     public DateTime? LastLoginDateTime { get; set; }
-    public bool Active { get; set; }
+    public bool IsActive { get; set; }
     public int RoleId { get; set; }
     public string ImagePath { get; set; }
 

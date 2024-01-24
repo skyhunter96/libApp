@@ -7,12 +7,13 @@
 
 <h1>Index</h1>
 
+@* TODO: Prolly this instead of Identity Register *@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<p>
+@* <p>
     <a id="register" asp-area="Identity" asp-page="/Account/Register">Register</a>
-</p>
+</p> *@
 @* <p>
     <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
 </p> *@
@@ -35,7 +36,7 @@
                 @Html.DisplayNameFor(model => model.City)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Active)
+                @Html.DisplayNameFor(model => model.IsActive)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.IsCardActive)
@@ -75,7 +76,7 @@
                 @Html.DisplayFor(modelItem => item.City)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Active)
+                @Html.DisplayFor(modelItem => item.IsActive)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.IsCardActive)
