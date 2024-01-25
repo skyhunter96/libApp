@@ -31,7 +31,7 @@ public class User : IdentityUser<int>
     public DateTime DateOfBirth { get; set; }
     public string City { get; set; }
     public string Address { get; set; }
-    public string CardCode { get; set; }
+    public string? CardCode { get; set; }
     public bool IsCardActive { get; set; }
     public decimal TotalFee { get; set; }
     public string Currency { get; set; }
