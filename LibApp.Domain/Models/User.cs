@@ -17,11 +17,6 @@ public class User : IdentityUser<int>
     public string Password { get; set; }
     //UserName, Pass, Email & Phone in Base Class
 
-    //TODO: Prolly not needed
-    public bool IsVerified { get; set; }
-    public string VerificationToken { get; set; }
-    public DateTime? VerificationSentAt { get; set; }
-
     public DateTime? LastLoginDateTime { get; set; }
     public bool IsActive { get; set; }
     public int RoleId { get; set; }

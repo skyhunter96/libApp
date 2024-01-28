@@ -47,18 +47,10 @@ namespace EfDataAccess.Configurations
                 .HasMaxLength(50);
 
             entity.Property(u => u.UserName)
-                .HasColumnType("char(50)")
                 .IsRequired();
 
             entity.Property(u => u.Email)
-                .HasColumnType("char(50)");
-
-            entity.Property(u => u.VerificationToken)
-                .HasColumnType("char(128)")
-                .IsRequired(false);
-
-            entity.Property(u => u.VerificationSentAt)
-                .IsRequired(false);
+                .IsRequired();
 
             entity.Property(u => u.ImagePath)
                 .HasColumnType("char(255)")
@@ -72,7 +64,7 @@ namespace EfDataAccess.Configurations
                 .IsRequired(false);
 
             entity.Property(u => u.PhoneNumber)
-                .HasColumnType("char(30)")
+                .HasMaxLength(30)
                 .IsRequired(false);
 
             entity.Property(u => u.TotalFee)
