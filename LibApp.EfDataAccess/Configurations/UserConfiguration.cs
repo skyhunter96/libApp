@@ -87,7 +87,8 @@ namespace EfDataAccess.Configurations
                 .IsRequired(false);
 
             entity.HasOne(u => u.Role)
-                .WithOne(r => r.User)
+                .WithMany(r => r.Users)
+                .HasForeignKey(u => u.RoleId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasMany(u => u.Reservations)

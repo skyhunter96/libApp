@@ -4,7 +4,7 @@ namespace Domain.Models
 {
     public class Role : IdentityRole<int>
     {
-        public User User { get; set; }
+        public ICollection<User> Users { get; set; }
     }
     public enum RoleEnum
     {

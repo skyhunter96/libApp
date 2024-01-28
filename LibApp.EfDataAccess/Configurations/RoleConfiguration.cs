@@ -14,9 +14,9 @@ namespace LibApp.EfDataAccess.Configurations
 
             entity.Property(r => r.Id).ValueGeneratedNever();
 
-            entity.HasOne(r => r.User)
+            entity.HasMany(r => r.Users)
                 .WithOne(u => u.Role)
-                .HasForeignKey<User>(u => u.RoleId)
+                .HasForeignKey(u => u.RoleId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasData(
