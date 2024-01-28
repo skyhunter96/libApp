@@ -8,11 +8,6 @@ namespace EfDataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<User> entity)
         {
-            //Do this after migration
-            //UPDATE[LibApp].[dbo].[User]
-            //SET UserName = LTRIM(RTRIM(UserName)),
-            //    Email = LTRIM(RTRIM(Email)
-
             //From BaseEntityConfig
             entity.HasKey(u => u.Id);
 
