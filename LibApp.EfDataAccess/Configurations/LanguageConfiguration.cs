@@ -10,9 +10,9 @@ namespace EfDataAccess.Configurations
         {
             entity.ToTable("Languages", "lib");
 
-            entity.HasKey(e => e.Id);
+            entity.HasKey(l => l.Id);
 
-            entity.Property(e => e.Name)
+            entity.Property(l => l.Name)
                 .HasMaxLength(50);
 
             entity.HasMany(d => d.Books)

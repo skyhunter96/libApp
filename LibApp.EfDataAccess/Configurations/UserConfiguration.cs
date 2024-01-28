@@ -9,14 +9,14 @@ namespace EfDataAccess.Configurations
         public void Configure(EntityTypeBuilder<User> entity)
         {
             //From BaseEntityConfig
-            entity.HasKey(e => e.Id);
+            entity.HasKey(u => u.Id);
 
             entity.Property(u => u.Id).ValueGeneratedOnAdd();
 
-            entity.Property(e => e.CreatedDateTime)
+            entity.Property(u => u.CreatedDateTime)
                 .HasDefaultValueSql("SYSDATETIME()");
 
-            entity.Property(e => e.ModifiedDateTime)
+            entity.Property(u => u.ModifiedDateTime)
                 .HasDefaultValueSql("SYSDATETIME()");
 
             entity.HasOne(e => e.CreatedByUser)
@@ -24,13 +24,15 @@ namespace EfDataAccess.Configurations
                 .HasForeignKey(e => e.CreatedByUserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            entity.HasOne(e => e.ModifiedByUser)
+            entity.HasOne(u => u.ModifiedByUser)
                 .WithMany()
-                .HasForeignKey(e => e.ModifiedByUserId)
+                .HasForeignKey(u => u.ModifiedByUserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
 
             entity.ToTable("User");
+
+            entity.Ignore(u => u.Password);
 
             entity.Property(u => u.DocumentId)
                 .HasMaxLength(13);
@@ -44,21 +46,21 @@ namespace EfDataAccess.Configurations
             entity.Property(u => u.LastName)
                 .HasMaxLength(50);
 
-            entity.Property(e => e.UserName)
+            entity.Property(u => u.UserName)
                 .HasColumnType("char(50)")
                 .IsRequired();
 
-            entity.Property(e => e.Email)
+            entity.Property(u => u.Email)
                 .HasColumnType("char(50)");
 
-            entity.Property(e => e.VerificationToken)
+            entity.Property(u => u.VerificationToken)
                 .HasColumnType("char(128)")
                 .IsRequired(false);
 
             entity.Property(u => u.VerificationSentAt)
                 .IsRequired(false);
 
-            entity.Property(e => e.ImagePath)
+            entity.Property(u => u.ImagePath)
                 .HasColumnType("char(255)")
                 .IsRequired(false);
 
@@ -73,7 +75,7 @@ namespace EfDataAccess.Configurations
                 .HasColumnType("char(30)")
                 .IsRequired(false);
 
-            entity.Property(e => e.TotalFee)
+            entity.Property(u => u.TotalFee)
                 .HasColumnType("decimal(10,2)");
 
             entity.Property(u => u.Currency)

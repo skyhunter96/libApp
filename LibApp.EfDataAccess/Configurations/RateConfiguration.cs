@@ -11,7 +11,7 @@ namespace EfDataAccess.Configurations
         {
             base.Configure(entity);
 
-            entity.Property(e => e.RateFee)
+            entity.Property(r => r.RateFee)
                 .HasColumnType("decimal(10,2)");
         }
     }

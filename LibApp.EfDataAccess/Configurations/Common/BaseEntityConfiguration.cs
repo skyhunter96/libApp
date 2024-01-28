@@ -13,12 +13,12 @@ namespace EfDataAccess.Configurations.Common
             var tableName = entityType.Name;
             entity.ToTable(tableName, "lib");
 
-            entity.HasKey(e => e.Id);
+            entity.HasKey(be => be.Id);
 
-            entity.Property(e => e.CreatedDateTime)
+            entity.Property(be => be.CreatedDateTime)
                 .HasDefaultValueSql("SYSDATETIME()");
 
-            entity.Property(e => e.ModifiedDateTime)
+            entity.Property(be => be.ModifiedDateTime)
                 .HasDefaultValueSql("SYSDATETIME()");
 
             entity.HasOne(e => e.CreatedByUser)

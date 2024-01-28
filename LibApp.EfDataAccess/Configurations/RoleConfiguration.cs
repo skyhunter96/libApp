@@ -10,7 +10,7 @@ namespace LibApp.EfDataAccess.Configurations
         {
             entity.ToTable("Role");
 
-            entity.HasKey(e => e.Id);
+            entity.HasKey(r => r.Id);
 
             entity.Property(r => r.Id).ValueGeneratedNever();
 

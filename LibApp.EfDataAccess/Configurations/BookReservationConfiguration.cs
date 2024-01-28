@@ -18,10 +18,10 @@ namespace EfDataAccess.Configurations
                 .WithMany(b => b.BookReservations)
                 .HasForeignKey(br => br.BookId);
 
-            entity.Property(e => e.CreatedDateTime)
+            entity.Property(br => br.CreatedDateTime)
                 .HasDefaultValueSql("SYSDATETIME()");
 
-            entity.Property(e => e.ModifiedDateTime)
+            entity.Property(br => br.ModifiedDateTime)
                 .HasDefaultValueSql("SYSDATETIME()");
         }
     }

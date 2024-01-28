@@ -11,24 +11,24 @@ namespace EfDataAccess.Configurations
         {
             base.Configure(entity);
 
-            entity.Property(e => e.Title)
+            entity.Property(b => b.Title)
                 .HasMaxLength(100);
 
-            entity.Property(e => e.Description)
+            entity.Property(b => b.Description)
                 .HasMaxLength(1000)
                 .IsRequired(false);
 
-            entity.Property(e => e.Isbn)
+            entity.Property(b => b.Isbn)
                 .HasColumnType("char(17)");
 
-            entity.Property(e => e.Edition)
+            entity.Property(b => b.Edition)
                 .HasMaxLength(100);
 
-            entity.Property(e => e.ImagePath)
+            entity.Property(b => b.ImagePath)
                 .HasColumnType("char(255)")
                 .IsRequired(false);
 
-            entity.Property(e => e.Cost)
+            entity.Property(b => b.Cost)
                 .HasColumnType("decimal(10,2)")
                 .IsRequired(false);
 

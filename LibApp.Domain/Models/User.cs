@@ -14,14 +14,14 @@ public class User : IdentityUser<int>
     public string DocumentId { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
-
+    public string Password { get; set; }
     //UserName, Pass, Email & Phone in Base Class
 
+    //TODO: Prolly not needed
     public bool IsVerified { get; set; }
     public string VerificationToken { get; set; }
-
-    //TODO: Prolly not needed
     public DateTime? VerificationSentAt { get; set; }
+
     public DateTime? LastLoginDateTime { get; set; }
     public bool IsActive { get; set; }
     public int RoleId { get; set; }
@@ -35,7 +35,7 @@ public class User : IdentityUser<int>
     public bool IsCardActive { get; set; }
     public decimal TotalFee { get; set; }
     public string Currency { get; set; }
-    public string Notes { get; set; }
+    public string? Notes { get; set; }
 
     //From BaseEntity:
     public virtual User CreatedByUser { get; set; }

@@ -8,19 +8,19 @@ namespace EfDataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<Log> entity)
         {
-            entity.HasKey(e => e.Id);
+            entity.HasKey(l => l.Id);
 
-            entity.Property(e => e.Name)
+            entity.Property(l => l.Name)
                 .HasMaxLength(50);
 
-            entity.Property(e => e.Description)
+            entity.Property(l => l.Description)
                 .HasMaxLength(1000)
                 .IsRequired(false);
 
-            entity.Property(e => e.DateTime)
+            entity.Property(l => l.DateTime)
                 .HasDefaultValueSql("SYSDATETIME()");
 
-            entity.Property(e => e.StackTrace)
+            entity.Property(l => l.StackTrace)
                 .HasMaxLength(500)
                 .IsRequired(false);
 

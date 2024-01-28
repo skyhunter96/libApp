@@ -20,7 +20,7 @@ namespace EfDataAccess.Configurations
             entity.Property(r => r.ActualReturnDate)
                 .HasColumnType("date");
 
-            entity.Property(e => e.LateFee)
+            entity.Property(r => r.LateFee)
                 .HasColumnType("decimal(10,2)");
 
             //TODO: Check if good behaviour

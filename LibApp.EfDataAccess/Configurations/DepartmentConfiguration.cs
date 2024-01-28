@@ -11,18 +11,18 @@ namespace EfDataAccess.Configurations
         {
             base.Configure(entity);
 
-            entity.Property(e => e.Name)
+            entity.Property(d => d.Name)
                 .HasMaxLength(50);
 
-            entity.Property(e => e.Description)
+            entity.Property(d => d.Description)
                 .HasMaxLength(1000)
                 .IsRequired(false);
 
-            entity.Property(e => e.Location)
+            entity.Property(d => d.Location)
                 .HasMaxLength(100)
                 .IsRequired(false);
 
-            entity.Property(e => e.Budget)
+            entity.Property(d => d.Budget)
                 .HasColumnType("decimal(10,2)");
 
             entity.HasMany(d => d.Books)
