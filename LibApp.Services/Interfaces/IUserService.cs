@@ -6,8 +6,11 @@ namespace LibApp.Services.Interfaces
     {
         Task<IEnumerable<User>> GetUsersAsync();
         Task<User> GetUserAsync(int id);
-        Task AddUserAsync(User User);
-        Task UpdateUserAsync(User User);
-        Task RemoveUserAsync(User User);
+        Task AddUserAsync(User user);
+        Task UpdateUserAsync(User user);
+        Task RemoveUserAsync(User user);
+        bool DocumentIdExists(string documentId);
+        bool EmailExists(string email);
+        bool UserNameExists(string userName);
     }
 }

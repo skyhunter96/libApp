@@ -95,23 +95,23 @@ namespace LibApp.WebApp.Controllers
         // POST: Books/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(BookViewModel model)
+        public async Task<IActionResult> Create(BookViewModel bookViewModel)
         {
             try
             {
                 //TODO: Insert image
                 //TODO: CreatedByUserId and UpdatedByUserId need to get from session
 
-                if (_bookService.IsbnExists(model.Isbn))
+                if (_bookService.IsbnExists(bookViewModel.Isbn))
                 {
                     ModelState.AddModelError("Isbn", "A book with this ISBN already exists.");
                 }
 
                 if (ModelState.IsValid)
                 {
-                    var book = _mapper.Map<Book>(model);
+                    var book = _mapper.Map<Book>(bookViewModel);
 
-                    await _bookService.AddBookAsync(book, model.AuthorIds, model.NewAuthor);
+                    await _bookService.AddBookAsync(book, bookViewModel.AuthorIds, bookViewModel.NewAuthor);
 
                     TempData["SuccessMessage"] = "Book added successfully.";
 
@@ -133,13 +133,13 @@ namespace LibApp.WebApp.Controllers
                     }
                 }
 
-                ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", model.CategoryId);
-                ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name", model.DepartmentId);
-                ViewData["LanguageId"] = new SelectList(_context.Languages, "Id", "Name", model.LanguageId);
-                ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", model.PublisherId);
-                ViewData["AuthorIds"] = new MultiSelectList(_context.Authors, "Id", "Name", model.AuthorIds);
+                ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", bookViewModel.CategoryId);
+                ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name", bookViewModel.DepartmentId);
+                ViewData["LanguageId"] = new SelectList(_context.Languages, "Id", "Name", bookViewModel.LanguageId);
+                ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", bookViewModel.PublisherId);
+                ViewData["AuthorIds"] = new MultiSelectList(_context.Authors, "Id", "Name", bookViewModel.AuthorIds);
 
-                return View(model);
+                return View(bookViewModel);
             }
             catch (Exception exception)
             {

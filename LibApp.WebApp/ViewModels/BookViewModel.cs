@@ -1,5 +1,4 @@
-﻿using LibApp.Services.Interfaces;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
@@ -47,7 +46,7 @@ namespace LibApp.WebApp.ViewModels
         [Display(Name = "Authors")]
         public IEnumerable<int>? AuthorIds { get; set; }
 
-        //TODO: these have to be null cuz validation for create fails, best would be to split vms for diff actions but have no time
+        //These have to be null cuz validation for create fails, best would be to split vms for diff actions but have no time
         public string? Publisher { get; set; }
         public string? Category { get; set; }
         public string? Department { get; set; }
@@ -86,10 +85,6 @@ namespace LibApp.WebApp.ViewModels
         [Display(Name = "ModifiedBy")]
         public string? ModifiedByUser { get; set; }
 
-        public bool IsbnExists { get; set; }
-
-
-        private readonly IBookService _bookService;
 
         private const string ISBNPattern = @"^(?=.*\d)(?=.*-).+$";
 

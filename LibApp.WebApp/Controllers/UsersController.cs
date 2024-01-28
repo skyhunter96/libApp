@@ -23,6 +23,9 @@ namespace LibApp.WebApp.Controllers
             _mapper = mapper;
         }
 
+        //TODO: Details date of birth only DATE
+        //TODO: Activate card action and then the user is active
+
         // GET: Users
         public async Task<IActionResult> Index()
         {
@@ -66,27 +69,65 @@ namespace LibApp.WebApp.Controllers
         // GET: Users/Create
         public IActionResult Create()
         {
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "CardCode");
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "CardCode");
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name");
-            return View();
+            try
+            {
+                ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name");
+                ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name");
+                ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name");
+
+                return View();
+            }
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
 
         // POST: Users/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CreatedDateTime,ModifiedDateTime,CreatedByUserId,ModifiedByUserId,FirstName,LastName,RegistrationDateTime,IsVerified,VerificationToken,VerificationSentAt,LastLoginDateTime,IsActive,RoleId,ImagePath,DateOfBirth,City,Address,CardCode,IsCardActive,TotalFee,Currency,Notes,Id,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PasswordHash,SecurityStamp,ConcurrencyStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnd,LockoutEnabled,AccessFailedCount")] User user)
+        public async Task<IActionResult> Create(UserViewModel userViewModel)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(user);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                //TODO: Insert image
+                //TODO: CreatedByUserId and UpdatedByUserId need to get from session
+
+                if (_userService.DocumentIdExists(userViewModel.DocumentId))
+                {
+                    ModelState.AddModelError("DocumentId", "An user with this DocumentId already exists.");
+                }
+
+                if (_userService.EmailExists(userViewModel.Email))
+                {
+                    ModelState.AddModelError("Email", "An user with this Email already exists.");
+                }
+
+                if (_userService.UserNameExists(userViewModel.UserName))
+                {
+                    ModelState.AddModelError("UserName", "An user with this UserName already exists.");
+                }
+
+                if (ModelState.IsValid)
+                {
+                    var user = _mapper.Map<User>(userViewModel);
+
+                    await _userService.AddUserAsync(user);
+
+                    TempData["SuccessMessage"] = "User added successfully.";
+
+                    return RedirectToAction(nameof(Index));
+                }
+                ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", userViewModel.CreatedByUserId);
+                ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", userViewModel.ModifiedByUserId);
+                ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name", userViewModel.RoleId);
+
+                return View(userViewModel);
             }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "CardCode", user.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "CardCode", user.ModifiedByUserId);
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name", user.RoleId);
-            return View(user);
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
 
         // GET: Users/Edit/5
@@ -102,8 +143,8 @@ namespace LibApp.WebApp.Controllers
             {
                 return NotFound();
             }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "CardCode", user.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "CardCode", user.ModifiedByUserId);
+            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", user.CreatedByUserId);
+            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", user.ModifiedByUserId);
             ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name", user.RoleId);
             return View(user);
         }
@@ -111,7 +152,7 @@ namespace LibApp.WebApp.Controllers
         // POST: Users/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CreatedDateTime,ModifiedDateTime,CreatedByUserId,ModifiedByUserId,FirstName,LastName,RegistrationDateTime,IsVerified,VerificationToken,VerificationSentAt,LastLoginDateTime,IsActive,RoleId,ImagePath,DateOfBirth,City,Address,CardCode,IsCardActive,TotalFee,Currency,Notes,Id,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PasswordHash,SecurityStamp,ConcurrencyStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnd,LockoutEnabled,AccessFailedCount")] User user)
+        public async Task<IActionResult> Edit(int id, User user)
         {
             if (id != user.Id)
             {
