@@ -35,7 +35,7 @@ namespace LibApp.Services
                 .Include(u => u.CreatedByUser)
                 .Include(u => u.ModifiedByUser)
                 .Include(u => u.Role)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(u => u.Id == id);
 
             return user;
         }
@@ -51,18 +51,25 @@ namespace LibApp.Services
 
             if (!result.Succeeded)
             {
-                // Handle errors if needed
                 var errors = result.Errors.Select(e => e.Description);
                 throw new ApplicationException($"User creation failed: {string.Join(", ", errors)}");
             }
-
-            //_context.Add(user);
-            //await _context.SaveChangesAsync();
         }
 
         public async Task UpdateUserAsync(User user)
         {
-            throw new NotImplementedException();
+            //TODO: UpdatedByUserId need to get from session
+            //TODO: CreatedByUserId is not sent from or mapped?
+            user.ModifiedByUserId = 1;
+            user.ModifiedDateTime = DateTime.Now;
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(e => e.Description);
+                throw new ApplicationException($"User creation failed: {string.Join(", ", errors)}");
+            }
         }
 
         public async Task RemoveUserAsync(User user)
@@ -76,15 +83,33 @@ namespace LibApp.Services
             return exists;
         }
 
+        public bool DocumentIdExistsInOtherBooks(int id, string documentId)
+        {
+            var exists = _context.Users.Any(u => u.Id != id && u.DocumentId == documentId);
+            return exists;
+        }
+
         public bool EmailExists(string email)
         {
             var exists = _context.Users.Any(u => u.Email == email);
             return exists;
         }
 
+        public bool EmailExistsInOtherBooks(int id, string email)
+        {
+            var exists = _context.Users.Any(u => u.Id != id && u.Email == email);
+            return exists;
+        }
+
         public bool UserNameExists(string userName)
         {
             var exists = _context.Users.Any(u => u.UserName == userName);
+            return exists;
+        }
+
+        public bool UserNameExistsInOtherBooks(int id, string userName)
+        {
+            var exists = _context.Users.Any(u => u.Id != id && u.UserName == userName);
             return exists;
         }
     }

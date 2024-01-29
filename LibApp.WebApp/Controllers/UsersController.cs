@@ -4,6 +4,7 @@ using EfDataAccess;
 using LibApp.Services;
 using LibApp.Services.Interfaces;
 using LibApp.WebApp.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -14,17 +15,20 @@ namespace LibApp.WebApp.Controllers
     {
         private readonly LibraryContext _context;
         private readonly IUserService _userService;
+        private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
 
-        public UsersController(LibraryContext context, IUserService userService, IMapper mapper)
+        public UsersController(LibraryContext context, IUserService userService, IMapper mapper, UserManager<User> userManager)
         {
             _context = context;
             _userService = userService;
             _mapper = mapper;
+            _userManager = userManager;
         }
 
         //TODO: Details date of birth only DATE
         //TODO: Activate card action and then the user is active
+        //TODO: Change pass action
 
         // GET: Users
         public async Task<IActionResult> Index()
@@ -131,58 +135,97 @@ namespace LibApp.WebApp.Controllers
         }
 
         // GET: Users/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
+                var user = await _userService.GetUserAsync(id);
+
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                var userViewModel = _mapper.Map<UserViewModel>(user);
+
+                ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", user.CreatedByUserId);
+                ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", user.ModifiedByUserId);
+                ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name", user.RoleId);
+
+                return View(userViewModel);
             }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", user.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", user.ModifiedByUserId);
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name", user.RoleId);
-            return View(user);
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
 
         // POST: Users/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, User user)
+        public async Task<IActionResult> Edit(int id, UserViewModel userViewModel)
         {
-            if (id != user.Id)
+            if (id != userViewModel.Id)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            try
             {
-                try
+                //TODO: Insert image
+                //TODO: CreatedByUserId and UpdatedByUserId need to get from session
+
+                ViewData.ModelState.Remove("Password");
+
+                if (_userService.DocumentIdExistsInOtherBooks(userViewModel.Id, userViewModel.DocumentId))
                 {
-                    _context.Update(user);
-                    await _context.SaveChangesAsync();
+                    ModelState.AddModelError("DocumentId", "An user with this DocumentId already exists.");
                 }
-                catch (DbUpdateConcurrencyException)
+
+                if (_userService.EmailExistsInOtherBooks(userViewModel.Id, userViewModel.Email))
                 {
-                    if (!UserExists(user.Id))
+                    ModelState.AddModelError("Email", "An user with this Email already exists.");
+                }
+
+                if (_userService.UserNameExistsInOtherBooks(userViewModel.Id, userViewModel.UserName))
+                {
+                    ModelState.AddModelError("UserName", "An user with this UserName already exists.");
+                }
+
+                if (ModelState.IsValid)
+                {
+                    var user = await _userManager.FindByIdAsync(userViewModel.Id.ToString());
+
+                    if (user == null)
                     {
                         return NotFound();
                     }
-                    else
-                    {
-                        throw;
-                    }
+
+                    //var user = _mapper.Map<User>(userViewModel);
+                    _mapper.Map(userViewModel, user);
+
+                    await _userService.UpdateUserAsync(user);
+
+                    TempData["SuccessMessage"] = "User updated successfully.";
+
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
+
+                ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", userViewModel.CreatedByUserId);
+                ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", userViewModel.ModifiedByUserId);
+                ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name", userViewModel.RoleId);
+
+                return View(userViewModel);
             }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "CardCode", user.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "CardCode", user.ModifiedByUserId);
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name", user.RoleId);
-            return View(user);
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
 
         // GET: Users/Delete/5

@@ -242,7 +242,7 @@ namespace LibApp.WebApp.Controllers
                 if (book != null)
                 {
                     await _bookService.RemoveBookAsync(book);
-                    TempData["SuccessMessage"] = "Book added successfully.";
+                    TempData["SuccessMessage"] = "Book deleted successfully.";
                     return Json(new { success = true, message = "Book deleted successfully." });
                 }
 

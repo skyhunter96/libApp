@@ -28,7 +28,7 @@ namespace EfDataAccess.Configurations
                 .WithMany()
                 .HasForeignKey(u => u.ModifiedByUserId)
                 .OnDelete(DeleteBehavior.Restrict);
-
+            
 
             entity.ToTable("User");
 
