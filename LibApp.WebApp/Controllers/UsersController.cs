@@ -28,7 +28,7 @@ namespace LibApp.WebApp.Controllers
 
         //TODO: Details date of birth only DATE
         //TODO: Activate card action and then the user is active
-        //TODO: Change pass action
+        //TODO: Change pass action (maybe in manageNavPages
 
         // GET: Users
         public async Task<IActionResult> Index()
@@ -228,45 +228,32 @@ namespace LibApp.WebApp.Controllers
             }
         }
 
-        // GET: Users/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var user = await _context.Users
-                .Include(u => u.CreatedByUser)
-                .Include(u => u.ModifiedByUser)
-                .Include(u => u.Role)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            return View(user);
-        }
-
         // POST: Users/Delete/5
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user != null)
+            try
             {
-                _context.Users.Remove(user);
+                if (_context.Users == null)
+                {
+                    return RedirectToAction("ServerError", "Error");
+                }
+
+                var user = await _userService.GetUserAsync(id);
+                if (user != null)
+                {
+                    await _userService.RemoveUserAsync(user);
+                    TempData["SuccessMessage"] = "User deleted successfully.";
+                    return Json(new { success = true, message = "User deleted successfully." });
+                }
+
+                TempData["ErrorMessage"] = "User was not deleted. An error occurred while processing your request.";
+                return Json(new { success = false, message = "User not found." });
             }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool UserExists(int id)
-        {
-            return _context.Users.Any(e => e.Id == id);
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
     }
 }

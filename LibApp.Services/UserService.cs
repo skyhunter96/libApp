@@ -74,7 +74,8 @@ namespace LibApp.Services
 
         public async Task RemoveUserAsync(User user)
         {
-            throw new NotImplementedException();
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
         }
 
         public bool DocumentIdExists(string documentId)

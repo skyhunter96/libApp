@@ -10,7 +10,10 @@ namespace LibApp.Services.Interfaces
         Task UpdateUserAsync(User user);
         Task RemoveUserAsync(User user);
         bool DocumentIdExists(string documentId);
+        bool DocumentIdExistsInOtherBooks(int id, string documentId);
         bool EmailExists(string email);
+        bool EmailExistsInOtherBooks(int id, string email);
         bool UserNameExists(string userName);
+        bool UserNameExistsInOtherBooks(int id, string userName);
     }
 }
