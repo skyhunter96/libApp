@@ -92,6 +92,8 @@ namespace LibApp.Services
 
         public async Task UpdateBookAsync(Book book, IEnumerable<int>? selectedAuthorIds, string? newAuthorName)
         {
+            //TODO: UpdatedByUserId need to get from session
+
             var newAuthor = new Author();
 
             // Like this cuz plain 'book' does not get authors loaded

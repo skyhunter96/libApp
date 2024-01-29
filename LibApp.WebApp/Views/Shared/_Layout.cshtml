@@ -131,26 +131,22 @@
         <script>
         $(document).ready(function () {
             $('.delete-button').on('click', function (event) {
-                event.preventDefault(); // Prevent the default behavior of the anchor element
+                event.preventDefault();
 
-                var bookId = $(this).data('book-id');
-                var confirmation = confirm('Are you sure you want to delete this book?');
+                var entityController = $(this).data('controller');
+                var entityAction = $(this).data('action');
+                var entityId = $(this).data('id');
+                var confirmation = confirm('Are you sure you want to delete this item?');
 
                 if (confirmation) {
                     $.ajax({
-                        url: '@Url.Action("Delete", "Books")',
-                        data: { id: bookId },
+                        url: '/' + entityController + '/' + entityAction,
+                        data: { id: entityId },
                         type: 'POST',
-                        // headers: {
-                        //     RequestVerificationToken: $('meta[name="RequestVerificationToken"]').attr('content')
-                        // },
                         success: function (data) {
-                            // console.log('success');
-
                             location.reload();
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
-                            // console.log('error');
                             alert('Error: ' + xhr.responseText);
                         }
                     });

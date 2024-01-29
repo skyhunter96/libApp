@@ -131,7 +131,13 @@
                     <td>
                         <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
                         <a asp-action="Details" asp-route-id="@item.Id">Details</a>
-                        <a class="delete-button" asp-action="Delete" asp-route-id="@item.Id" data-book-id="@item.Id">Delete</a>
+                        <a class="delete-button" 
+                           data-controller="Books" 
+                           data-action="Delete" 
+                           data-id="@item.Id" 
+                           style="color: #51cbce; text-decoration: none; cursor: pointer;"
+                           onmouseover="this.style.textDecoration='underline';"
+                           onmouseout="this.style.textDecoration='none';">Delete</a>
                     </td>
                 </tr>
             }
