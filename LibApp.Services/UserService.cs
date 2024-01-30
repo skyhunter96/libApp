@@ -3,7 +3,6 @@ using EfDataAccess;
 using LibApp.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata;
 
 namespace LibApp.Services
 {
@@ -36,6 +35,17 @@ namespace LibApp.Services
                 .Include(u => u.ModifiedByUser)
                 .Include(u => u.Role)
                 .FirstOrDefaultAsync(u => u.Id == id);
+
+            return user;
+        }
+
+        public async Task<User> GetUserByUserNameAsync(string userName)
+        {
+            var user = await _context.Users
+                .Include(u => u.CreatedByUser)
+                .Include(u => u.ModifiedByUser)
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.UserName == userName);
 
             return user;
         }
