@@ -1,6 +1,6 @@
 ﻿#nullable disable
 
-using Microsoft.AspNetCore.Authentication;
+using Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.WebUtilities;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Encodings.Web;
-using Domain.Models;
 
 namespace LibApp.WebApp.Areas.Identity.Pages.Account
 {
@@ -37,13 +36,9 @@ namespace LibApp.WebApp.Areas.Identity.Pages.Account
             _emailSender = emailSender;
         }
 
-
         [BindProperty]
         public InputModel Input { get; set; }
-
         public string ReturnUrl { get; set; }
-
-        public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
         public class InputModel
         {
@@ -64,17 +59,14 @@ namespace LibApp.WebApp.Areas.Identity.Pages.Account
             public string ConfirmPassword { get; set; }
         }
 
-
         public async Task OnGetAsync(string returnUrl = null)
         {
             ReturnUrl = returnUrl;
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
                 var user = CreateUser();

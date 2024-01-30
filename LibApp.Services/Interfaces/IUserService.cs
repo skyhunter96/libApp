@@ -6,6 +6,7 @@ namespace LibApp.Services.Interfaces
     {
         Task<IEnumerable<User>> GetUsersAsync();
         Task<User> GetUserAsync(int id);
+        Task<User> GetUserByUserNameAsync(string userName);
         Task AddUserAsync(User user);
         Task UpdateUserAsync(User user);
         Task RemoveUserAsync(User user);
