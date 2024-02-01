@@ -139,6 +139,8 @@ namespace LibApp.WebApp.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnPostSendVerificationEmailAsync()
         {
+            //TODO: If using this try SendGrid
+
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {

@@ -57,6 +57,7 @@ namespace LibApp.WebApp.Areas.Identity.Pages.Account.Manage
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Phone]
+            [MaxLength(30)]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
         }
