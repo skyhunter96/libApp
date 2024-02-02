@@ -37,7 +37,6 @@ namespace LibApp.WebApp.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Current password")]
             public string OldPassword { get; set; }
 
-            //TODO: Maybe change to be uniform as userVM pass
             [Required]
             [StringLength(50, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 8)]
             [DataType(DataType.Password)]

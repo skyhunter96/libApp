@@ -21,7 +21,8 @@ namespace LibApp.WebApp.Mappings
             CreateMap<BookViewModel, Book>();
 
             CreateMap<User, UserViewModel>()
-                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.Name));
+                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.Name))
+                .ForMember(dest => dest.DateOfBirthToShow, opt => opt.MapFrom(src => src.DateOfBirth.ToString("d.M.yyyy.")));
 
             CreateMap<UserViewModel, User>();
         }

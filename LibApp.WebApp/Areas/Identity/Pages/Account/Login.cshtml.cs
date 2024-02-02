@@ -14,21 +14,20 @@ namespace LibApp.WebApp.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<User> _signInManager;
         private readonly ILogger<LoginModel> _logger;
-        private readonly UserManager<User> _userManager;
+
         private readonly IUserService _userService;
 
         public LoginModel(SignInManager<User> signInManager, ILogger<LoginModel> logger, UserManager<User> userManager, IUserService userService)
         {
             _signInManager = signInManager;
             _logger = logger;
-            _userManager = userManager;
             _userService = userService;
         }
 
         [BindProperty]
         public InputModel Input { get; set; }
-        public IList<AuthenticationScheme> ExternalLogins { get; set; }
         public string ReturnUrl { get; set; }
+
         [TempData]
         public string ErrorMessage { get; set; }
 
@@ -52,8 +51,6 @@ namespace LibApp.WebApp.Areas.Identity.Pages.Account
             {
                 ModelState.AddModelError(string.Empty, ErrorMessage);
             }
-
-            //TODO: Needs to return to page where gotten from or to home?
 
             returnUrl ??= Url.Content("~/");
 

@@ -29,6 +29,7 @@ namespace LibApp.WebApp.Controllers
         //TODO: Details date of birth only DATE
         //TODO: Activate card action and then the user is active
         //TODO: Change pass action (maybe in manageNavPages
+        //TODO: Can't login if not active
 
         // GET: Users
         public async Task<IActionResult> Index()

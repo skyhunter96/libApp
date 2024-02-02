@@ -52,6 +52,9 @@ namespace LibApp.WebApp.ViewModels
         [Display(Name = "Date Of Birth")]
         public DateTime DateOfBirth { get; set; }
 
+        [Display(Name = "Date Of Birth")]
+        public string? DateOfBirthToShow { get; set; }
+
         [Required]
         [MaxLength(50)]
         public string City { get; set; }
