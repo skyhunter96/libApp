@@ -14,6 +14,15 @@ builder.Services.AddDbContext<LibraryContext>(options =>
         b => b.MigrationsAssembly("LibApp.EfDataAccess")));
 
 builder.Services.AddDefaultIdentity<User>(/*options => options.SignIn.RequireConfirmedAccount = true*/).AddEntityFrameworkStores<LibraryContext>();
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.Password.RequireDigit = false; 
+    options.Password.RequireLowercase = false; 
+    options.Password.RequireUppercase = false; 
+    options.Password.RequireNonAlphanumeric = false; 
+    options.Password.RequiredLength = 8; 
+    options.Password.RequiredUniqueChars = 0; 
+});
 builder.Services.AddControllersWithViews();
 
 // Register AutoMapper
