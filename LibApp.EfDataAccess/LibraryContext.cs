@@ -88,7 +88,6 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
             Address = "nema ulice bb",
             PhoneNumber = "0611234567",
             CardCode = "123-456-789",
-            IsCardActive = true,
         };
         var librarian = new User
         {
@@ -106,7 +105,6 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
             Address = "nema ulice bb",
             PhoneNumber = "0621234567",
             CardCode = "111-456-789",
-            IsCardActive = true,
         };
         var regular = new User
         {
@@ -124,7 +122,6 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
             Address = "nema ulice bb",
             PhoneNumber = "0631234567",
             CardCode = "222-456-789",
-            IsCardActive = true,
         };
 
         var users = new List<User> { admin, librarian, regular };

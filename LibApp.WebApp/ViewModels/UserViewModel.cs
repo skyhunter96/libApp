@@ -40,13 +40,11 @@ namespace LibApp.WebApp.ViewModels
         public string DocumentId { get; set; }
 
         public bool IsVerified { get; set; }
-        public DateTime? LastLoginDateTime { get; set; }
 
         [Display(Name = "Active")]
         public bool IsActive { get; set; }
 
         [Display(Name = "CardActive")]
-        public bool IsCardActive { get; set; }
         public string? ImagePath { get; set; }
 
         [Display(Name = "Date Of Birth")]

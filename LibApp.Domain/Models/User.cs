@@ -17,7 +17,6 @@ public class User : IdentityUser<int>
     public string Password { get; set; }
     //UserName, Pass, Email & Phone in Base Class
 
-    public DateTime? LastLoginDateTime { get; set; }
     public bool IsActive { get; set; }
     public int RoleId { get; set; }
     public string ImagePath { get; set; }
@@ -27,7 +26,6 @@ public class User : IdentityUser<int>
     public string City { get; set; }
     public string Address { get; set; }
     public string? CardCode { get; set; }
-    public bool IsCardActive { get; set; }
     public decimal TotalFee { get; set; }
     public string Currency { get; set; }
     public string? Notes { get; set; }
