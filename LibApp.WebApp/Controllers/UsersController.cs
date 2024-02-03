@@ -1,13 +1,11 @@
 ﻿using AutoMapper;
 using Domain.Models;
 using EfDataAccess;
-using LibApp.Services;
 using LibApp.Services.Interfaces;
 using LibApp.WebApp.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 
 namespace LibApp.WebApp.Controllers
 {
@@ -26,8 +24,6 @@ namespace LibApp.WebApp.Controllers
             _userManager = userManager;
         }
 
-        //TODO: Remove IsCardActive from all actions, remove Active from edit
-        //TODO: Change pass action (maybe in manageNavPages
         //TODO: Can't login if not active
 
         // GET: Users

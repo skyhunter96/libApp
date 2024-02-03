@@ -1,7 +1,14 @@
-﻿@model LibApp.WebApp.ViewModels.UserViewModel
+﻿@using Domain.Models
+@using Microsoft.AspNetCore.Identity
+
+@inject UserManager<User> UserManager
+
+@model LibApp.WebApp.ViewModels.UserViewModel
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var user = await UserManager.GetUserAsync(User);
 }
 
 <h1>Details</h1>
@@ -131,5 +138,9 @@
     {
         <a asp-action="Activate" asp-route-id="@Model.Id">Activate</a>
     }
-
+    | 
+    @if (user?.RoleId == (int)RoleEnum.Admin)
+    {
+        <a asp-area="Identity" asp-page="/Account/ChangeUserPassword" asp-route-id="@Model.Id">Change user's password</a>
+    }
 </div>
