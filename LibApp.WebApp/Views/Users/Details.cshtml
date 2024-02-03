@@ -136,5 +136,15 @@
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Back to List</a> |
+    
+    @if (Model.IsActive)
+    {
+        <a asp-action="Deactivate" asp-route-id="@Model.Id">Deactivate</a>
+    }
+    else
+    {
+        <a asp-action="Activate" asp-route-id="@Model.Id">Activate</a>
+    }
+
 </div>

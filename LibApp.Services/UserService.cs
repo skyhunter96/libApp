@@ -123,5 +123,29 @@ namespace LibApp.Services
             var exists = _context.Users.Any(u => u.Id != id && u.UserName == userName);
             return exists;
         }
+
+        public void Activate(int id)
+        {
+            var user = _context.Users
+                .FirstOrDefault(u => u.Id == id);
+
+            if (user == null) return;
+
+            user.IsActive = true;
+
+            _context.SaveChangesAsync();
+        }
+
+        public void Deactivate(int id)
+        {
+            var user = _context.Users
+                .FirstOrDefault(u => u.Id == id);
+
+            if (user == null) return;
+
+            user.IsActive = false;
+
+            _context.SaveChangesAsync();
+        }
     }
 }

@@ -16,5 +16,7 @@ namespace LibApp.Services.Interfaces
         bool EmailExistsInOtherBooks(int id, string email);
         bool UserNameExists(string userName);
         bool UserNameExistsInOtherBooks(int id, string userName);
+        void Activate(int id);
+        void Deactivate(int id);
     }
 }

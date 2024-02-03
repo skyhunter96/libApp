@@ -21,6 +21,7 @@ namespace LibApp.WebApp.Controllers
             _mapper = mapper;
         }
 
+        //TODO: Paginate with search
         //TODO: Links from details and other pages
         //TODO: CreatedBy User link
         //TODO: Authorize actions

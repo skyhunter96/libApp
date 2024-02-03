@@ -26,8 +26,7 @@ namespace LibApp.WebApp.Controllers
             _userManager = userManager;
         }
 
-        //TODO: Details date of birth only DATE
-        //TODO: Activate card action and then the user is active
+        //TODO: Remove IsCardActive from all actions, remove Active from edit
         //TODO: Change pass action (maybe in manageNavPages
         //TODO: Can't login if not active
 
@@ -207,7 +206,6 @@ namespace LibApp.WebApp.Controllers
                         return NotFound();
                     }
 
-                    //var user = _mapper.Map<User>(userViewModel);
                     _mapper.Map(userViewModel, user);
 
                     await _userService.UpdateUserAsync(user);
@@ -250,6 +248,48 @@ namespace LibApp.WebApp.Controllers
 
                 TempData["ErrorMessage"] = "User was not deleted. An error occurred while processing your request.";
                 return Json(new { success = false, message = "User not found." });
+            }
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
+        }
+
+        public IActionResult Activate(int id)
+        {
+            try
+            {
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                _userService.Activate(id);
+
+                TempData["SuccessMessage"] = "User activated successfully.";
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
+        }
+
+        public IActionResult Deactivate(int id)
+        {
+            try
+            {
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                _userService.Deactivate(id);
+
+                TempData["SuccessMessage"] = "User deactivated successfully.";
+
+                return RedirectToAction(nameof(Index));
             }
             catch (Exception exception)
             {
