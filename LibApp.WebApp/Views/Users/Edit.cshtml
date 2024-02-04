@@ -1,8 +1,15 @@
-﻿@model LibApp.WebApp.ViewModels.UserViewModel
+﻿@using Domain.Models
+@using Microsoft.AspNetCore.Identity
+
+@inject UserManager<User> UserManager
+
+@model LibApp.WebApp.ViewModels.UserViewModel
 
 @{
     ViewData["Title"] = "Edit";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var user = await UserManager.GetUserAsync(User);
 }
 
 <h1>Edit</h1>
@@ -108,6 +115,20 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Back to List</a> |
+    
+    @if (Model.IsActive)
+    {
+        <a asp-action="Deactivate" asp-route-id="@Model.Id">Deactivate</a>
+    }
+    else
+    {
+        <a asp-action="Activate" asp-route-id="@Model.Id">Activate</a>
+    }
+    | 
+    @if (user?.RoleId == (int)RoleEnum.Admin)
+    {
+        <a asp-area="Identity" asp-page="/Account/ChangeUserPassword" asp-route-id="@Model.Id">Change user's password</a>
+    }
 </div>
 

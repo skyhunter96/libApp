@@ -89,7 +89,6 @@ namespace LibApp.WebApp.Controllers
             try
             {
                 //TODO: Insert image
-                //TODO: CreatedByUserId and UpdatedByUserId need to get from session
 
                 if (_userService.DocumentIdExists(userViewModel.DocumentId))
                 {
@@ -109,6 +108,10 @@ namespace LibApp.WebApp.Controllers
                 if (ModelState.IsValid)
                 {
                     var user = _mapper.Map<User>(userViewModel);
+
+                    var loggedInUserId = _userManager.GetUserId(User);
+
+                    user.CreatedByUserId = user.ModifiedByUserId = Convert.ToInt32(loggedInUserId);
 
                     await _userService.AddUserAsync(user);
 
@@ -172,7 +175,6 @@ namespace LibApp.WebApp.Controllers
             try
             {
                 //TODO: Insert image
-                //TODO: CreatedByUserId and UpdatedByUserId need to get from session
 
                 ViewData.ModelState.Remove("Password");
 
@@ -201,6 +203,10 @@ namespace LibApp.WebApp.Controllers
                     }
 
                     _mapper.Map(userViewModel, user);
+
+                    var loggedInUserId = _userManager.GetUserId(User);
+
+                    user.ModifiedByUserId = Convert.ToInt32(loggedInUserId);
 
                     await _userService.UpdateUserAsync(user);
 

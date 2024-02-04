@@ -52,9 +52,6 @@ namespace LibApp.Services
 
         public async Task AddUserAsync(User user)
         {
-            //TODO: CreatedByUserId and UpdatedByUserId need to get from session
-            user.CreatedByUserId = user.ModifiedByUserId = 1;
-
             user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, user.Password);
 
             var result = await _userManager.CreateAsync(user);
@@ -68,9 +65,6 @@ namespace LibApp.Services
 
         public async Task UpdateUserAsync(User user)
         {
-            //TODO: UpdatedByUserId need to get from session
-            //TODO: CreatedByUserId is not sent from or mapped?
-            user.ModifiedByUserId = 1;
             user.ModifiedDateTime = DateTime.Now;
 
             var result = await _userManager.UpdateAsync(user);
