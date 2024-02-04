@@ -61,7 +61,6 @@ namespace LibApp.Services
         {
             var newAuthor = new Author();
 
-            //TODO: Check CreatedByUserId and UpdatedByUserId need to get from session
             newAuthor.CreatedByUserId = newAuthor.ModifiedByUserId = book.CreatedByUserId = book.ModifiedByUserId;
 
             if (newAuthorName != null)
@@ -92,8 +91,6 @@ namespace LibApp.Services
 
         public async Task UpdateBookAsync(Book book, IEnumerable<int>? selectedAuthorIds, string? newAuthorName)
         {
-            //TODO: Check UpdatedByUserId need to get from session
-
             var newAuthor = new Author();
 
             // Like this cuz plain 'book' does not get authors loaded

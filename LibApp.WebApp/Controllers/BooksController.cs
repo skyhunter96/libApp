@@ -26,7 +26,6 @@ namespace LibApp.WebApp.Controllers
 
         //TODO: Paginate with search
         //TODO: Links from details and other pages
-        //TODO: CreatedBy User link
         //TODO: Authorize actions
         //TODO: Reservation timer job
 
@@ -104,7 +103,6 @@ namespace LibApp.WebApp.Controllers
             try
             {
                 //TODO: Insert image
-                //TODO: CreatedByUserId and UpdatedByUserId need to get from session
 
                 if (_bookService.IsbnExists(bookViewModel.Isbn))
                 {
@@ -134,7 +132,6 @@ namespace LibApp.WebApp.Controllers
                     {
                         foreach (var error in entry.Value.Errors)
                         {
-                            //TODO: to check if to log somewhere
                             errorMessageList.Add(error.ErrorMessage);
                             Console.WriteLine($"Property: {entry.Key}, Error: {error.ErrorMessage}");
                         }
@@ -195,7 +192,6 @@ namespace LibApp.WebApp.Controllers
         public async Task<IActionResult> Edit(int id, BookViewModel bookViewModel)
         {
             //TODO: Edit image
-            //TODO: CreatedByUserId and UpdatedByUserId need to get from session
 
             if (id != bookViewModel.Id)
             {
@@ -240,7 +236,7 @@ namespace LibApp.WebApp.Controllers
 
         // POST: Books/Delete/5
         [HttpPost, ActionName("Delete")]
-        //TODO: validate anti-forgery?
+        //Validate anti-forgery is left on purpose
         public async Task<IActionResult> Delete(int id)
         {
             try
