@@ -24,8 +24,6 @@ namespace LibApp.WebApp.Controllers
             _userManager = userManager;
         }
 
-        //TODO: Can't login if not active
-
         // GET: Users
         public async Task<IActionResult> Index()
         {

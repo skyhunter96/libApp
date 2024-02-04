@@ -71,6 +71,12 @@ namespace LibApp.WebApp.Areas.Identity.Pages.Account
 
                 var user = await _userService.GetUserByUserNameAsync(Input.UserName);
 
+                if (user.IsActive == false)
+                {
+                    ModelState.AddModelError(string.Empty, "Cannot login with inactive user");
+                    return Page();
+                }
+
                 var result = await _signInManager.PasswordSignInAsync(user.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
