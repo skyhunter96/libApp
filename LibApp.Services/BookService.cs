@@ -61,8 +61,8 @@ namespace LibApp.Services
         {
             var newAuthor = new Author();
 
-            //TODO: CreatedByUserId and UpdatedByUserId need to get from session
-            book.CreatedByUserId = book.ModifiedByUserId = newAuthor.CreatedByUserId = newAuthor.ModifiedByUserId = 1;
+            //TODO: Check CreatedByUserId and UpdatedByUserId need to get from session
+            newAuthor.CreatedByUserId = newAuthor.ModifiedByUserId = book.CreatedByUserId = book.ModifiedByUserId;
 
             if (newAuthorName != null)
             {
@@ -92,7 +92,7 @@ namespace LibApp.Services
 
         public async Task UpdateBookAsync(Book book, IEnumerable<int>? selectedAuthorIds, string? newAuthorName)
         {
-            //TODO: UpdatedByUserId need to get from session
+            //TODO: Check UpdatedByUserId need to get from session
 
             var newAuthor = new Author();
 
@@ -105,8 +105,8 @@ namespace LibApp.Services
             // Attach the provided 'bookToUpdate' to the context
             _context.Attach(bookToUpdate);
 
-            //TODO: UpdatedByUserId need to get from session for book and CreatedByUserId and ModifiedByUserId for author
-            bookToUpdate.ModifiedByUserId = newAuthor.CreatedByUserId = newAuthor.ModifiedByUserId = 1;
+            //TODO: Check UpdatedByUserId need to get from session for book and CreatedByUserId and ModifiedByUserId for author
+            newAuthor.CreatedByUserId = newAuthor.ModifiedByUserId = bookToUpdate.ModifiedByUserId = book.ModifiedByUserId;
 
             await MapBook(book, bookToUpdate, _context);
 

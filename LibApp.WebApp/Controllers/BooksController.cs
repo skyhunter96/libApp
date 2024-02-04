@@ -3,6 +3,7 @@ using Domain.Models;
 using EfDataAccess;
 using LibApp.Services.Interfaces;
 using LibApp.WebApp.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -13,12 +14,14 @@ namespace LibApp.WebApp.Controllers
         private readonly LibraryContext _context;
         private readonly IBookService _bookService;
         private readonly IMapper _mapper;
+        private readonly UserManager<User> _userManager;
 
-        public BooksController(LibraryContext context, IBookService bookService, IMapper mapper)
+        public BooksController(LibraryContext context, IBookService bookService, IMapper mapper, UserManager<User> userManager)
         {
             _context = context;
             _bookService = bookService;
             _mapper = mapper;
+            _userManager = userManager;
         }
 
         //TODO: Paginate with search
@@ -111,6 +114,10 @@ namespace LibApp.WebApp.Controllers
                 if (ModelState.IsValid)
                 {
                     var book = _mapper.Map<Book>(bookViewModel);
+
+                    var loggedInUserId = _userManager.GetUserId(User);
+
+                    book.CreatedByUserId = book.ModifiedByUserId = Convert.ToInt32(loggedInUserId);
 
                     await _bookService.AddBookAsync(book, bookViewModel.AuthorIds, bookViewModel.NewAuthor);
 
@@ -205,6 +212,10 @@ namespace LibApp.WebApp.Controllers
                 if (ModelState.IsValid)
                 {
                     var book = _mapper.Map<Book>(bookViewModel);
+
+                    var loggedInUserId = _userManager.GetUserId(User);
+
+                    book.ModifiedByUserId = Convert.ToInt32(loggedInUserId);
 
                     await _bookService.UpdateBookAsync(book, bookViewModel.AuthorIds, bookViewModel.NewAuthor);
 
