@@ -25,9 +25,10 @@ namespace LibApp.WebApp.Controllers
         }
 
         //TODO: Paginate with search
-        //TODO: Links from details and other pages
+        //TODO: Links from details and other pages to resources (authors, departments etc)
         //TODO: Authorize actions
         //TODO: Reservation timer job
+        //TODO: Show links based on role
 
         // GET: Books
         public async Task<IActionResult> Index()

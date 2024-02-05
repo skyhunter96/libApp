@@ -20,9 +20,9 @@ namespace LibApp.EfDataAccess.Configurations
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasData(
-                new Role { Id = 1, Name = "Admin" },
-                new Role { Id = 2, Name = "Librarian" },
-                new Role { Id = 3, Name = "Regular" }
+                new Role { Id = 1, Name = RoleEnum.Admin.ToString() },
+                new Role { Id = 2, Name = RoleEnum.Librarian.ToString() },
+                new Role { Id = 3, Name = RoleEnum.Regular.ToString() }
             );
         }
     }

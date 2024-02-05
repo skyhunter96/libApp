@@ -7,12 +7,14 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 namespace LibApp.WebApp.Areas.Identity.Pages.Account
 {
     public class LoginModel : PageModel
     {
         private readonly SignInManager<User> _signInManager;
+        private readonly UserManager<User> _userManager;
         private readonly ILogger<LoginModel> _logger;
 
         private readonly IUserService _userService;
@@ -21,6 +23,7 @@ namespace LibApp.WebApp.Areas.Identity.Pages.Account
         {
             _signInManager = signInManager;
             _logger = logger;
+            _userManager = userManager;
             _userService = userService;
         }
 
@@ -76,6 +79,13 @@ namespace LibApp.WebApp.Areas.Identity.Pages.Account
                     ModelState.AddModelError(string.Empty, "Cannot login with inactive user");
                     return Page();
                 }
+
+                // Fetch user roles and add them to claims
+                var role = user.Role.ToString();
+                var roleClaim = new Claim(ClaimTypes.Role, role);
+
+                // Add role claims to user's identity
+                await _userManager.AddClaimsAsync(user, new[] { roleClaim });
 
                 var result = await _signInManager.PasswordSignInAsync(user.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)

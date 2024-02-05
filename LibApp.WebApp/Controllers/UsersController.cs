@@ -2,13 +2,16 @@
 using Domain.Models;
 using EfDataAccess;
 using LibApp.Services.Interfaces;
+using LibApp.WebApp.Utilities;
 using LibApp.WebApp.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace LibApp.WebApp.Controllers
 {
+    [Authorize(Roles = AppRoles.Admin + "," + AppRoles.Librarian)]
     public class UsersController : Controller
     {
         private readonly LibraryContext _context;

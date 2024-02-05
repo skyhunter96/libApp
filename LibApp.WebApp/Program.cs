@@ -12,7 +12,9 @@ builder.Services.AddDbContext<LibraryContext>(options =>
     options.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=LibApp;Integrated Security=True",
         b => b.MigrationsAssembly("LibApp.EfDataAccess")));
 
-builder.Services.AddDefaultIdentity<User>(/*options => options.SignIn.RequireConfirmedAccount = true*/).AddEntityFrameworkStores<LibraryContext>();
+builder.Services.AddDefaultIdentity<User>()
+    .AddRoles<Role>()
+    .AddEntityFrameworkStores<LibraryContext>();
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.Password.RequireDigit = false; 

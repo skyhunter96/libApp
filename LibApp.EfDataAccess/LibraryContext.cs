@@ -1,7 +1,6 @@
 ﻿using Domain.Models;
 using EfDataAccess.Configurations;
 using LibApp.EfDataAccess.Configurations;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -79,7 +78,6 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
             FirstName = "Mladen",
             LastName = "Karic",
             UserName = "giomlly",
-            //Password = "giomlly",
             Email = "misteryx96@yahoo.com",
             IsActive = true,
             RoleId = (int)RoleEnum.Admin,
@@ -96,7 +94,6 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
             FirstName = "Mirko",
             LastName = "Cvetkovic",
             UserName = "mirko",
-            //Password = "mirko",
             Email = "mirko@yahoo.com",
             IsActive = true,
             RoleId = (int)RoleEnum.Librarian,
@@ -113,7 +110,6 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
             FirstName = "Marko",
             LastName = "Nikolic",
             UserName = "marko",
-            //Password = "marko",
             Email = "marko@yahoo.com",
             IsActive = true,
             RoleId = (int)RoleEnum.Regular,
