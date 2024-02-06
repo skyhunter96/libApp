@@ -2,7 +2,9 @@
 using Domain.Models;
 using EfDataAccess;
 using LibApp.Services.Interfaces;
+using LibApp.WebApp.Utilities;
 using LibApp.WebApp.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -26,9 +28,9 @@ namespace LibApp.WebApp.Controllers
 
         //TODO: Paginate with search
         //TODO: Links from details and other pages to resources (authors, departments etc)
-        //TODO: Authorize actions
         //TODO: Reservation timer job
-        //TODO: Show links based on role
+        //TODO: Bulk Delete?
+        //TODO: Delete on Edit?
 
         // GET: Books
         public async Task<IActionResult> Index()
@@ -78,6 +80,7 @@ namespace LibApp.WebApp.Controllers
         }
 
         // GET: Books/Create
+        [Authorize(Roles = AppRoles.Admin + "," + AppRoles.Librarian)]
         public IActionResult Create()
         {
             try
@@ -97,6 +100,7 @@ namespace LibApp.WebApp.Controllers
         }
 
         // POST: Books/Create
+        [Authorize(Roles = AppRoles.Admin + "," + AppRoles.Librarian)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(BookViewModel bookViewModel)
@@ -154,6 +158,7 @@ namespace LibApp.WebApp.Controllers
         }
 
         // GET: Books/Edit/5
+        [Authorize(Roles = AppRoles.Admin + "," + AppRoles.Librarian)]
         public async Task<IActionResult> Edit(int id)
         {
             try
@@ -188,6 +193,7 @@ namespace LibApp.WebApp.Controllers
         }
 
         // POST: Books/Edit/5
+        [Authorize(Roles = AppRoles.Admin + "," + AppRoles.Librarian)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, BookViewModel bookViewModel)
@@ -236,6 +242,7 @@ namespace LibApp.WebApp.Controllers
         }
 
         // POST: Books/Delete/5
+        [Authorize(Roles = AppRoles.Admin + "," + AppRoles.Librarian)]
         [HttpPost, ActionName("Delete")]
         //Validate anti-forgery is left on purpose
         public async Task<IActionResult> Delete(int id)

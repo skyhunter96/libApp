@@ -1,8 +1,15 @@
-﻿@using Microsoft.IdentityModel.Tokens
+﻿@using Microsoft.AspNetCore.Identity
+@using Domain.Models
+@using Microsoft.IdentityModel.Tokens
+
+@inject UserManager<User> UserManager
+
 @model LibApp.WebApp.ViewModels.BookViewModel
 
 @{
     ViewData["Title"] = "Details";
+
+    var user = await UserManager.GetUserAsync(User);
 }
 
 <h1>Details</h1>
@@ -185,6 +192,10 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    @if (user?.RoleId is (int)RoleEnum.Admin or (int)RoleEnum.Librarian)
+    {
+        <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
+    }
+    |
     <a asp-action="Index">Back to List</a>
 </div>

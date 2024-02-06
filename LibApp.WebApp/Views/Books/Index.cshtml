@@ -1,7 +1,14 @@
-﻿@model IEnumerable<LibApp.WebApp.ViewModels.BookViewModel>
+﻿@using Microsoft.AspNetCore.Identity
+@using Domain.Models
+
+@inject UserManager<User> UserManager
+
+@model IEnumerable<LibApp.WebApp.ViewModels.BookViewModel>
 
 @{
     ViewData["Title"] = "Index";
+
+    var user = await UserManager.GetUserAsync(User);
 }
 
 <h1>Index</h1>
@@ -127,17 +134,28 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.ModifiedByUser)
                     </td>
-                    @* TODO: Remove this actions for regular user *@
+
                     <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                        <a asp-action="Details" asp-route-id="@item.Id">Details</a>
-                        <a class="delete-button" 
-                           data-controller="Books" 
-                           data-action="Delete" 
-                           data-id="@item.Id" 
-                           style="color: #51cbce; text-decoration: none; cursor: pointer;"
-                           onmouseover="this.style.textDecoration='underline';"
-                           onmouseout="this.style.textDecoration='none';">Delete</a>
+                        @if (user?.RoleId == (int)RoleEnum.Admin || user?.RoleId == (int)RoleEnum.Librarian)
+                        {
+                            
+                            
+                                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                        
+                                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                                <a class="delete-button" 
+                                   data-controller="Books" 
+                                   data-action="Delete" 
+                                   data-id="@item.Id" 
+                                   style="color: #51cbce; text-decoration: none; cursor: pointer;"
+                                   onmouseover="this.style.textDecoration='underline';"
+                                   onmouseout="this.style.textDecoration='none';">Delete</a>
+
+                        }
+                        else
+                        {
+                            <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                        }
                     </td>
                 </tr>
             }

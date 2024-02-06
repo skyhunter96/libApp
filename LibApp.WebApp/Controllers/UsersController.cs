@@ -231,6 +231,7 @@ namespace LibApp.WebApp.Controllers
         }
 
         // POST: Users/Delete/5
+        [Authorize(Roles = AppRoles.Admin)]
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -258,6 +259,7 @@ namespace LibApp.WebApp.Controllers
             }
         }
 
+        [Authorize(Roles = AppRoles.Admin)]
         public IActionResult Activate(int id)
         {
             try
@@ -279,6 +281,7 @@ namespace LibApp.WebApp.Controllers
             }
         }
 
+        [Authorize(Roles = AppRoles.Admin)]
         public IActionResult Deactivate(int id)
         {
             try

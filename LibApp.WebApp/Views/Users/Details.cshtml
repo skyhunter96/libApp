@@ -4,6 +4,7 @@
 @inject UserManager<User> UserManager
 
 @model LibApp.WebApp.ViewModels.UserViewModel
+
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -134,11 +135,12 @@
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a> |
     
-    @if (Model.IsActive)
+    @* Only Admin Actions *@
+    @if (Model.IsActive && user?.RoleId == (int)RoleEnum.Admin)
     {
         <a asp-action="Deactivate" asp-route-id="@Model.Id">Deactivate</a>
     }
-    else
+    else if (!Model.IsActive && user?.RoleId == (int)RoleEnum.Admin)
     {
         <a asp-action="Activate" asp-route-id="@Model.Id">Activate</a>
     }

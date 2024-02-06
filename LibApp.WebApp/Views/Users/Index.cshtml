@@ -1,8 +1,15 @@
-﻿@model IEnumerable<LibApp.WebApp.ViewModels.UserViewModel>
+﻿@using Microsoft.AspNetCore.Identity
+@using Domain.Models
+
+@inject UserManager<User> UserManager
+
+@model IEnumerable<LibApp.WebApp.ViewModels.UserViewModel>
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var user = await UserManager.GetUserAsync(User);
 }
 
 <h1>Index</h1>
@@ -91,6 +98,9 @@
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                
+            @if (user?.RoleId == (int)RoleEnum.Admin)
+            {
                 <a class="delete-button" 
                    data-controller="Users" 
                    data-action="Delete" 
@@ -98,6 +108,7 @@
                    style="color: #51cbce; text-decoration: none; cursor: pointer;"
                    onmouseover="this.style.textDecoration='underline';"
                    onmouseout="this.style.textDecoration='none';">Delete</a>
+            }
             </td>
         </tr>
 }
