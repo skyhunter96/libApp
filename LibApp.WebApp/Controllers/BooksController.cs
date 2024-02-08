@@ -29,8 +29,8 @@ namespace LibApp.WebApp.Controllers
         //TODO: Paginate with search
         //TODO: Links from details and other pages to resources (authors, departments etc)
         //TODO: Reservation timer job
-        //TODO: Bulk Delete?
-        //TODO: Delete on Edit?
+        //TODO: Bulk Delete? after pagination?
+        //TODO: Delete on Details & Edit?
 
         // GET: Books
         public async Task<IActionResult> Index()
