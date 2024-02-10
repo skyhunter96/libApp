@@ -27,6 +27,8 @@ namespace LibApp.WebApp.Controllers
         }
 
         //TODO: Paginate with search
+        //TODO: Filter by title, authors, publisher, category, language
+        //TODO: Sort by title, released, qty, created, modified
         //TODO: Links from details and other pages to resources (authors, departments etc)
         //TODO: Reservation timer job
         //TODO: Bulk Delete? after pagination?

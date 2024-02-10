@@ -23,6 +23,7 @@ namespace LibApp.Services
                 .Include(u => u.CreatedByUser)
                 .Include(u => u.ModifiedByUser)
                 .Include(u => u.Role)
+                .AsNoTracking()
                 .ToListAsync();
 
             return users;
@@ -34,6 +35,7 @@ namespace LibApp.Services
                 .Include(u => u.CreatedByUser)
                 .Include(u => u.ModifiedByUser)
                 .Include(u => u.Role)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Id == id);
 
             return user;

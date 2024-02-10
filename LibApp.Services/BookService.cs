@@ -23,7 +23,8 @@ namespace LibApp.Services
                 .Include(b => b.Category)
                 .Include(b => b.Department)
                 .Include(b => b.Language)
-                .Include(b => b.Publisher);
+                .Include(b => b.Publisher)
+                .AsNoTracking();
 
             return books;
         }
@@ -36,6 +37,7 @@ namespace LibApp.Services
                 .Include(b => b.Department)
                 .Include(b => b.Language)
                 .Include(b => b.Publisher)
+                .AsNoTracking()
                 .ToListAsync();
 
             return books;
