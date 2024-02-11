@@ -122,10 +122,10 @@
                 });
             });
 
-            $(document).ready(function () {
-                var releaseYearInput = document.getElementById("ReleaseYear");
+            var releaseYearInput = document.getElementById("ReleaseYear");
+            if (releaseYearInput.value === "") {
                 releaseYearInput.value = new Date().getFullYear();
-            });
+            }
         </script>
 
         <!-- Delete -->

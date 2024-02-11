@@ -27,15 +27,14 @@ namespace LibApp.WebApp.Controllers
             _userManager = userManager;
         }
 
-        //TODO: Paginate with search
-        //TODO: Filter by title, authors, publisher, category, language
-        //TODO: Sort by released, qty, created, modified
-        //TODO: Links from details and other pages to resources (authors, departments etc)
-        //TODO: Reservation timer job
-        //TODO: Bulk Delete? after pagination?
-        //TODO: Delete on Details & Edit?
-        //TODO: Delete behavior with existing related entities
+        //Sort by qty, created, modified
+        //Bulk Delete? after pagination?
         //TODO: Enter 76 books somehow
+        //TODO: Filter by title, authors, publisher, category, language
+        //TODO: Links from details and other pages to resources (authors, departments etc)
+        //TODO: Delete on Details & Edit?
+        //TODO: Delete behavior with existing related entities?
+        //TODO: Reservation timer job
 
         // GET: Books
         public async Task<IActionResult> Index(string sortTitleOrder, string sortReleaseOrder, string currentFilter, string searchString, int? page)
@@ -237,7 +236,6 @@ namespace LibApp.WebApp.Controllers
             {
                 return RedirectToAction("ServerError", "Error");
             }
-            
         }
 
         // POST: Books/Edit/5
