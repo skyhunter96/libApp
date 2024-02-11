@@ -1,19 +1,28 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using Domain.Models
+@using LibApp.WebApp.ViewModels
+@using X.PagedList
+@using X.PagedList.Mvc.Core
 
 @inject UserManager<User> UserManager
-
-@model IEnumerable<LibApp.WebApp.ViewModels.BookViewModel>
 
 @{
     ViewData["Title"] = "Index";
 
     var user = await UserManager.GetUserAsync(User);
+
+    IPagedList<BookViewModel>? bookPages = ViewBag.Books as IPagedList<BookViewModel>;
+
+    var svgSortTitleDesc = @"<svg xmlns=""http://www.w3.org/2000/svg"" width=""16"" height=""16"" fill=""currentColor"" class=""bi bi-sort-alpha-down"" viewBox=""0 0 16 16""><path fill-rule=""evenodd"" d=""M10.082 5.629 9.664 7H8.598l1.789-5.332h1.234L13.402 7h-1.12l-.419-1.371zm1.57-.785L11 2.687h-.047l-.652 2.157z""/><path d=""M12.96 14H9.028v-.691l2.579-3.72v-.054H9.098v-.867h3.785v.691l-2.567 3.72v.054h2.645zM4.5 2.5a.5.5 0 0 0-1 0v9.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L4.5 12.293z""/></svg>";
+    var svgSortTitleAsc = @"<svg xmlns=""http://www.w3.org/2000/svg"" width=""16"" height=""16"" fill=""currentColor"" class=""bi bi-sort-alpha-down-alt"" viewBox=""0 0 16 16""><path d=""M12.96 7H9.028v-.691l2.579-3.72v-.054H9.098v-.867h3.785v.691l-2.567 3.72v.054h2.645z""/><path fill-rule=""evenodd"" d=""M10.082 12.629 9.664 14H8.598l1.789-5.332h1.234L13.402 14h-1.12l-.419-1.371zm1.57-.785L11 9.688h-.047l-.652 2.156z""/><path d=""M4.5 2.5a.5.5 0 0 0-1 0v9.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L4.5 12.293z""/></svg>";
+
 }
 
 <h1>Index</h1>
 
-@*TODO: Different for regular and librarian*@
+@*TODO: Width needs to be shorter as before *@
+@*TODO: Check if delete works *@
+@*TODO: Authors *@
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -23,67 +32,80 @@
     <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5z"></path>
 </svg>
 
+@using (Html.BeginForm("Index", "Books", FormMethod.Get))
+{
+    <p>
+        Find by title: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+        <input type="submit" value="Search" />
+    </p>
+}
+
 <div class="table-responsive">
     <table class="table">
         <thead class=" text-primary">
             <tr>
+                
+                <th>Title</th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Title)
+                    <a href="@Url.Action("Index", new { sortOrder = ViewBag.TitleSortParm, currentFilter = ViewBag.CurrentFilter })">
+                        
+                        @if (ViewBag.CurrentSort = "title_desc")
+                        {
+                            @Html.Raw(svgSortTitleDesc)
+                        }
+                        else
+                        {
+                            @Html.Raw(svgSortTitleAsc)
+                        }
+                    </a>
                 </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Authors)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Edition)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ReleaseYear)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.IsAvailable)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Quantity)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.AvailableQuantity)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ReservedQuantity)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Publisher)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Category)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Language)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.CreatedDateTime)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ModifiedDateTime)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.CreatedByUser)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ModifiedByUser)
-                </th>
+
+                <th>Authors</th>
+
+                <th>Edition</th>
+
+                <th>Released</th>
+
+                <th>IsAvailable</th>
+                
+                <th>Quantity</th>
+
+                <th>Available</th>
+
+                <th>Reserved</th>
+
+                <th>Publisher</th>
+                
+                <th>Category</th>
+                
+                <th>Language</th>
+
+                @if (user?.RoleId is (int)RoleEnum.Admin or (int)RoleEnum.Librarian)
+                {
+                    <th>Created</th>
+                    
+                    <th>Modified</th>
+                    
+                    <th>CreatedBy</th>
+                    
+                    <th>ModifiedBy</th>
+                }
+
                 <th></th>
+
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+            @foreach (var item in bookPages)
             {
                 <tr>
                     <td>
                         @Html.DisplayFor(modelItem => item.Title)
                     </td>
                     <td>
-                        @foreach (var author in item.Authors)
+                    </td>
+                    <td>
+@*                         @foreach (var author in bookPages.Authors)
                         {
                             <a href="@Url.Action("Details", "Authors", new { id = author.AuthorId })">
                                 @author.AuthorName
@@ -92,7 +114,7 @@
                             {
                                 <span>, </span>
                             }
-                        }
+                        } *@
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Edition)
@@ -127,35 +149,41 @@
                             @item.Language
                         </a>
                     </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.CreatedDateTime)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.ModifiedDateTime)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.CreatedByUser)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.ModifiedByUser)
-                    </td>
+
+                    @if (user?.RoleId is (int)RoleEnum.Admin or (int)RoleEnum.Librarian)
+                    {
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CreatedDateTime)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ModifiedDateTime)
+                        </td>
+                        <td>
+                            <a href="@Url.Action("Details", "Users", new { id = item.CreatedByUserId })">
+                                @item.CreatedByUser
+                            </a>
+                        </td>
+                        <td>
+                            <a href="@Url.Action("Details", "Users", new { id = item.ModifiedByUserId })">
+                                @item.ModifiedByUser
+                            </a>
+                        </td>
+                    }
 
                     <td>
-                        @if (user?.RoleId == (int)RoleEnum.Admin || user?.RoleId == (int)RoleEnum.Librarian)
+                        @if (user?.RoleId is (int)RoleEnum.Admin or (int)RoleEnum.Librarian)
                         {
+                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
                             
-                            
-                                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                        
-                                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
-                                <a class="delete-button" 
-                                   data-controller="Books" 
-                                   data-action="Delete" 
-                                   data-id="@item.Id" 
-                                   style="color: #51cbce; text-decoration: none; cursor: pointer;"
-                                   onmouseover="this.style.textDecoration='underline';"
-                                   onmouseout="this.style.textDecoration='none';">Delete</a>
-
+                            <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                            <a class="delete-button" 
+                               data-controller="Books" 
+                               data-action="Delete" 
+                               data-id="@item.Id" 
+                               style="color: #51cbce; text-decoration: none; cursor: pointer;"
+                               onmouseover="this.style.textDecoration='underline';"
+                               onmouseout="this.style.textDecoration='none';">Delete
+                            </a>
                         }
                         else
                         {
@@ -166,4 +194,9 @@
             }
         </tbody>
     </table>
+    <br />
+    Page @(bookPages.PageNumber) of @(bookPages.PageCount)
+
+    @Html.PagedListPager(bookPages, page => Url.Action("Index",
+            new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
 </div>

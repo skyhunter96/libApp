@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using X.PagedList;
 
 namespace LibApp.WebApp.Controllers
 {
@@ -33,26 +34,55 @@ namespace LibApp.WebApp.Controllers
         //TODO: Reservation timer job
         //TODO: Bulk Delete? after pagination?
         //TODO: Delete on Details & Edit?
+        //TODO: Delete behavior with existing related entities
+        //TODO: Enter 76 books somehow
 
         // GET: Books
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
-            //TODO: Pagination
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.TitleSortParm = String.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
 
-            //var stopwatch = new Stopwatch();
-            //stopwatch.Start();
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewBag.CurrentFilter = searchString;
             try
             {
                 var books = _bookService.GetBooks();
                 var bookViewModels = _mapper.Map<IEnumerable<BookViewModel>>(books);
 
-                //stopwatch.Stop();
-                //var executionTime = stopwatch.ElapsedMilliseconds;
-                return View(bookViewModels);
+                if (!String.IsNullOrEmpty(searchString))
+                {
+                    bookViewModels = bookViewModels.Where(b => b.Title.Contains(searchString));
+                }
+
+                switch (sortOrder)
+                {
+                    case "title_desc":
+                        bookViewModels = bookViewModels.OrderByDescending(b => b.Title);
+                        break;
+                    default:  // Title ascending 
+                        bookViewModels = bookViewModels.OrderBy(b => b.Title);
+                        break;
+                }
+
+                //TODO: PageSize 25?
+                var pageSize = 25;
+                var pageNumber = (page ?? 1);
+
+                ViewBag.Books = bookViewModels.ToPagedList(pageNumber, pageSize);
+
+                return View();
             }
             catch (Exception exception)
             {
-                //stopwatch.Stop();
                 return RedirectToAction("ServerError", "Error");
             }
         }
