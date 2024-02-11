@@ -31,7 +31,7 @@ namespace LibApp.WebApp.Controllers
             _userManager = userManager;
         }
 
-        //Sort by qty, created, modified
+        //Sort by released, qty, created, modified
         //Bulk Delete? after pagination?
         //TODO: Check sort with lotsa books
         //TODO: Filter by title, authors, publisher, category, language
@@ -41,12 +41,10 @@ namespace LibApp.WebApp.Controllers
         //TODO: Reservation timer job
 
         // GET: Books
-        public async Task<IActionResult> Index(string sortTitleOrder, string sortReleaseOrder, string currentFilter, string searchString, int? page)
+        public async Task<IActionResult> Index(string sortTitleOrder, string currentFilter, string searchString, int? page)
         {
             ViewBag.CurrentSortTitle = sortTitleOrder;
-            ViewBag.CurrentSortRelease = sortReleaseOrder;
             ViewBag.SortTitleParm = String.IsNullOrEmpty(sortTitleOrder) ? SortTitleOrder : "";
-            ViewBag.SortReleaseParm = String.IsNullOrEmpty(sortReleaseOrder) ? SortReleaseOrder : "";
 
             if (searchString != null)
             {
@@ -68,22 +66,12 @@ namespace LibApp.WebApp.Controllers
                     bookViewModels = bookViewModels.Where(b => b.Title.Contains(searchString));
                 }
 
-                bookViewModels = sortReleaseOrder switch
+                bookViewModels = sortTitleOrder switch
                 {
-                    SortReleaseOrder => bookViewModels.OrderByDescending(b => b.ReleaseYear),
-                    _ => bookViewModels.OrderBy(b => b.ReleaseYear)
+                    SortTitleOrder => bookViewModels.OrderByDescending(b => b.Title),
+                    _ => bookViewModels.OrderBy(b => b.Title)
                 };
-
-                //Sort Title Last I Guess?
-                if (sortReleaseOrder == null)
-                {
-                    bookViewModels = sortTitleOrder switch
-                    {
-                        SortTitleOrder => bookViewModels.OrderByDescending(b => b.Title),
-                        _ => bookViewModels.OrderBy(b => b.Title)
-                    };
-                }
-
+                
                 var pageNumber = (page ?? 1);
 
                 ViewBag.Books = bookViewModels.ToPagedList(pageNumber, PageSize);
