@@ -19,6 +19,10 @@ namespace LibApp.WebApp.Controllers
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
 
+        private const int PageSize = 10;
+        private const string SortTitleOrder = "title_desc";
+        private const string SortReleaseOrder = "release_desc";
+
         public BooksController(LibraryContext context, IBookService bookService, IMapper mapper, UserManager<User> userManager)
         {
             _context = context;
@@ -29,7 +33,7 @@ namespace LibApp.WebApp.Controllers
 
         //Sort by qty, created, modified
         //Bulk Delete? after pagination?
-        //TODO: Enter 76 books somehow
+        //TODO: Check sort with lotsa books
         //TODO: Filter by title, authors, publisher, category, language
         //TODO: Links from details and other pages to resources (authors, departments etc)
         //TODO: Delete on Details & Edit?
@@ -41,8 +45,8 @@ namespace LibApp.WebApp.Controllers
         {
             ViewBag.CurrentSortTitle = sortTitleOrder;
             ViewBag.CurrentSortRelease = sortReleaseOrder;
-            ViewBag.SortTitleParm = String.IsNullOrEmpty(sortTitleOrder) ? "title_desc" : "";
-            ViewBag.SortReleaseParm = String.IsNullOrEmpty(sortReleaseOrder) ? "release_desc" : "";
+            ViewBag.SortTitleParm = String.IsNullOrEmpty(sortTitleOrder) ? SortTitleOrder : "";
+            ViewBag.SortReleaseParm = String.IsNullOrEmpty(sortReleaseOrder) ? SortReleaseOrder : "";
 
             if (searchString != null)
             {
@@ -59,40 +63,30 @@ namespace LibApp.WebApp.Controllers
                 var books = _bookService.GetBooks();
                 var bookViewModels = _mapper.Map<IEnumerable<BookViewModel>>(books);
 
-                if (!String.IsNullOrEmpty(searchString))
+                if (!string.IsNullOrEmpty(searchString))
                 {
                     bookViewModels = bookViewModels.Where(b => b.Title.Contains(searchString));
                 }
 
-                switch (sortReleaseOrder)
+                bookViewModels = sortReleaseOrder switch
                 {
-                    case "release_desc":
-                        bookViewModels = bookViewModels.OrderByDescending(b => b.ReleaseYear);
-                        break;
-                    default:  // Release ascending 
-                        bookViewModels = bookViewModels.OrderBy(b => b.ReleaseYear);
-                        break;
-                }
+                    SortReleaseOrder => bookViewModels.OrderByDescending(b => b.ReleaseYear),
+                    _ => bookViewModels.OrderBy(b => b.ReleaseYear)
+                };
 
                 //Sort Title Last I Guess?
                 if (sortReleaseOrder == null)
                 {
-                    switch (sortTitleOrder)
+                    bookViewModels = sortTitleOrder switch
                     {
-                        case "title_desc":
-                            bookViewModels = bookViewModels.OrderByDescending(b => b.Title);
-                            break;
-                        default:  // Title ascending 
-                            bookViewModels = bookViewModels.OrderBy(b => b.Title);
-                            break;
-                    }
+                        SortTitleOrder => bookViewModels.OrderByDescending(b => b.Title),
+                        _ => bookViewModels.OrderBy(b => b.Title)
+                    };
                 }
 
-                //TODO: PageSize 25?
-                var pageSize = 25;
                 var pageNumber = (page ?? 1);
 
-                ViewBag.Books = bookViewModels.ToPagedList(pageNumber, pageSize);
+                ViewBag.Books = bookViewModels.ToPagedList(pageNumber, PageSize);
 
                 return View();
             }

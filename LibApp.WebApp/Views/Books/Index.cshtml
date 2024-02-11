@@ -220,5 +220,5 @@
     Page @(bookPages.PageNumber) of @(bookPages.PageCount)
 
     @Html.PagedListPager(bookPages, page => Url.Action("Index",
-            new { page, sortTitleOrder = ViewBag.CurrentSortTitle, sortReleaseOrder = ViewBag.CurrentReleaseOrder, currentFilter = ViewBag.CurrentFilter }))
+            new { page, sortTitleOrder = ViewBag.CurrentSortTitle, sortReleaseOrder = ViewBag.CurrentSortRelease, currentFilter = ViewBag.CurrentFilter }))
 </div>
