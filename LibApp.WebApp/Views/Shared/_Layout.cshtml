@@ -93,6 +93,12 @@
         <!-- Select2 -->
         <script>
             $(document).ready(function () {
+                $("#AuthorId").select2({
+                    placeholder: "Select author", // Placeholder text
+                });
+            });
+
+            $(document).ready(function () {
                 $("#AuthorIds").select2({
                     placeholder: "Select authors", // Placeholder text
                 });
@@ -125,6 +131,14 @@
             var releaseYearInput = document.getElementById("ReleaseYear");
             if (releaseYearInput.value === "") {
                 releaseYearInput.value = new Date().getFullYear();
+            }
+        </script>
+        
+        <!-- Clear Button -->
+        <script>
+            function clearInputs() {
+                document.getElementById("SearchTitleString").value = "";
+                $('#AuthorId').val(null).trigger('change');
             }
         </script>
 

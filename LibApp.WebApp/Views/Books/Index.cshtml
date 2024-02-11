@@ -20,10 +20,6 @@
 
 <h1>Index</h1>
 
-@*TODO: Width needs to be shorter as before *@
-@*TODO: Check if delete works *@
-@*TODO: Authors *@
-
 @if (user?.RoleId is (int)RoleEnum.Admin or (int)RoleEnum.Librarian)
 {
     <p>
@@ -38,8 +34,19 @@
 @using (Html.BeginForm("Index", "Books", FormMethod.Get))
 {
     <p>
-        Find by title: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+        Find by title:
+        <br/>
+        @Html.TextBox("SearchTitleString", ViewBag.CurrentTitleFilter as string)
+        <br/><br/>
+        
+        Find by author:
+        <br />
+        @Html.DropDownList("AuthorId", ViewBag.Authors as SelectList, "All", new { @class = "form-control", id = "AuthorId", style = "width:200px;" })
+        <br /><br />
+
         <input type="submit" value="Search" />
+
+        <button type="button" onclick="clearInputs()">Clear</button>
     </p>
 }
 
@@ -50,7 +57,7 @@
                 
                 <th>
                     Title
-                    <a href="@Url.Action("Index", new { sortTitleOrder = ViewBag.SortTitleParm, currentFilter = ViewBag.CurrentFilter })">
+                    <a href="@Url.Action("Index", new { sortTitleOrder = ViewBag.SortTitleParm, currentTitleFilter = ViewBag.CurrentTitleFilter })">
                         
                         @if (ViewBag.CurrentSortTitle == "title_desc")
                         {
@@ -204,5 +211,5 @@
     Page @(bookPages.PageNumber) of @(bookPages.PageCount)
 
     @Html.PagedListPager(bookPages, page => Url.Action("Index",
-            new { page, sortTitleOrder = ViewBag.CurrentSortTitle, currentFilter = ViewBag.CurrentFilter }))
+            new { page, sortTitleOrder = ViewBag.CurrentSortTitle, currentTitleFilter = ViewBag.CurrentTitleFilter, authorId = ViewBag.AuthorId }))
 </div>

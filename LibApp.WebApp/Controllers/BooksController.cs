@@ -39,29 +39,37 @@ namespace LibApp.WebApp.Controllers
         //TODO: Reservation timer job
 
         // GET: Books
-        public async Task<IActionResult> Index(string sortTitleOrder, string currentFilter, string searchString, int? page)
+        public async Task<IActionResult> Index(string sortTitleOrder, string currentTitleFilter, string searchTitleString, int? authorId, int? page)
         {
             ViewBag.CurrentSortTitle = sortTitleOrder;
             ViewBag.SortTitleParm = String.IsNullOrEmpty(sortTitleOrder) ? SortTitleOrder : "";
 
-            if (searchString != null)
+            ViewData["AuthorId"] = new SelectList(_context.Authors, "Id", "Name");
+
+            if (searchTitleString != null)
             {
                 page = 1;
             }
             else
             {
-                searchString = currentFilter;
+                searchTitleString = currentTitleFilter;
             }
 
-            ViewBag.CurrentFilter = searchString;
+            ViewBag.CurrentTitleFilter = searchTitleString;
             try
             {
                 var books = _bookService.GetBooks();
                 var bookViewModels = _mapper.Map<IEnumerable<BookViewModel>>(books);
 
-                if (!string.IsNullOrEmpty(searchString))
+                if (!string.IsNullOrEmpty(searchTitleString))
                 {
-                    bookViewModels = bookViewModels.Where(b => b.Title.Contains(searchString));
+                    bookViewModels = bookViewModels.Where(b => b.Title.ToLower().Contains(searchTitleString.ToLower()));
+                }
+
+                if (authorId != null)
+                {
+                    var bookIdsWithAuthor = _bookService.GetBookIdsByAuthorId(authorId.Value);
+                    bookViewModels = bookViewModels.Where(b => bookIdsWithAuthor.Contains(b.Id));
                 }
 
                 bookViewModels = sortTitleOrder switch

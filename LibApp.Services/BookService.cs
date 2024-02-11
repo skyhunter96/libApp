@@ -59,6 +59,15 @@ namespace LibApp.Services
             return book;
         }
 
+        public IEnumerable<int> GetBookIdsByAuthorId(int authorId)
+        {
+            return _context.Authors
+                .Where(a => a.Id == authorId)
+                .SelectMany(a => a.Books.Select(b => b.Id))
+                .Distinct()
+                .ToList();
+        }
+
         public async Task AddBookAsync(Book book, IEnumerable<int>? existingAuthorIds, string? newAuthorName)
         {
             var newAuthor = new Author();

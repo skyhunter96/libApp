@@ -7,6 +7,7 @@ public interface IBookService
     IEnumerable<Book> GetBooks();
     Task<IEnumerable<Book>> GetBooksAsync();
     Task<Book> GetBookAsync(int id);
+    IEnumerable<int> GetBookIdsByAuthorId(int authorId);
     Task AddBookAsync(Book book, IEnumerable<int>? existingAuthorIds, string? newAuthorName);
     Task UpdateBookAsync(Book book, IEnumerable<int>? selectedAuthorIds, string? newAuthorName);
     Task RemoveBookAsync(Book book);
