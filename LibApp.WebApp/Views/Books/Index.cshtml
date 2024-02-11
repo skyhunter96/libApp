@@ -43,6 +43,11 @@
         <br />
         @Html.DropDownList("AuthorId", ViewBag.Authors as SelectList, "All", new { @class = "form-control", id = "AuthorId", style = "width:200px;" })
         <br /><br />
+        
+        Find by publisher:
+        <br />
+        @Html.DropDownList("PublisherId", ViewBag.Publishers as SelectList, "All", new { @class = "form-control", id = "PublisherId", style = "width:200px;" })
+        <br /><br />
 
         <input type="submit" value="Search" />
 
@@ -57,7 +62,8 @@
                 
                 <th>
                     Title
-                    <a href="@Url.Action("Index", new { sortTitleOrder = ViewBag.SortTitleParm, currentTitleFilter = ViewBag.CurrentTitleFilter, authorId = ViewBag.CurrentAuthorId })">
+                    <a href="@Url.Action("Index", 
+                                 new { sortTitleOrder = ViewBag.SortTitleParm, currentTitleFilter = ViewBag.CurrentTitleFilter, authorId = ViewBag.CurrentAuthorId, publisherId = ViewBag.CurrentPublisherId })">
                         
                         @if (ViewBag.CurrentSortTitle == "title_desc")
                         {
@@ -211,5 +217,5 @@
     Page @(bookPages.PageNumber) of @(bookPages.PageCount)
 
     @Html.PagedListPager(bookPages, page => Url.Action("Index",
-            new { page, sortTitleOrder = ViewBag.CurrentSortTitle, currentTitleFilter = ViewBag.CurrentTitleFilter, authorId = ViewBag.CurrentAuthorId }))
+            new { page, sortTitleOrder = ViewBag.CurrentSortTitle, currentTitleFilter = ViewBag.CurrentTitleFilter, authorId = ViewBag.CurrentAuthorId, publisherId = ViewBag.CurrentPublisherId }))
 </div>

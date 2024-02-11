@@ -32,19 +32,20 @@ namespace LibApp.WebApp.Controllers
 
         //Sort by released, qty, created, modified
         //Bulk Delete? after pagination?
-        //TODO: Filter by title, authors, publisher, category, language
+        //TODO: Filter by category, department, language
         //TODO: Links from details and other pages to resources (authors, departments etc)
         //TODO: Delete on Details & Edit?
-        //TODO: Delete behavior with existing related entities?
+        //TODO: Delete behavior with existing related entities - don't allow, alert not possible cuz related?
         //TODO: Reservation timer job
 
         // GET: Books
-        public async Task<IActionResult> Index(string sortTitleOrder, string currentTitleFilter, string searchTitleString, int? authorId, int? page)
+        public async Task<IActionResult> Index(string sortTitleOrder, string currentTitleFilter, string searchTitleString, int? authorId, int? publisherId, int? page)
         {
             ViewBag.CurrentSortTitle = sortTitleOrder;
             ViewBag.SortTitleParm = String.IsNullOrEmpty(sortTitleOrder) ? SortTitleOrder : "";
 
             ViewData["AuthorId"] = new SelectList(_context.Authors, "Id", "Name");
+            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name");
 
             if (searchTitleString != null)
             {
@@ -71,6 +72,12 @@ namespace LibApp.WebApp.Controllers
                     var bookIdsWithAuthor = _bookService.GetBookIdsByAuthorId(authorId.Value);
                     bookViewModels = bookViewModels.Where(b => bookIdsWithAuthor.Contains(b.Id));
                     ViewBag.CurrentAuthorId = authorId;
+                }
+
+                if (publisherId != null)
+                {
+                    bookViewModels = bookViewModels.Where(b => b.PublisherId == publisherId);
+                    ViewBag.CurrentPublisherId = publisherId;
                 }
 
                 bookViewModels = sortTitleOrder switch
