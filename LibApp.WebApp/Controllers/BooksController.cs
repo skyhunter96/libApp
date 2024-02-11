@@ -32,20 +32,23 @@ namespace LibApp.WebApp.Controllers
 
         //Sort by released, qty, created, modified
         //Bulk Delete? after pagination?
-        //TODO: Filter by category, department, language
         //TODO: Links from details and other pages to resources (authors, departments etc)
         //TODO: Delete on Details & Edit?
         //TODO: Delete behavior with existing related entities - don't allow, alert not possible cuz related?
         //TODO: Reservation timer job
 
         // GET: Books
-        public async Task<IActionResult> Index(string sortTitleOrder, string currentTitleFilter, string searchTitleString, int? authorId, int? publisherId, int? page)
+        public async Task<IActionResult> Index(string sortTitleOrder, string currentTitleFilter,
+            string searchTitleString, int? authorId, int? publisherId, int? categoryId, int? departmentId, int? languageId, int? page)
         {
             ViewBag.CurrentSortTitle = sortTitleOrder;
             ViewBag.SortTitleParm = String.IsNullOrEmpty(sortTitleOrder) ? SortTitleOrder : "";
 
             ViewData["AuthorId"] = new SelectList(_context.Authors, "Id", "Name");
             ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name");
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
+            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name");
+            ViewData["LanguageId"] = new SelectList(_context.Languages, "Id", "Name");
 
             if (searchTitleString != null)
             {
@@ -78,6 +81,24 @@ namespace LibApp.WebApp.Controllers
                 {
                     bookViewModels = bookViewModels.Where(b => b.PublisherId == publisherId);
                     ViewBag.CurrentPublisherId = publisherId;
+                }
+
+                if (categoryId != null)
+                {
+                    bookViewModels = bookViewModels.Where(b => b.CategoryId == categoryId);
+                    ViewBag.CurrentCategoryId = categoryId;
+                }
+
+                if (departmentId != null)
+                {
+                    bookViewModels = bookViewModels.Where(b => b.DepartmentId == departmentId);
+                    ViewBag.CurrentDepartmentId = departmentId;
+                }
+
+                if (languageId != null)
+                {
+                    bookViewModels = bookViewModels.Where(b => b.LanguageId == languageId);
+                    ViewBag.CurrentLanguageId = languageId;
                 }
 
                 bookViewModels = sortTitleOrder switch

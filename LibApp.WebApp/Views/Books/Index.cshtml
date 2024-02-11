@@ -48,6 +48,21 @@
         <br />
         @Html.DropDownList("PublisherId", ViewBag.Publishers as SelectList, "All", new { @class = "form-control", id = "PublisherId", style = "width:200px;" })
         <br /><br />
+        
+        Find by category:
+        <br />
+        @Html.DropDownList("CategoryId", ViewBag.Categories as SelectList, "All", new { @class = "form-control", id = "CategoryId", style = "width:200px;" })
+        <br /><br />
+
+        Find by department:
+        <br />
+        @Html.DropDownList("DepartmentId", ViewBag.Departments as SelectList, "All", new { @class = "form-control", id = "DepartmentId", style = "width:200px;" })
+        <br /><br />
+
+        Find by language:
+        <br />
+        @Html.DropDownList("LanguageId", ViewBag.Languages as SelectList, "All", new { @class = "form-control", id = "LanguageId", style = "width:200px;" })
+        <br /><br />
 
         <input type="submit" value="Search" />
 
@@ -63,7 +78,7 @@
                 <th>
                     Title
                     <a href="@Url.Action("Index", 
-                                 new { sortTitleOrder = ViewBag.SortTitleParm, currentTitleFilter = ViewBag.CurrentTitleFilter, authorId = ViewBag.CurrentAuthorId, publisherId = ViewBag.CurrentPublisherId })">
+                                 new { sortTitleOrder = ViewBag.SortTitleParm, currentTitleFilter = ViewBag.CurrentTitleFilter, authorId = ViewBag.CurrentAuthorId, publisherId = ViewBag.CurrentPublisherId, categoryId = ViewBag.CurrentCategoryId, departmentId = ViewBag.CurrentDepartmentId, languageId = ViewBag.CurrentLanguageId })">
                         
                         @if (ViewBag.CurrentSortTitle == "title_desc")
                         {
@@ -217,5 +232,5 @@
     Page @(bookPages.PageNumber) of @(bookPages.PageCount)
 
     @Html.PagedListPager(bookPages, page => Url.Action("Index",
-            new { page, sortTitleOrder = ViewBag.CurrentSortTitle, currentTitleFilter = ViewBag.CurrentTitleFilter, authorId = ViewBag.CurrentAuthorId, publisherId = ViewBag.CurrentPublisherId }))
+            new { page, sortTitleOrder = ViewBag.CurrentSortTitle, currentTitleFilter = ViewBag.CurrentTitleFilter, authorId = ViewBag.CurrentAuthorId, publisherId = ViewBag.CurrentPublisherId, categoryId = ViewBag.CurrentCategoryId, departmentId = ViewBag.CurrentDepartmentId, languageId = ViewBag.CurrentLanguageId }))
 </div>
