@@ -108,7 +108,7 @@
                     </td>
 
                     <td>
-@*                         @foreach (var author in bookPages.Authors)
+                        @foreach (var author in item.Authors)
                         {
                             <a href="@Url.Action("Details", "Authors", new { id = author.AuthorId })">
                                 @author.AuthorName
@@ -117,7 +117,7 @@
                             {
                                 <span>, </span>
                             }
-                        } *@
+                        }
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Edition)

@@ -21,7 +21,6 @@ namespace LibApp.WebApp.Controllers
 
         private const int PageSize = 10;
         private const string SortTitleOrder = "title_desc";
-        private const string SortReleaseOrder = "release_desc";
 
         public BooksController(LibraryContext context, IBookService bookService, IMapper mapper, UserManager<User> userManager)
         {
@@ -33,7 +32,6 @@ namespace LibApp.WebApp.Controllers
 
         //Sort by released, qty, created, modified
         //Bulk Delete? after pagination?
-        //TODO: Check sort with lotsa books
         //TODO: Filter by title, authors, publisher, category, language
         //TODO: Links from details and other pages to resources (authors, departments etc)
         //TODO: Delete on Details & Edit?
