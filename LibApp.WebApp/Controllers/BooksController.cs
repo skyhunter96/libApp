@@ -70,6 +70,7 @@ namespace LibApp.WebApp.Controllers
                 {
                     var bookIdsWithAuthor = _bookService.GetBookIdsByAuthorId(authorId.Value);
                     bookViewModels = bookViewModels.Where(b => bookIdsWithAuthor.Contains(b.Id));
+                    ViewBag.CurrentAuthorId = authorId;
                 }
 
                 bookViewModels = sortTitleOrder switch

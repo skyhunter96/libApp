@@ -57,7 +57,7 @@
                 
                 <th>
                     Title
-                    <a href="@Url.Action("Index", new { sortTitleOrder = ViewBag.SortTitleParm, currentTitleFilter = ViewBag.CurrentTitleFilter })">
+                    <a href="@Url.Action("Index", new { sortTitleOrder = ViewBag.SortTitleParm, currentTitleFilter = ViewBag.CurrentTitleFilter, authorId = ViewBag.CurrentAuthorId })">
                         
                         @if (ViewBag.CurrentSortTitle == "title_desc")
                         {
@@ -211,5 +211,5 @@
     Page @(bookPages.PageNumber) of @(bookPages.PageCount)
 
     @Html.PagedListPager(bookPages, page => Url.Action("Index",
-            new { page, sortTitleOrder = ViewBag.CurrentSortTitle, currentTitleFilter = ViewBag.CurrentTitleFilter, authorId = ViewBag.AuthorId }))
+            new { page, sortTitleOrder = ViewBag.CurrentSortTitle, currentTitleFilter = ViewBag.CurrentTitleFilter, authorId = ViewBag.CurrentAuthorId }))
 </div>
