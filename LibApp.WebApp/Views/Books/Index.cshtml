@@ -51,8 +51,8 @@
         <thead class=" text-primary">
             <tr>
                 
-                <th>Title</th>
                 <th>
+                    Title
                     <a href="@Url.Action("Index", new { sortTitleOrder = ViewBag.SortTitleParm, currentFilter = ViewBag.CurrentFilter })">
                         
                         @if (ViewBag.CurrentSortTitle == "title_desc")
@@ -70,19 +70,18 @@
 
                 <th>Edition</th>
 
-                <th>Released</th>
-
                 <th>
+                    Released
                     <a href="@Url.Action("Index", new { sortReleaseOrder = ViewBag.SortReleaseParm, currentFilter = ViewBag.CurrentFilter })">
                         
-                    @if (ViewBag.CurrentSortRelease == "release_desc")
-                    {
-                        @Html.Raw(svgSortReleaseDesc)
-                    }
-                    else
-                    {
-                        @Html.Raw(svgSortReleaseAsc)
-                    }
+                        @if (ViewBag.CurrentSortRelease == "release_desc")
+                        {
+                            @Html.Raw(svgSortReleaseDesc)
+                        }
+                        else
+                        {
+                            @Html.Raw(svgSortReleaseAsc)
+                        }
                     </a>
                 </th>
 
@@ -123,7 +122,6 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.Title)
                     </td>
-                    <td></td>
 
                     <td>
 @*                         @foreach (var author in bookPages.Authors)
@@ -144,7 +142,6 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.ReleaseYear)
                     </td>
-                    <td></td>
 
                     <td>
                         @Html.DisplayFor(modelItem => item.IsAvailable)

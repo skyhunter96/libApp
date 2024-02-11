@@ -146,7 +146,7 @@ namespace LibApp.Services
 
             if (book.PublisherId != 0)
             {
-                var newPublisher = await context.Publishers.FindAsync(book.CategoryId);
+                var newPublisher = await context.Publishers.FindAsync(book.PublisherId);
                 bookToUpdate.Publisher = newPublisher!;
             }
 
@@ -158,13 +158,13 @@ namespace LibApp.Services
 
             if (book.DepartmentId != 0)
             {
-                var newDepartment = await context.Departments.FindAsync(book.CategoryId);
+                var newDepartment = await context.Departments.FindAsync(book.DepartmentId);
                 bookToUpdate.Department = newDepartment!;
             }
 
             if (book.LanguageId != 0)
             {
-                var newLanguage = await context.Languages.FindAsync(book.CategoryId);
+                var newLanguage = await context.Languages.FindAsync(book.LanguageId);
                 bookToUpdate.Language = newLanguage!;
             }
 

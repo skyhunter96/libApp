@@ -172,8 +172,16 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
             CreatedByUserId = admin.Id,
             ModifiedByUserId = admin.Id
         };
+        var publisher3 = new Publisher
+        {
+            Id = 3,
+            Name = "Vulkan",
+            Description = "Vulkan knjižare",
+            CreatedByUserId = admin.Id,
+            ModifiedByUserId = admin.Id
+        };
 
-        var publishers = new List<Publisher> { publisher1, publisher2 };
+        var publishers = new List<Publisher> { publisher1, publisher2, publisher3 };
         
         foreach (var publisher in publishers)
         {
@@ -199,8 +207,32 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
             CreatedByUserId = admin.Id,
             ModifiedByUserId = admin.Id
         };
+        var category3 = new Category
+        {
+            Id = 3,
+            Name = "Filozofija",
+            Description = "Filozofija",
+            CreatedByUserId = admin.Id,
+            ModifiedByUserId = admin.Id
+        };
+        var category4 = new Category
+        {
+            Id = 4,
+            Name = "Istorija",
+            Description = "Istorija",
+            CreatedByUserId = admin.Id,
+            ModifiedByUserId = admin.Id
+        };
+        var category5 = new Category
+        {
+            Id = 5,
+            Name = "Horor",
+            Description = "Horor",
+            CreatedByUserId = admin.Id,
+            ModifiedByUserId = admin.Id
+        };
 
-        var categories = new List<Category> { category1, category2 };
+        var categories = new List<Category> { category1, category2, category3, category4, category5 };
 
         foreach (var category in categories)
         {
@@ -219,7 +251,6 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
             CreatedByUserId = admin.Id,
             ModifiedByUserId = admin.Id
         };
-
         var department2 = new Department
         {
             Id = 2,
@@ -229,8 +260,35 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
             CreatedByUserId = admin.Id,
             ModifiedByUserId = admin.Id
         };
+        var department3 = new Department
+        {
+            Id = 3,
+            Name = "20th century",
+            Description = "Departman 20-og veka svetske književnosti",
+            Budget = 100000,
+            CreatedByUserId = admin.Id,
+            ModifiedByUserId = admin.Id
+        };
+        var department4 = new Department
+        {
+            Id = 4,
+            Name = "19th century",
+            Description = "Departman 20-og veka svetske književnosti",
+            Budget = 100000,
+            CreatedByUserId = admin.Id,
+            ModifiedByUserId = admin.Id
+        };
+        var department5 = new Department
+        {
+            Id = 5,
+            Name = "Filozofija",
+            Description = "Departman filozofije",
+            Budget = 100000,
+            CreatedByUserId = admin.Id,
+            ModifiedByUserId = admin.Id
+        };
 
-        var departments = new List<Department> { department1, department2 };
+        var departments = new List<Department> { department1, department2, department3, department4, department5 };
 
         //LANGUAGES
 

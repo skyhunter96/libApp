@@ -4,6 +4,7 @@ using EfDataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EfDataAccess.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    partial class LibraryContextModelSnapshot : ModelSnapshot
+    [Migration("20240211150753_seed-data-more")]
+    partial class seeddatamore
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -372,16 +375,6 @@ namespace EfDataAccess.Migrations
                             ModifiedByUserId = 1,
                             ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Name = "Istorija"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CreatedByUserId = 1,
-                            CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Horor",
-                            ModifiedByUserId = 1,
-                            ModifiedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Horor"
                         });
                 });
 
@@ -939,7 +932,7 @@ namespace EfDataAccess.Migrations
                             Address = "nema ulice bb",
                             CardCode = "123-456-789",
                             City = "Belgrade",
-                            ConcurrencyStamp = "df19d14f-31a8-4374-8b7f-d3d2dcf859a7",
+                            ConcurrencyStamp = "b3a8d274-83e5-46d9-8b53-62b76f1579b3",
                             CreatedByUserId = 1,
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DateOfBirth = new DateTime(1996, 2, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -966,7 +959,7 @@ namespace EfDataAccess.Migrations
                             Address = "nema ulice bb",
                             CardCode = "111-456-789",
                             City = "Belgrade",
-                            ConcurrencyStamp = "3ac91d1a-bddd-443c-aaaf-df2f2d141b95",
+                            ConcurrencyStamp = "04ba419d-0889-45b8-ba0c-5ddb2678b34a",
                             CreatedByUserId = 1,
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DateOfBirth = new DateTime(1996, 2, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -993,7 +986,7 @@ namespace EfDataAccess.Migrations
                             Address = "nema ulice bb",
                             CardCode = "222-456-789",
                             City = "Belgrade",
-                            ConcurrencyStamp = "7b28e647-c7fb-4a49-91d5-1d4d6feb9771",
+                            ConcurrencyStamp = "18eadbde-1498-411a-b943-56404d3e873c",
                             CreatedByUserId = 1,
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DateOfBirth = new DateTime(1996, 2, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
