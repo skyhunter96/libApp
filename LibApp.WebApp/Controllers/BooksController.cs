@@ -38,10 +38,10 @@ namespace LibApp.WebApp.Controllers
         //TODO: Enter 76 books somehow
 
         // GET: Books
-        public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString, int? page)
+        public async Task<IActionResult> Index(string sortTitleOrder, string currentFilter, string searchString, int? page)
         {
-            ViewBag.CurrentSort = sortOrder;
-            ViewBag.TitleSortParm = String.IsNullOrEmpty(sortOrder) ? "title_desc" : "";
+            ViewBag.CurrentSortTitle = sortTitleOrder;
+            ViewBag.SortTitleParm = String.IsNullOrEmpty(sortTitleOrder) ? "title_desc" : "";
 
             if (searchString != null)
             {
@@ -63,7 +63,7 @@ namespace LibApp.WebApp.Controllers
                     bookViewModels = bookViewModels.Where(b => b.Title.Contains(searchString));
                 }
 
-                switch (sortOrder)
+                switch (sortTitleOrder)
                 {
                     case "title_desc":
                         bookViewModels = bookViewModels.OrderByDescending(b => b.Title);
