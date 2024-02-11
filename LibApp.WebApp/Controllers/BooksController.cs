@@ -29,7 +29,7 @@ namespace LibApp.WebApp.Controllers
 
         //TODO: Paginate with search
         //TODO: Filter by title, authors, publisher, category, language
-        //TODO: Sort by title, released, qty, created, modified
+        //TODO: Sort by released, qty, created, modified
         //TODO: Links from details and other pages to resources (authors, departments etc)
         //TODO: Reservation timer job
         //TODO: Bulk Delete? after pagination?
@@ -38,10 +38,12 @@ namespace LibApp.WebApp.Controllers
         //TODO: Enter 76 books somehow
 
         // GET: Books
-        public async Task<IActionResult> Index(string sortTitleOrder, string currentFilter, string searchString, int? page)
+        public async Task<IActionResult> Index(string sortTitleOrder, string sortReleaseOrder, string currentFilter, string searchString, int? page)
         {
             ViewBag.CurrentSortTitle = sortTitleOrder;
+            ViewBag.CurrentSortRelease = sortReleaseOrder;
             ViewBag.SortTitleParm = String.IsNullOrEmpty(sortTitleOrder) ? "title_desc" : "";
+            ViewBag.SortReleaseParm = String.IsNullOrEmpty(sortReleaseOrder) ? "release_desc" : "";
 
             if (searchString != null)
             {
@@ -63,14 +65,28 @@ namespace LibApp.WebApp.Controllers
                     bookViewModels = bookViewModels.Where(b => b.Title.Contains(searchString));
                 }
 
-                switch (sortTitleOrder)
+                switch (sortReleaseOrder)
                 {
-                    case "title_desc":
-                        bookViewModels = bookViewModels.OrderByDescending(b => b.Title);
+                    case "release_desc":
+                        bookViewModels = bookViewModels.OrderByDescending(b => b.ReleaseYear);
                         break;
-                    default:  // Title ascending 
-                        bookViewModels = bookViewModels.OrderBy(b => b.Title);
+                    default:  // Release ascending 
+                        bookViewModels = bookViewModels.OrderBy(b => b.ReleaseYear);
                         break;
+                }
+
+                //Sort Title Last I Guess?
+                if (sortReleaseOrder == null)
+                {
+                    switch (sortTitleOrder)
+                    {
+                        case "title_desc":
+                            bookViewModels = bookViewModels.OrderByDescending(b => b.Title);
+                            break;
+                        default:  // Title ascending 
+                            bookViewModels = bookViewModels.OrderBy(b => b.Title);
+                            break;
+                    }
                 }
 
                 //TODO: PageSize 25?
