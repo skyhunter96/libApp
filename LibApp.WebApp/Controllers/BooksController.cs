@@ -32,8 +32,8 @@ namespace LibApp.WebApp.Controllers
 
         //Sort by released, qty, created, modified
         //Bulk Delete? after pagination?
+        //Delete on Details & Edit?
         //TODO: Links from details and other pages to resources (authors, departments etc)
-        //TODO: Delete on Details & Edit?
         //TODO: Delete behavior with existing related entities - don't allow, alert not possible cuz related?
         //TODO: Reservation timer job
 
