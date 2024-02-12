@@ -1,22 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AutoMapper;
+using Domain.Models;
+using EfDataAccess;
+using LibApp.Services.Interfaces;
+using LibApp.WebApp.Utilities;
+using LibApp.WebApp.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Domain.Models;
-using EfDataAccess;
 
 namespace LibApp.WebApp.Controllers
 {
+    [Authorize(Roles = AppRoles.Admin + "," + AppRoles.Librarian)]
     public class AuthorsController : Controller
     {
         private readonly LibraryContext _context;
+        private readonly IAuthorService _authorService;
+        private readonly IMapper _mapper;
 
-        public AuthorsController(LibraryContext context)
+        public AuthorsController(LibraryContext context, IAuthorService authorService, IMapper mapper)
         {
             _context = context;
+            _authorService = authorService;
+            _mapper = mapper;
         }
 
         // GET: Authors
@@ -27,23 +33,25 @@ namespace LibApp.WebApp.Controllers
         }
 
         // GET: Authors/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                var author = await _authorService.GetAuthorAsync(id);
 
-            var author = await _context.Authors
-                .Include(a => a.CreatedByUser)
-                .Include(a => a.ModifiedByUser)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (author == null)
+                if (author == null)
+                {
+                    return NotFound();
+                }
+
+                var authorViewModel = _mapper.Map<AuthorViewModel>(author);
+
+                return View(authorViewModel);
+            }
+            catch (Exception exception)
             {
-                return NotFound();
+                return RedirectToAction("ServerError", "Error");
             }
-
-            return View(author);
         }
 
         // GET: Authors/Create

@@ -74,6 +74,7 @@ namespace LibApp.WebApp.ViewModels
 
         [Display(Name = "Role")]
         public int RoleId { get; set; }
+        public string? Role { get; set; }
 
 
         [Display(Name = "Created")]
@@ -87,7 +88,6 @@ namespace LibApp.WebApp.ViewModels
 
         [Display(Name = "ModifiedBy")]
         public string? ModifiedByUser { get; set; }
-        public string? Role { get; set; }
 
 
         private const string DocumentIdPattern = @"^\d{13}$";
