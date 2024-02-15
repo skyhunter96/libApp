@@ -31,15 +31,16 @@ namespace LibApp.WebApp.Controllers
         }
 
         //Sort by released, qty, created, modified
+        //Filter by isAvailable
         //Bulk Delete? after pagination?
         //Delete on Details & Edit?
         //TODO: Links from details and other pages to resources (authors, departments etc)
-        //TODO: Delete behavior with existing related entities - don't allow, alert not possible cuz related?
+        //TODO: Delete behavior with existing related entities - don't allow, alert - not possible cuz related?
         //TODO: Reservation timer job
 
         // GET: Books
-        public async Task<IActionResult> Index(string sortTitleOrder, string currentTitleFilter,
-            string searchTitleString, int? authorId, int? publisherId, int? categoryId, int? departmentId, int? languageId, int? page)
+        public async Task<IActionResult> Index(string sortTitleOrder, string currentTitleFilter, string searchTitleString, 
+            int? authorId, int? publisherId, int? categoryId, int? departmentId, int? languageId, int? page)
         {
             ViewBag.CurrentSortTitle = sortTitleOrder;
             ViewBag.SortTitleParm = String.IsNullOrEmpty(sortTitleOrder) ? SortTitleOrder : "";
@@ -60,6 +61,7 @@ namespace LibApp.WebApp.Controllers
             }
 
             ViewBag.CurrentTitleFilter = searchTitleString;
+
             try
             {
                 var books = _bookService.GetBooks();

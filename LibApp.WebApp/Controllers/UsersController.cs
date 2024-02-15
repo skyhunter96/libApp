@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Domain.Models;
 using EfDataAccess;
+using LibApp.Services;
 using LibApp.Services.Interfaces;
 using LibApp.WebApp.Utilities;
 using LibApp.WebApp.ViewModels;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using X.PagedList;
 
 namespace LibApp.WebApp.Controllers
 {
@@ -19,6 +21,9 @@ namespace LibApp.WebApp.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
 
+        private const int PageSize = 10;
+        private const string SortNameOrder = "name_desc";
+
         public UsersController(LibraryContext context, IUserService userService, IMapper mapper, UserManager<User> userManager)
         {
             _context = context;
@@ -27,15 +32,57 @@ namespace LibApp.WebApp.Controllers
             _userManager = userManager;
         }
 
+        //TODO: Search by fullname, username & email in same filter
         // GET: Users
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortNameOrder, string currentNameFilter, string searchNameString, 
+            int? roleId, int? page)
         {
+
+            ViewBag.CurrentSortName = sortNameOrder;
+            ViewBag.SortNameParm = String.IsNullOrEmpty(sortNameOrder) ? SortNameOrder : "";
+
+            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name");
+
+            if (searchNameString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchNameString = currentNameFilter;
+            }
+
+            ViewBag.CurrentNameFilter = searchNameString;
+
             try
             {
                 var users = await _userService.GetUsersAsync();
                 var userViewModels = _mapper.Map<IEnumerable<UserViewModel>>(users);
 
-                return View(userViewModels);
+                if (!string.IsNullOrEmpty(searchNameString))
+                {
+                    userViewModels = userViewModels.Where(u => u.FullName.ToLower().Contains(searchNameString.ToLower()) || 
+                                                               u.UserName.ToLower().Contains(searchNameString.ToLower()) ||
+                                                               u.Email.ToLower().Contains(searchNameString.ToLower()));
+                }
+
+                if (roleId != null)
+                {
+                    userViewModels = userViewModels.Where(u => u.RoleId == roleId);
+                    ViewBag.CurrentRoleId = roleId;
+                }
+
+                userViewModels = sortNameOrder switch
+                {
+                    SortNameOrder => userViewModels.OrderByDescending(b => b.FullName),
+                    _ => userViewModels.OrderBy(b => b.FullName)
+                };
+
+                var pageNumber = (page ?? 1);
+
+                ViewBag.Users = userViewModels.ToPagedList(pageNumber, PageSize);
+
+                return View();
             }
             catch (Exception exception)
             {

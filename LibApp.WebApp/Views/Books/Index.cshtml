@@ -233,4 +233,5 @@
 
     @Html.PagedListPager(bookPages, page => Url.Action("Index",
             new { page, sortTitleOrder = ViewBag.CurrentSortTitle, currentTitleFilter = ViewBag.CurrentTitleFilter, authorId = ViewBag.CurrentAuthorId, publisherId = ViewBag.CurrentPublisherId, categoryId = ViewBag.CurrentCategoryId, departmentId = ViewBag.CurrentDepartmentId, languageId = ViewBag.CurrentLanguageId }))
+
 </div>
