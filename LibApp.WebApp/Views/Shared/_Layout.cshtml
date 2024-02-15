@@ -137,6 +137,8 @@
         <!-- Clear Button -->
         <script>
             function clearInputs() {
+                document.getElementById("SearchNameString").value = "";
+                $('#RoleId').val(null).trigger('change');
                 document.getElementById("SearchTitleString").value = "";
                 $('#AuthorId').val(null).trigger('change');
                 $('#PublisherId').val(null).trigger('change');
