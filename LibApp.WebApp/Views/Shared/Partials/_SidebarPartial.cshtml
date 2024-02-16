@@ -1,5 +1,14 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.IdentityModel.Tokens
+@using Domain.Models
+
+@inject UserManager<User> UserManager
+
+
+@{
     Layout = null;
+
+    var user = await UserManager.GetUserAsync(User);
 }
 <div class="sidebar" data-color="white" data-active-color="danger">
     <div class="logo">
@@ -22,54 +31,59 @@
                     <p>Books</p>
                 </a>
             </li>
-            <li>
-                <a asp-controller="Categories" asp-action="Index">
-                    <i class="nc-icon nc-tag-content"></i>
-                    <p>Categories</p>
-                </a>
-            </li>
-            <li>
-                <a asp-controller="Authors" asp-action="Index">
-                    <i class="nc-icon nc-badge"></i>
-                    <p>Authors</p>
-                </a>
-            </li>
-            <li>
-                <a asp-controller="Publishers" asp-action="Index">
-                    <i class="nc-icon nc-bold"></i>
-                    <p>Publishers</p>
-                </a>
-            </li>
-            <li>
-                <a asp-controller="Departments" asp-action="Index">
-                    <i class="nc-icon nc-tile-56"></i>
-                    <p>Departments</p>
-                </a>
-            </li>
-            <li>
-                <a asp-controller="Reservations" asp-action="Index">
-                    <i class="nc-icon nc-check-2"></i>
-                    <p>Reservations</p>
-                </a>
-            </li>
-            <li>
-                <a asp-controller="Users" asp-action="Index">
-                    <i class="nc-icon nc-single-02"></i>
-                    <p>Users</p>
-                </a>
-            </li>
-            <li>
-                <a asp-controller="Rates" asp-action="Index">
-                    <i class="nc-icon nc-money-coins"></i>
-                    <p>Rates</p>
-                </a>
-            </li>
-            <li>
-                <a asp-controller="Languages" asp-action="Index">
-                    <i class="nc-icon nc-globe"></i>
-                    <p>Languages</p>
-                </a>
-            </li>
+            
+            @if (user?.RoleId is (int)RoleEnum.Admin or (int)RoleEnum.Librarian)
+            {
+                <li>
+                    <a asp-controller="Categories" asp-action="Index">
+                        <i class="nc-icon nc-tag-content"></i>
+                        <p>Categories</p>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Authors" asp-action="Index">
+                        <i class="nc-icon nc-badge"></i>
+                        <p>Authors</p>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Publishers" asp-action="Index">
+                        <i class="nc-icon nc-bold"></i>
+                        <p>Publishers</p>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Departments" asp-action="Index">
+                        <i class="nc-icon nc-tile-56"></i>
+                        <p>Departments</p>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Reservations" asp-action="Index">
+                        <i class="nc-icon nc-check-2"></i>
+                        <p>Reservations</p>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Users" asp-action="Index">
+                        <i class="nc-icon nc-single-02"></i>
+                        <p>Users</p>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Rates" asp-action="Index">
+                        <i class="nc-icon nc-money-coins"></i>
+                        <p>Rates</p>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Languages" asp-action="Index">
+                        <i class="nc-icon nc-globe"></i>
+                        <p>Languages</p>
+                    </a>
+                </li>
+            }
+
         </ul>
     </div>
 </div>
