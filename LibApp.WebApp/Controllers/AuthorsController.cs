@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Domain.Models;
 using EfDataAccess;
+using LibApp.Services;
 using LibApp.Services.Interfaces;
 using LibApp.WebApp.Utilities;
 using LibApp.WebApp.ViewModels;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using X.PagedList;
 
 namespace LibApp.WebApp.Controllers
 {
@@ -18,6 +20,9 @@ namespace LibApp.WebApp.Controllers
         private readonly IAuthorService _authorService;
         private readonly IMapper _mapper;
 
+        private const int PageSize = 10;
+        private const string SortNameOrder = "name_desc";
+
         public AuthorsController(LibraryContext context, IAuthorService authorService, IMapper mapper)
         {
             _context = context;
@@ -25,11 +30,52 @@ namespace LibApp.WebApp.Controllers
             _mapper = mapper;
         }
 
+        //TODO: Links to users createdBy/modBy on index, details
+
         // GET: Authors
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortNameOrder, string currentNameFilter, string searchNameString,
+            int? page)
         {
-            var libraryContext = _context.Authors.Include(a => a.CreatedByUser).Include(a => a.ModifiedByUser);
-            return View(await libraryContext.ToListAsync());
+            ViewBag.CurrentSortName = sortNameOrder;
+            ViewBag.SortNameParm = String.IsNullOrEmpty(sortNameOrder) ? SortNameOrder : "";
+
+            if (searchNameString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchNameString = currentNameFilter;
+            }
+
+            ViewBag.CurrentNameFilter = searchNameString;
+
+            try
+            {
+                var authors = await _authorService.GetAuthorsAsync();
+                var authorViewModels = _mapper.Map<IEnumerable<AuthorViewModel>>(authors);
+
+                if (!string.IsNullOrEmpty(searchNameString))
+                {
+                    authorViewModels = authorViewModels.Where(a => a.Name.ToLower().Contains(searchNameString.ToLower()));
+                }
+
+                authorViewModels = sortNameOrder switch
+                {
+                    SortNameOrder => authorViewModels.OrderByDescending(a => a.Name),
+                    _ => authorViewModels.OrderBy(a => a.Name)
+                };
+
+                var pageNumber = (page ?? 1);
+
+                ViewBag.Authors = authorViewModels.ToPagedList(pageNumber, PageSize);
+
+                return View();
+            }
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
 
         // GET: Authors/Details/5

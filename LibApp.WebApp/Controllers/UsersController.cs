@@ -32,7 +32,8 @@ namespace LibApp.WebApp.Controllers
             _userManager = userManager;
         }
 
-        //TODO: Search by fullname, username & email in same filter
+        //TODO: Links to users createdBy/modBy on index, details
+
         // GET: Users
         public async Task<IActionResult> Index(string sortNameOrder, string currentNameFilter, string searchNameString, 
             int? roleId, int? page)

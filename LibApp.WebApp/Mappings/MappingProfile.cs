@@ -26,12 +26,12 @@ namespace LibApp.WebApp.Mappings
 
             CreateMap<UserViewModel, User>();
 
-            CreateMap<AuthorViewModel, Author>();
-
             CreateMap<Author, AuthorViewModel>()
                 .ForMember(dest => dest.CreatedByUser, opt => opt.MapFrom(src => src.CreatedByUser.UserName))
                 .ForMember(dest => dest.ModifiedByUser, opt => opt.MapFrom(src => src.ModifiedByUser.UserName));
 
+
+            CreateMap<AuthorViewModel, Author>();
         }
 
         private IEnumerable<(int AuthorId, string AuthorName)> MapAuthors(IEnumerable<Author> authors)
