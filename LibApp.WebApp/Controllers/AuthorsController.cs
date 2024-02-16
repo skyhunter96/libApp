@@ -31,6 +31,7 @@ namespace LibApp.WebApp.Controllers
         }
 
         //TODO: Links to users createdBy/modBy on index, details
+        //TODO: Delete behavior with existing related entities - don't allow, alert - not possible cuz related?
 
         // GET: Authors
         public async Task<IActionResult> Index(string sortNameOrder, string currentNameFilter, string searchNameString,

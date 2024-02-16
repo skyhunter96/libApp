@@ -114,13 +114,14 @@
                 @Html.DisplayFor(modelItem => item.CreatedDateTime)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ModifiedDateTime)
+                <a href="@Url.Action("Details", "Users", new { id = item.CreatedByUserId })">
+                    @item.CreatedByUser
+                </a>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CreatedByUser)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ModifiedByUser)
+                <a href="@Url.Action("Details", "Users", new { id = item.ModifiedByUserId })">
+                    @item.ModifiedByUser
+                </a>
             </td>
 
             <td>

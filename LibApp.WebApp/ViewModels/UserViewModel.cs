@@ -66,16 +66,9 @@ namespace LibApp.WebApp.ViewModels
         [MaxLength(1000)]
         public string? Notes { get; set; }
 
-        [Display(Name = "CreatedBy")]
-        public int CreatedByUserId { get; set; }
-
-        [Display(Name = "ModifiedBy")]
-        public int ModifiedByUserId { get; set; }
-
         [Display(Name = "Role")]
         public int RoleId { get; set; }
         public string? Role { get; set; }
-
 
         [Display(Name = "Created")]
         public DateTime CreatedDateTime { get; set; }
@@ -89,6 +82,11 @@ namespace LibApp.WebApp.ViewModels
         [Display(Name = "ModifiedBy")]
         public string? ModifiedByUser { get; set; }
 
+        [Display(Name = "CreatedBy")]
+        public int CreatedByUserId { get; set; }
+
+        [Display(Name = "ModifiedBy")]
+        public int ModifiedByUserId { get; set; }
 
         private const string DocumentIdPattern = @"^\d{13}$";
 

@@ -82,11 +82,16 @@
                 @Html.DisplayFor(modelItem => item.ModifiedDateTime)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CreatedByUser)
+                <a href="@Url.Action("Details", "Users", new { id = item.CreatedByUserId })">
+                    @item.CreatedByUser
+                </a>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ModifiedByUser)
+                <a href="@Url.Action("Details", "Users", new { id = item.ModifiedByUserId })">
+                    @item.ModifiedByUser
+                </a>
             </td>
+
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
