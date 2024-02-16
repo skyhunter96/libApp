@@ -137,14 +137,25 @@
         <!-- Clear Button -->
         <script>
             function clearInputs() {
-                document.getElementById("SearchNameString").value = "";
-                $('#RoleId').val(null).trigger('change');
-                document.getElementById("SearchTitleString").value = "";
-                $('#AuthorId').val(null).trigger('change');
-                $('#PublisherId').val(null).trigger('change');
-                $('#CategoryId').val(null).trigger('change');
-                $('#DepartmentId').val(null).trigger('change');
-                $('#LanguageId').val(null).trigger('change');
+                clearInput("SearchNameString");
+                clearSelect("RoleId");
+                clearInput("SearchTitleString");
+                clearSelect("AuthorId");
+                clearSelect("PublisherId");
+                clearSelect("CategoryId");
+                clearSelect("DepartmentId");
+                clearSelect("LanguageId");
+            }
+
+            function clearInput(inputId) {
+                var input = document.getElementById(inputId);
+                if (input) {
+                    input.value = "";
+                }
+            }
+
+            function clearSelect(selectId) {
+                $("#" + selectId).val(null).trigger('change');
             }
         </script>
 
