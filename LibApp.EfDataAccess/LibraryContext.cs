@@ -27,8 +27,6 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
 
     public virtual DbSet<Language> Languages { get; set; }
 
-    public virtual DbSet<Log> Logs { get; set; }
-
     public virtual DbSet<Publisher> Publishers { get; set; }
 
     public virtual DbSet<Rate> Rates { get; set; }
@@ -56,7 +54,6 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
         modelBuilder.ApplyConfiguration(new RateConfiguration());
         modelBuilder.ApplyConfiguration(new ReservationConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
-        modelBuilder.ApplyConfiguration(new LogConfiguration());
         modelBuilder.ApplyConfiguration(new BookReservationConfiguration());
         modelBuilder.ApplyConfiguration(new RoleConfiguration());
 
