@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Domain.Models;
 using EfDataAccess;
-using LibApp.Services;
 using LibApp.Services.Interfaces;
 using LibApp.WebApp.Utilities;
 using LibApp.WebApp.ViewModels;
@@ -9,8 +8,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using X.PagedList;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace LibApp.WebApp.Controllers
 {
@@ -33,7 +32,6 @@ namespace LibApp.WebApp.Controllers
             _userManager = userManager;
         }
 
-        //TODO: Links to users createdBy/modBy on index, details
         //TODO: Delete behavior with existing related entities - don't allow, alert - not possible cuz related?
 
         // GET: Authors
@@ -227,44 +225,34 @@ namespace LibApp.WebApp.Controllers
             }
         }
 
-        // GET: Authors/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var author = await _context.Authors
-                .Include(a => a.CreatedByUser)
-                .Include(a => a.ModifiedByUser)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (author == null)
-            {
-                return NotFound();
-            }
-
-            return View(author);
-        }
-
         // POST: Authors/Delete/5
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var author = await _context.Authors.FindAsync(id);
-            if (author != null)
+            try
             {
-                _context.Authors.Remove(author);
+                var author = await _authorService.GetAuthorAsync(id);
+                if (author != null)
+                {
+                    var isDeletable = _authorService.IsDeletable(author);
+                    if (isDeletable)
+                    {
+                        await _authorService.RemoveAuthorAsync(author);
+                        TempData["SuccessMessage"] = "Author deleted successfully.";
+                        return Json(new { success = true, message = "Author deleted successfully." });
+                    }
+                    
+                    TempData["ErrorMessage"] = "Author cannot be deleted because they have associated books.";
+                    return Json(new { success = false, message = "Author cannot be deleted because they have associated books." });
+                }
+
+                TempData["ErrorMessage"] = "Author was not deleted. An error occurred while processing your request.";
+                return Json(new { success = false, message = "Author not found." });
             }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool AuthorExists(int id)
-        {
-            return _context.Authors.Any(e => e.Id == id);
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
     }
 }

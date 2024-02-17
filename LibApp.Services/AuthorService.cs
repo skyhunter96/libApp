@@ -60,7 +60,8 @@ namespace LibApp.Services
 
         public async Task RemoveAuthorAsync(Author author)
         {
-            throw new NotImplementedException();
+            _context.Authors.Remove(author);
+            await _context.SaveChangesAsync();
         }
 
         public bool AuthorExists(string name)
