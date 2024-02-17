@@ -74,5 +74,10 @@ namespace LibApp.Services
             var exists = _context.Authors.Any(a => a.Id != id && a.Name.ToLower() == name.ToLower());
             return exists;
         }
+
+        public bool IsDeletable(Author author)
+        {
+            return !_context.Books.Any(b => b.Authors.Contains(author));
+        }
     }
 }

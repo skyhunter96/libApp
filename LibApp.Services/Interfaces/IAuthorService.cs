@@ -11,5 +11,6 @@ namespace LibApp.Services.Interfaces
         Task RemoveAuthorAsync(Author author);
         bool AuthorExists(string name);
         bool AuthorExistsInOtherAuthors(int id, string name);
+        bool IsDeletable(Author author);
     }
 }
