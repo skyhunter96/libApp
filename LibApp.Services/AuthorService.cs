@@ -1,6 +1,7 @@
 ﻿using Domain.Models;
 using EfDataAccess;
 using LibApp.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibApp.Services
@@ -38,17 +39,40 @@ namespace LibApp.Services
 
         public async Task AddAuthorAsync(Author author)
         {
-            throw new NotImplementedException();
+            _context.Add(author);
+            await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAuthorAsync(Author author)
         {
-            throw new NotImplementedException();
+            try
+            {
+                author.ModifiedDateTime = DateTime.UtcNow;
+
+                _context.Update(author);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception exception)
+            {
+                throw;
+            }
         }
 
         public async Task RemoveAuthorAsync(Author author)
         {
             throw new NotImplementedException();
+        }
+
+        public bool AuthorExists(string name)
+        {
+            var exists = _context.Authors.Any(a => a.Name.ToLower() == name.ToLower());
+            return exists;
+        }
+
+        public bool AuthorExistsInOtherAuthors(int id, string name)
+        {
+            var exists = _context.Authors.Any(a => a.Id != id && a.Name.ToLower() == name.ToLower());
+            return exists;
         }
     }
 }

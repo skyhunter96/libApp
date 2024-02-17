@@ -6,6 +6,7 @@ using LibApp.Services.Interfaces;
 using LibApp.WebApp.Utilities;
 using LibApp.WebApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -18,16 +19,18 @@ namespace LibApp.WebApp.Controllers
     {
         private readonly LibraryContext _context;
         private readonly IAuthorService _authorService;
+        private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
 
         private const int PageSize = 10;
         private const string SortNameOrder = "name_desc";
 
-        public AuthorsController(LibraryContext context, IAuthorService authorService, IMapper mapper)
+        public AuthorsController(LibraryContext context, IAuthorService authorService, IMapper mapper, UserManager<User> userManager)
         {
             _context = context;
             _authorService = authorService;
             _mapper = mapper;
+            _userManager = userManager;
         }
 
         //TODO: Links to users createdBy/modBy on index, details
@@ -104,82 +107,124 @@ namespace LibApp.WebApp.Controllers
         // GET: Authors/Create
         public IActionResult Create()
         {
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "City");
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "City");
-            return View();
+            try
+            {
+                ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name");
+                ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name");
+
+                return View();
+            }
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
 
         // POST: Authors/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Id,CreatedDateTime,ModifiedDateTime,CreatedByUserId,ModifiedByUserId")] Author author)
+        public async Task<IActionResult> Create(AuthorViewModel authorViewModel)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(author);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (_authorService.AuthorExists(authorViewModel.Name))
+                {
+                    ModelState.AddModelError("Name", "An author with this Name already exists.");
+                }
+
+                if (ModelState.IsValid)
+                {
+                    var author = _mapper.Map<Author>(authorViewModel);
+
+                    var loggedInUserId = _userManager.GetUserId(User);
+
+                    author.CreatedByUserId = author.ModifiedByUserId = Convert.ToInt32(loggedInUserId);
+
+                    await _authorService.AddAuthorAsync(author);
+
+                    TempData["SuccessMessage"] = "Author added successfully.";
+
+                    return RedirectToAction(nameof(Index));
+                }
+                ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", authorViewModel.CreatedByUserId);
+                ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", authorViewModel.ModifiedByUserId);
+
+                return View(authorViewModel);
             }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "City", author.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "City", author.ModifiedByUserId);
-            return View(author);
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
 
         // GET: Authors/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var author = await _context.Authors.FindAsync(id);
-            if (author == null)
+            try
             {
-                return NotFound();
+                var author = await _context.Authors.FindAsync(id);
+
+                if (author == null)
+                {
+                    return NotFound();
+                }
+
+                var authorViewModel = _mapper.Map<AuthorViewModel>(author);
+
+                ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "City", author.CreatedByUserId);
+                ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "City", author.ModifiedByUserId);
+                return View(authorViewModel);
             }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "City", author.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "City", author.ModifiedByUserId);
-            return View(author);
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
 
         // POST: Authors/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Name,Id,CreatedDateTime,ModifiedDateTime,CreatedByUserId,ModifiedByUserId")] Author author)
+        public async Task<IActionResult> Edit(int id, AuthorViewModel authorViewModel)
         {
-            if (id != author.Id)
+            if (id != authorViewModel.Id)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            try
             {
-                try
+                if (_authorService.AuthorExistsInOtherAuthors(authorViewModel.Id, authorViewModel.Name))
                 {
-                    _context.Update(author);
-                    await _context.SaveChangesAsync();
+                    ModelState.AddModelError("Name", "An author with this Name already exists.");
                 }
-                catch (DbUpdateConcurrencyException)
+
+                if (ModelState.IsValid)
                 {
-                    if (!AuthorExists(author.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    var author = _mapper.Map<Author>(authorViewModel);
+
+                    var loggedInUserId = _userManager.GetUserId(User);
+
+                    author.ModifiedByUserId = Convert.ToInt32(loggedInUserId);
+
+                    await _authorService.UpdateAuthorAsync(author);
+
+                    TempData["SuccessMessage"] = "Author updated successfully.";
+
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
+                ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", authorViewModel.CreatedByUserId);
+                ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", authorViewModel.ModifiedByUserId);
+                return View(authorViewModel);
             }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "City", author.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "City", author.ModifiedByUserId);
-            return View(author);
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
 
         // GET: Authors/Delete/5

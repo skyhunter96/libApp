@@ -1,8 +1,7 @@
-﻿@model Domain.Models.Author
+﻿@model LibApp.WebApp.ViewModels.AuthorViewModel
 
 @{
     ViewData["Title"] = "Edit";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h1>Edit</h1>
@@ -18,27 +17,12 @@
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
+            
             <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="CreatedDateTime" class="control-label"></label>
-                <input asp-for="CreatedDateTime" class="form-control" />
-                <span asp-validation-for="CreatedDateTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ModifiedDateTime" class="control-label"></label>
-                <input asp-for="ModifiedDateTime" class="form-control" />
-                <span asp-validation-for="ModifiedDateTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedByUserId" class="control-label"></label>
-                <select asp-for="CreatedByUserId" class="form-control" asp-items="ViewBag.CreatedByUserId"></select>
-                <span asp-validation-for="CreatedByUserId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ModifiedByUserId" class="control-label"></label>
-                <select asp-for="ModifiedByUserId" class="form-control" asp-items="ViewBag.ModifiedByUserId"></select>
-                <span asp-validation-for="ModifiedByUserId" class="text-danger"></span>
-            </div>
+            <input type="hidden" asp-for="CreatedByUserId" />
+            <input type="hidden" asp-for="CreatedDateTime" />
+            <input type="hidden" asp-for="ModifiedDateTime" />
+
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

@@ -9,5 +9,7 @@ namespace LibApp.Services.Interfaces
         Task AddAuthorAsync(Author author);
         Task UpdateAuthorAsync(Author author);
         Task RemoveAuthorAsync(Author author);
+        bool AuthorExists(string name);
+        bool AuthorExistsInOtherAuthors(int id, string name);
     }
 }

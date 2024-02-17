@@ -32,7 +32,9 @@ namespace LibApp.WebApp.Controllers
             _userManager = userManager;
         }
 
+        //TODO: User update not working
         //TODO: Links to users createdBy/modBy on index, details
+        //TODO: Insert & update image
 
         // GET: Users
         public async Task<IActionResult> Index(string sortNameOrder, string currentNameFilter, string searchNameString, 
@@ -139,8 +141,6 @@ namespace LibApp.WebApp.Controllers
         {
             try
             {
-                //TODO: Insert image
-
                 if (_userService.DocumentIdExists(userViewModel.DocumentId))
                 {
                     ModelState.AddModelError("DocumentId", "An user with this DocumentId already exists.");

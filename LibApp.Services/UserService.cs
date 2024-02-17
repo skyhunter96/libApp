@@ -61,7 +61,7 @@ namespace LibApp.Services
             if (!result.Succeeded)
             {
                 var errors = result.Errors.Select(e => e.Description);
-                throw new ApplicationException($"User creation failed: {string.Join(", ", errors)}");
+                throw new ApplicationException($"User update failed: {string.Join(", ", errors)}");
             }
         }
 
@@ -74,7 +74,7 @@ namespace LibApp.Services
             if (!result.Succeeded)
             {
                 var errors = result.Errors.Select(e => e.Description);
-                throw new ApplicationException($"User creation failed: {string.Join(", ", errors)}");
+                throw new ApplicationException($"User update failed: {string.Join(", ", errors)}");
             }
         }
 
