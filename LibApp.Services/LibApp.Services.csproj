@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="NuGet.Packaging" Version="6.8.0" />
+    <PackageReference Include="NuGet.Packaging" Version="6.9.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LibApp.EfDataAccess\LibApp.EfDataAccess.csproj" />
