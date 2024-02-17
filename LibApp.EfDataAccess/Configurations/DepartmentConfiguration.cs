@@ -28,12 +28,6 @@ namespace EfDataAccess.Configurations
             entity.HasMany(d => d.Books)
                 .WithOne(b => b.Department)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            entity.HasOne(d => d.ParentDepartment)
-                .WithMany(d => d.ChildDepartments)
-                .HasForeignKey(d => d.ParentDepartmentId)
-                .IsRequired(false)
-                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

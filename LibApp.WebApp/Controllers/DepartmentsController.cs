@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Domain.Models;
+using EfDataAccess;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Domain.Models;
-using EfDataAccess;
 
 namespace LibApp.WebApp.Controllers
 {
@@ -22,7 +18,7 @@ namespace LibApp.WebApp.Controllers
         // GET: Departments
         public async Task<IActionResult> Index()
         {
-            var libraryContext = _context.Departments.Include(d => d.CreatedByUser).Include(d => d.ModifiedByUser).Include(d => d.ParentDepartment);
+            var libraryContext = _context.Departments.Include(d => d.CreatedByUser).Include(d => d.ModifiedByUser);
             return View(await libraryContext.ToListAsync());
         }
 
@@ -37,7 +33,6 @@ namespace LibApp.WebApp.Controllers
             var department = await _context.Departments
                 .Include(d => d.CreatedByUser)
                 .Include(d => d.ModifiedByUser)
-                .Include(d => d.ParentDepartment)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (department == null)
             {
@@ -52,7 +47,6 @@ namespace LibApp.WebApp.Controllers
         {
             ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "City");
             ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "City");
-            ViewData["ParentDepartmentId"] = new SelectList(_context.Departments, "Id", "Name");
             return View();
         }
 
@@ -71,7 +65,6 @@ namespace LibApp.WebApp.Controllers
             }
             ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "City", department.CreatedByUserId);
             ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "City", department.ModifiedByUserId);
-            ViewData["ParentDepartmentId"] = new SelectList(_context.Departments, "Id", "Name", department.ParentDepartmentId);
             return View(department);
         }
 
@@ -90,7 +83,6 @@ namespace LibApp.WebApp.Controllers
             }
             ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "City", department.CreatedByUserId);
             ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "City", department.ModifiedByUserId);
-            ViewData["ParentDepartmentId"] = new SelectList(_context.Departments, "Id", "Name", department.ParentDepartmentId);
             return View(department);
         }
 
@@ -128,7 +120,6 @@ namespace LibApp.WebApp.Controllers
             }
             ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "City", department.CreatedByUserId);
             ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "City", department.ModifiedByUserId);
-            ViewData["ParentDepartmentId"] = new SelectList(_context.Departments, "Id", "Name", department.ParentDepartmentId);
             return View(department);
         }
 
@@ -143,7 +134,6 @@ namespace LibApp.WebApp.Controllers
             var department = await _context.Departments
                 .Include(d => d.CreatedByUser)
                 .Include(d => d.ModifiedByUser)
-                .Include(d => d.ParentDepartment)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (department == null)
             {
