@@ -10,5 +10,4 @@ public class Department : BaseEntity
     public decimal? Budget { get; set; }
 
     public virtual ICollection<Book> Books { get; set; }
-    public ICollection<Department> ChildDepartments { get; set; }
 }

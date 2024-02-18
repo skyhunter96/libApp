@@ -1,8 +1,7 @@
-﻿@model IEnumerable<Domain.Models.Department>
+﻿@model IEnumerable<LibApp.WebApp.ViewModels.DepartmentViewModel>
 
 @{
     ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h1>Index</h1>
@@ -15,9 +14,6 @@
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Location)
@@ -47,9 +43,6 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.Location)
             </td>
             <td>
@@ -59,18 +52,26 @@
                 @Html.DisplayFor(modelItem => item.CreatedDateTime)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ModifiedDateTime)
+                <a href="@Url.Action("Details", "Users", new { id = item.CreatedByUserId })">
+                    @item.CreatedByUser
+                </a>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CreatedByUser.City)
+                <a href="@Url.Action("Details", "Users", new { id = item.ModifiedByUserId })">
+                    @item.ModifiedByUser
+                </a>
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ModifiedByUser.City)
-            </td>
+
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a class="delete-button" 
+                   data-controller="Departments" 
+                   data-action="Delete" 
+                   data-id="@item.Id" 
+                   style="color: #51cbce; text-decoration: none; cursor: pointer;"
+                   onmouseover="this.style.textDecoration='underline';"
+                   onmouseout="this.style.textDecoration='none';">Delete</a>
             </td>
         </tr>
 }

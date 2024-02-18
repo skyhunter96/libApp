@@ -9,6 +9,7 @@ namespace LibApp.WebApp.ViewModels
         [Required]
         [MaxLength(50)]
         public string Name { get; set; }
+
         [Display(Name = "Created")]
         public DateTime CreatedDateTime { get; set; }
 

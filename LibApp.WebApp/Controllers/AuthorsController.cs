@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using X.PagedList;
-using static System.Reflection.Metadata.BlobBuilder;
 
 namespace LibApp.WebApp.Controllers
 {
@@ -31,8 +30,6 @@ namespace LibApp.WebApp.Controllers
             _mapper = mapper;
             _userManager = userManager;
         }
-
-        //TODO: Delete behavior with existing related entities - don't allow, alert - not possible cuz related?
 
         // GET: Authors
         public async Task<IActionResult> Index(string sortNameOrder, string currentNameFilter, string searchNameString,
