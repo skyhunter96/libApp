@@ -18,6 +18,8 @@ namespace LibApp.WebApp.Controllers
         private readonly IDepartmentService _departmentService;
         private readonly IMapper _mapper;
 
+        //TODO: Cannot delete if has relations
+
         public DepartmentsController(LibraryContext context, IDepartmentService departmentService, IMapper mapper)
         {
             _context = context;

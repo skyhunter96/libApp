@@ -34,6 +34,7 @@ namespace LibApp.WebApp.Controllers
         //TODO: User update not working
         //TODO: Links to users createdBy/modBy on index, details
         //TODO: Insert & update image
+        //TODO: User can be deleted even if it has relations
 
         // GET: Users
         public async Task<IActionResult> Index(string sortNameOrder, string currentNameFilter, string searchNameString, 
