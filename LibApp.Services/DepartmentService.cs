@@ -26,9 +26,15 @@ namespace LibApp.Services
             return departments;
         }
 
-        public Task<Department> GetDepartmentAsync(int id)
+        public async Task<Department> GetDepartmentAsync(int id)
         {
-            throw new NotImplementedException();
+            var department = await _context.Departments
+                .Include(d => d.CreatedByUser)
+                .Include(d => d.ModifiedByUser)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(d => d.Id == id);
+
+            return department;
         }
 
         public Task AddDepartmentAsync(Department department)

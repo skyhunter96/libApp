@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Domain.Models;
 using EfDataAccess;
+using LibApp.Services;
 using LibApp.Services.Interfaces;
 using LibApp.WebApp.Utilities;
 using LibApp.WebApp.ViewModels;
@@ -46,23 +47,25 @@ namespace LibApp.WebApp.Controllers
         }
 
         // GET: Departments/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                var department = await _departmentService.GetDepartmentAsync(id);
 
-            var department = await _context.Departments
-                .Include(d => d.CreatedByUser)
-                .Include(d => d.ModifiedByUser)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (department == null)
+                if (department == null)
+                {
+                    return NotFound();
+                }
+
+                var departmentViewModel = _mapper.Map<DepartmentViewModel>(department);
+
+                return View(departmentViewModel);
+            }
+            catch (Exception exception)
             {
-                return NotFound();
+                return RedirectToAction("ServerError", "Error");
             }
-
-            return View(department);
         }
 
         // GET: Departments/Create

@@ -32,7 +32,6 @@ namespace LibApp.WebApp.Controllers
         }
 
         //TODO: Insert & update image
-        //TODO: User can be deleted even if it has relations
 
         // GET: Users
         public async Task<IActionResult> Index(string sortNameOrder, string currentNameFilter, string searchNameString, 
@@ -96,7 +95,7 @@ namespace LibApp.WebApp.Controllers
         {
             try
             {
-                //TODO: Process image - prerequisite create
+                //TODO: Process image
 
                 var user = await _userService.GetUserAsync(id);
 

@@ -1,5 +1,6 @@
 ﻿@using Domain.Models
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.IdentityModel.Tokens
 
 @inject UserManager<User> UserManager
 
@@ -104,22 +105,31 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.ModifiedDateTime)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedByUser)
-        </dt>
-        <dd class="col-sm-10">
-            <a href="@Url.Action("Details", "Users", new { id = Model.CreatedByUserId })">
-                @Model.CreatedByUser
-            </a>
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ModifiedByUser)
-        </dt>
-        <dd class="col-sm-10">
-            <a href="@Url.Action("Details", "Users", new { id = Model.ModifiedByUserId })">
-                @Model.ModifiedByUser
-            </a>
-        </dd>
+
+        @if (!Model.CreatedByUser.IsNullOrEmpty())
+        {
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.CreatedByUser)
+            </dt>
+            <dd class="col-sm-10">
+                <a href="@Url.Action("Details", "Users", new { id = Model.CreatedByUserId })">
+                    @Model.CreatedByUser
+                </a>
+            </dd>
+        }
+
+        @if (!Model.ModifiedByUser.IsNullOrEmpty())
+        {
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.ModifiedByUser)
+            </dt>
+            <dd class="col-sm-10">
+                <a href="@Url.Action("Details", "Users", new { id = Model.ModifiedByUserId })">
+                    @Model.ModifiedByUser
+                </a>
+            </dd>
+        }
+
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Notes)
         </dt>
