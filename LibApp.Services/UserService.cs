@@ -80,7 +80,24 @@ namespace LibApp.Services
 
         public async Task RemoveUserAsync(User user)
         {
+            await SeverRelations(user);
+
             _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+        }
+
+        private async Task SeverRelations(User user)
+        {
+            foreach (var book in _context.Books.Where(b => b.CreatedByUserId == user.Id))
+            {
+                book.CreatedByUser = null;
+            }
+
+            foreach (var book in _context.Books.Where(b => b.ModifiedByUserId == user.Id))
+            {
+                book.ModifiedByUser = null;
+            }
+
             await _context.SaveChangesAsync();
         }
 
