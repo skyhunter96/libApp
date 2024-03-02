@@ -24,11 +24,13 @@ namespace EfDataAccess.Configurations.Common
             entity.HasOne(e => e.CreatedByUser)
                 .WithMany()
                 .HasForeignKey(e => e.CreatedByUserId)
+                .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(e => e.ModifiedByUser)
                 .WithMany()
                 .HasForeignKey(e => e.ModifiedByUserId)
+                .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }
