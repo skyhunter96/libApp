@@ -31,8 +31,6 @@ namespace LibApp.WebApp.Controllers
             _userManager = userManager;
         }
 
-        //TODO: User update not working
-        //TODO: Links to users createdBy/modBy on index, details
         //TODO: Insert & update image
         //TODO: User can be deleted even if it has relations
 
@@ -290,7 +288,16 @@ namespace LibApp.WebApp.Controllers
                     return RedirectToAction("ServerError", "Error");
                 }
 
+                var loggedInUserId = Convert.ToInt32(_userManager.GetUserId(User));
+
+                if (loggedInUserId == id)
+                {
+                    TempData["ErrorMessage"] = "Cannot delete an User you are currently logged in with.";
+                    return Json(new { success = false, message = "User currently logged in." });
+                }
+
                 var user = await _userService.GetUserAsync(id);
+
                 if (user != null)
                 {
                     await _userService.RemoveUserAsync(user);
