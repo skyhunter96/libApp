@@ -31,8 +31,6 @@ namespace LibApp.WebApp.Controllers
             _userManager = userManager;
         }
 
-        //TODO: Insert & update image
-
         // GET: Users
         public async Task<IActionResult> Index(string sortNameOrder, string currentNameFilter, string searchNameString, 
             int? roleId, int? page)
@@ -95,8 +93,6 @@ namespace LibApp.WebApp.Controllers
         {
             try
             {
-                //TODO: Process image
-
                 var user = await _userService.GetUserAsync(id);
 
                 if (user == null)
@@ -222,8 +218,6 @@ namespace LibApp.WebApp.Controllers
 
             try
             {
-                //TODO: Insert image
-
                 ViewData.ModelState.Remove("Password");
 
                 if (_userService.DocumentIdExistsInOtherBooks(userViewModel.Id, userViewModel.DocumentId))

@@ -19,8 +19,6 @@ namespace LibApp.WebApp.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
 
-        //TODO: Cannot delete if has relations
-
         public DepartmentsController(LibraryContext context, IDepartmentService departmentService, IMapper mapper, UserManager<User> userManager)
         {
             _context = context;

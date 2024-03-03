@@ -34,6 +34,8 @@ namespace LibApp.WebApp.Controllers
         //Filter by isAvailable
         //Bulk Delete? after pagination?
         //Delete on Details & Edit?
+        //TODO: Sever relations with all entities for createdby and modifiedby User
+        //TODO: Reservation ReservedBy User relation how to?
         //TODO: Links from details and other pages to resources (authors, departments etc)
         //TODO: Reservation timer job
 

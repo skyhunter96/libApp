@@ -10,7 +10,5 @@
 
         public DateTime CreatedDateTime { get; set; }
         public DateTime ModifiedDateTime { get; set; }
-        public int CreatedByUserId { get; set; }
-        public int ModifiedByUserId { get; set; }
     }
 }
