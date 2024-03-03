@@ -27,8 +27,6 @@ namespace LibApp.WebApp.Controllers
             _userManager = userManager;
         }
 
-        //TODO: Delete behavior with existing related entities - don't allow, alert - not possible cuz related?
-
         // GET: Departments
         public async Task<IActionResult> Index()
         {
@@ -92,7 +90,7 @@ namespace LibApp.WebApp.Controllers
             {
                 if (_departmentService.DepartmentExists(departmentViewModel.Name))
                 {
-                    ModelState.AddModelError("Name", "An department with this Name already exists.");
+                    ModelState.AddModelError("Name", "A department with this Name already exists.");
                 }
 
                 if (ModelState.IsValid)

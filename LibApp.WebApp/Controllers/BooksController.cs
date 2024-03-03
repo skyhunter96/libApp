@@ -35,6 +35,7 @@ namespace LibApp.WebApp.Controllers
         //Bulk Delete? after pagination?
         //Delete on Details & Edit?
         //TODO: Sever relations with all entities for createdby and modifiedby User
+        //TODO: Delete behavior with existing related entities - don't allow, alert - not possible cuz related? on all entities
         //TODO: Reservation ReservedBy User relation how to?
         //TODO: Links from details and other pages to resources (authors, departments etc)
         //TODO: Reservation timer job

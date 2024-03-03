@@ -35,5 +35,42 @@ namespace LibApp.Services
 
             return category;
         }
+
+        public async Task AddCategoryAsync(Category category)
+        {
+            _context.Add(category);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateCategoryAsync(Category category)
+        {
+            category.ModifiedDateTime = DateTime.Now;
+
+            _context.Update(category);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveCategoryAsync(Category category)
+        {
+            _context.Remove(category);
+            await _context.SaveChangesAsync();
+        }
+
+        public bool CategoryExists(string name)
+        {
+            var exists = _context.Categories.Any(d => d.Name.ToLower() == name.ToLower());
+            return exists;
+        }
+
+        public bool CategoryExistsInOtherCategories(int id, string name)
+        {
+            var exists = _context.Categories.Any(d => d.Id != id && d.Name.ToLower() == name.ToLower());
+            return exists;
+        }
+
+        public bool IsDeletable(Category category)
+        {
+            return !_context.Books.Any(b => b.Category == category);
+        }
     }
 }
