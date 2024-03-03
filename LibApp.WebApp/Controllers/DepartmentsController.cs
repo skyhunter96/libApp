@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Domain.Models;
 using EfDataAccess;
-using LibApp.Services;
 using LibApp.Services.Interfaces;
 using LibApp.WebApp.Utilities;
 using LibApp.WebApp.ViewModels;
@@ -9,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 
 namespace LibApp.WebApp.Controllers
 {
@@ -194,7 +192,8 @@ namespace LibApp.WebApp.Controllers
             }
         }
 
-        // GET: Departments/Delete/5
+        // POST: Authors/Delete/5
+        [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -210,8 +209,8 @@ namespace LibApp.WebApp.Controllers
                         return Json(new { success = true, message = "Department deleted successfully." });
                     }
 
-                    TempData["ErrorMessage"] = "Department cannot be deleted because tit has associated books.";
-                    return Json(new { success = false, message = "Department cannot be deleted because tit has associated books." });
+                    TempData["ErrorMessage"] = "Department cannot be deleted because it has associated books.";
+                    return Json(new { success = false, message = "Department cannot be deleted because it has associated books." });
                 }
 
                 TempData["ErrorMessage"] = "Department was not deleted. An error occurred while processing your request.";

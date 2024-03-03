@@ -74,6 +74,12 @@ namespace LibApp.WebApp.Areas.Identity.Pages.Account
 
                 var user = await _userService.GetUserByUserNameAsync(Input.UserName);
 
+                if (user == null)
+                {
+                    ModelState.AddModelError(string.Empty, "The user with chosen credentials does not exist");
+                    return Page();
+                }
+
                 if (user.IsActive == false)
                 {
                     ModelState.AddModelError(string.Empty, "Cannot login with inactive user");

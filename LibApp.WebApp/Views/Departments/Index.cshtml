@@ -52,6 +52,9 @@
                 @Html.DisplayFor(modelItem => item.CreatedDateTime)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.ModifiedDateTime)
+            </td>
+            <td>
                 <a href="@Url.Action("Details", "Users", new { id = item.CreatedByUserId })">
                     @item.CreatedByUser
                 </a>
