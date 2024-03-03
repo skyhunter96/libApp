@@ -113,7 +113,6 @@ namespace LibApp.Services
             // Attach the provided 'bookToUpdate' to the context
             _context.Attach(bookToUpdate);
 
-            //TODO: Check UpdatedByUserId need to get from session for book and CreatedByUserId and ModifiedByUserId for author
             newAuthor.CreatedByUserId = newAuthor.ModifiedByUserId = bookToUpdate.ModifiedByUserId = book.ModifiedByUserId;
 
             await MapBook(book, bookToUpdate, _context);

@@ -14,7 +14,7 @@ namespace LibApp.WebApp.ViewModels
         public string Description { get; set; }
 
         [MaxLength(100)]
-        public string Location { get; set; }
+        public string? Location { get; set; }
         public decimal? Budget { get; set; }
 
         [Display(Name = "Created")]

@@ -9,5 +9,8 @@ namespace LibApp.Services.Interfaces
         Task AddDepartmentAsync(Department department);
         Task UpdateDepartmentAsync(Department department);
         Task RemoveDepartmentAsync(Department department);
+        bool DepartmentExists(string name);
+        bool DepartmentExistsInOtherDepartments(int id, string name);
+        bool IsDeletable(Department department);
     }
 }

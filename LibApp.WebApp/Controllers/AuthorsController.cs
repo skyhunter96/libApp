@@ -171,8 +171,8 @@ namespace LibApp.WebApp.Controllers
 
                 var authorViewModel = _mapper.Map<AuthorViewModel>(author);
 
-                ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "City", author.CreatedByUserId);
-                ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "City", author.ModifiedByUserId);
+                ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", author.CreatedByUserId);
+                ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", author.ModifiedByUserId);
                 return View(authorViewModel);
             }
             catch (Exception exception)
@@ -239,8 +239,8 @@ namespace LibApp.WebApp.Controllers
                         return Json(new { success = true, message = "Author deleted successfully." });
                     }
                     
-                    TempData["ErrorMessage"] = "Author cannot be deleted because they have associated books.";
-                    return Json(new { success = false, message = "Author cannot be deleted because they have associated books." });
+                    TempData["ErrorMessage"] = "Author cannot be deleted because it has associated books.";
+                    return Json(new { success = false, message = "Author cannot be deleted because it has associated books." });
                 }
 
                 TempData["ErrorMessage"] = "Author was not deleted. An error occurred while processing your request.";

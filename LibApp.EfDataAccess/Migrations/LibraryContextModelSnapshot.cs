@@ -288,7 +288,7 @@ namespace EfDataAccess.Migrations
 
                     b.HasIndex("BookId");
 
-                    b.ToTable("BookReservations");
+                    b.ToTable("BookReservations", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Models.Category", b =>

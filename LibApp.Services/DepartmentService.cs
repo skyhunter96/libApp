@@ -2,6 +2,7 @@
 using EfDataAccess;
 using LibApp.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace LibApp.Services
 {
@@ -37,19 +38,41 @@ namespace LibApp.Services
             return department;
         }
 
-        public Task AddDepartmentAsync(Department department)
+        public async Task AddDepartmentAsync(Department department)
         {
-            throw new NotImplementedException();
+            _context.Add(department);
+            await _context.SaveChangesAsync();
         }
 
-        public Task UpdateDepartmentAsync(Department department)
+        public async Task UpdateDepartmentAsync(Department department)
         {
-            throw new NotImplementedException();
+            department.ModifiedDateTime = DateTime.Now;
+
+            _context.Update(department);
+            await _context.SaveChangesAsync();
         }
 
-        public Task RemoveDepartmentAsync(Department department)
+        public async Task RemoveDepartmentAsync(Department department)
         {
-            throw new NotImplementedException();
+            _context.Remove(department);
+            await _context.SaveChangesAsync();
+        }
+
+        public bool DepartmentExists(string name)
+        {
+            var exists = _context.Departments.Any(d => d.Name.ToLower() == name.ToLower());
+            return exists;
+        }
+
+        public bool DepartmentExistsInOtherDepartments(int id, string name)
+        {
+            var exists = _context.Departments.Any(d => d.Id != id && d.Name.ToLower() == name.ToLower());
+            return exists;
+        }
+
+        public bool IsDeletable(Department department)
+        {
+            return !_context.Books.Any(b => b.Department == department);
         }
     }
 }

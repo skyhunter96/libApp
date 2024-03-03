@@ -6,6 +6,7 @@ using LibApp.Services.Interfaces;
 using LibApp.WebApp.Utilities;
 using LibApp.WebApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -17,15 +18,17 @@ namespace LibApp.WebApp.Controllers
     {
         private readonly LibraryContext _context;
         private readonly IDepartmentService _departmentService;
+        private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
 
         //TODO: Cannot delete if has relations
 
-        public DepartmentsController(LibraryContext context, IDepartmentService departmentService, IMapper mapper)
+        public DepartmentsController(LibraryContext context, IDepartmentService departmentService, IMapper mapper, UserManager<User> userManager)
         {
             _context = context;
             _departmentService = departmentService;
             _mapper = mapper;
+            _userManager = userManager;
         }
 
         //TODO: Delete behavior with existing related entities - don't allow, alert - not possible cuz related?
@@ -71,118 +74,153 @@ namespace LibApp.WebApp.Controllers
         // GET: Departments/Create
         public IActionResult Create()
         {
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "City");
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "City");
-            return View();
+            try
+            {
+                ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name");
+                ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name");
+
+                return View();
+            }
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
 
         // POST: Departments/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Department department)
+        public async Task<IActionResult> Create(DepartmentViewModel departmentViewModel)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(department);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (_departmentService.DepartmentExists(departmentViewModel.Name))
+                {
+                    ModelState.AddModelError("Name", "An department with this Name already exists.");
+                }
+
+                if (ModelState.IsValid)
+                {
+                    var department = _mapper.Map<Department>(departmentViewModel);
+
+                    var loggedInUserId = _userManager.GetUserId(User);
+
+                    department.CreatedByUserId = department.ModifiedByUserId = Convert.ToInt32(loggedInUserId);
+
+                    await _departmentService.AddDepartmentAsync(department);
+
+                    TempData["SuccessMessage"] = "Department added successfully.";
+
+                    return RedirectToAction(nameof(Index));
+                }
+                ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", departmentViewModel.CreatedByUserId);
+                ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", departmentViewModel.ModifiedByUserId);
+
+                return View(departmentViewModel);
             }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "City", department.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "City", department.ModifiedByUserId);
-            return View(department);
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
 
         // GET: Departments/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var department = await _context.Departments.FindAsync(id);
-            if (department == null)
+            try
             {
-                return NotFound();
+                var department = await _context.Departments.FindAsync(id);
+
+                if (department == null)
+                {
+                    return NotFound();
+                }
+
+                var departmentViewModel = _mapper.Map<DepartmentViewModel>(department);
+
+                ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", department.CreatedByUserId);
+                ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", department.ModifiedByUserId);
+                return View(departmentViewModel);
             }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "City", department.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "City", department.ModifiedByUserId);
-            return View(department);
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
 
         // POST: Departments/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Department department)
+        public async Task<IActionResult> Edit(int id, DepartmentViewModel departmentViewModel)
         {
-            if (id != department.Id)
+            if (id != departmentViewModel.Id)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            try
             {
-                try
+                if (_departmentService.DepartmentExistsInOtherDepartments(departmentViewModel.Id, departmentViewModel.Name))
                 {
-                    _context.Update(department);
-                    await _context.SaveChangesAsync();
+                    ModelState.AddModelError("Name", "An department with this Name already exists.");
                 }
-                catch (DbUpdateConcurrencyException)
+
+                if (ModelState.IsValid)
                 {
-                    if (!DepartmentExists(department.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    var department = _mapper.Map<Department>(departmentViewModel);
+
+                    var loggedInUserId = _userManager.GetUserId(User);
+
+                    department.ModifiedByUserId = Convert.ToInt32(loggedInUserId);
+
+                    await _departmentService.UpdateDepartmentAsync(department);
+
+                    TempData["SuccessMessage"] = "Department updated successfully.";
+
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
+                ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", departmentViewModel.CreatedByUserId);
+                ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", departmentViewModel.ModifiedByUserId);
+                return View(departmentViewModel);
             }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "City", department.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "City", department.ModifiedByUserId);
-            return View(department);
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
 
         // GET: Departments/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                var department = await _departmentService.GetDepartmentAsync(id);
+                if (department != null)
+                {
+                    var isDeletable = _departmentService.IsDeletable(department);
+                    if (isDeletable)
+                    {
+                        await _departmentService.RemoveDepartmentAsync(department);
+                        TempData["SuccessMessage"] = "Department deleted successfully.";
+                        return Json(new { success = true, message = "Department deleted successfully." });
+                    }
 
-            var department = await _context.Departments
-                .Include(d => d.CreatedByUser)
-                .Include(d => d.ModifiedByUser)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (department == null)
+                    TempData["ErrorMessage"] = "Department cannot be deleted because tit has associated books.";
+                    return Json(new { success = false, message = "Department cannot be deleted because tit has associated books." });
+                }
+
+                TempData["ErrorMessage"] = "Department was not deleted. An error occurred while processing your request.";
+                return Json(new { success = false, message = "Department not found." });
+            }
+            catch (Exception exception)
             {
-                return NotFound();
+                return RedirectToAction("ServerError", "Error");
             }
-
-            return View(department);
-        }
-
-        // POST: Departments/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var department = await _context.Departments.FindAsync(id);
-            if (department != null)
-            {
-                _context.Departments.Remove(department);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool DepartmentExists(int id)
-        {
-            return _context.Departments.Any(e => e.Id == id);
         }
     }
 }
