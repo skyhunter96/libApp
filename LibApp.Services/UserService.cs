@@ -80,10 +80,18 @@ namespace LibApp.Services
 
         public async Task RemoveUserAsync(User user)
         {
-            await SeverRelations(user);
+            try
+            {
+                await SeverRelations(user);
 
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+                throw;
+            }
         }
 
         private async Task SeverRelations(User user)
@@ -96,6 +104,66 @@ namespace LibApp.Services
             foreach (var book in _context.Books.Where(b => b.ModifiedByUserId == user.Id))
             {
                 book.ModifiedByUser = null;
+            }
+
+            foreach (var author in _context.Authors.Where(b => b.CreatedByUserId == user.Id))
+            {
+                author.CreatedByUser = null;
+            }
+
+            foreach (var author in _context.Authors.Where(b => b.ModifiedByUserId == user.Id))
+            {
+                author.ModifiedByUser = null;
+            }
+
+            foreach (var publisher in _context.Publishers.Where(b => b.CreatedByUserId == user.Id))
+            {
+                publisher.CreatedByUser = null;
+            }
+
+            foreach (var publisher in _context.Publishers.Where(b => b.ModifiedByUserId == user.Id))
+            {
+                publisher.ModifiedByUser = null;
+            }
+
+            foreach (var department in _context.Departments.Where(b => b.CreatedByUserId == user.Id))
+            {
+                department.CreatedByUser = null;
+            }
+
+            foreach (var department in _context.Departments.Where(b => b.ModifiedByUserId == user.Id))
+            {
+                department.ModifiedByUser = null;
+            }
+
+            foreach (var reservation in _context.Reservations.Where(b => b.CreatedByUserId == user.Id))
+            {
+                reservation.CreatedByUser = null;
+            }
+
+            foreach (var reservation in _context.Reservations.Where(b => b.ModifiedByUserId == user.Id))
+            {
+                reservation.ModifiedByUser = null;
+            }
+
+            foreach (var rate in _context.Rates.Where(b => b.CreatedByUserId == user.Id))
+            {
+                rate.CreatedByUser = null;
+            }
+
+            foreach (var rate in _context.Rates.Where(b => b.ModifiedByUserId == user.Id))
+            {
+                rate.ModifiedByUser = null;
+            }
+
+            foreach (var userToChange in _context.Users.Where(b => b.CreatedByUserId == user.Id))
+            {
+                userToChange.CreatedByUser = null;
+            }
+
+            foreach (var userToChange in _context.Users.Where(b => b.ModifiedByUserId == user.Id))
+            {
+                userToChange.ModifiedByUser = null;
             }
 
             await _context.SaveChangesAsync();
