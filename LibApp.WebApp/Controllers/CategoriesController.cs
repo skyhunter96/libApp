@@ -2,6 +2,9 @@
 using Domain.Models;
 using EfDataAccess;
 using LibApp.Services.Interfaces;
+using LibApp.WebApp.Utilities;
+using LibApp.WebApp.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LibApp.WebApp.Controllers
 {
+    [Authorize(Roles = AppRoles.Admin + "," + AppRoles.Librarian)]
     public class CategoriesController : Controller
     {
         private readonly LibraryContext _context;
@@ -29,35 +33,46 @@ namespace LibApp.WebApp.Controllers
         // GET: Categories
         public async Task<IActionResult> Index()
         {
-            var libraryContext = _context.Categories.Include(c => c.CreatedByUser).Include(c => c.ModifiedByUser);
-            return View(await libraryContext.ToListAsync());
+            try
+            {
+                var categories = await _categoryService.GetCategoriesAsync();
+                var categoryViewModels = _mapper.Map<IEnumerable<CategoryViewModel>>(categories);
+
+                return View(categoryViewModels);
+            }
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
 
         // GET: Categories/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                var category = await _categoryService.GetCategoryAsync(id);
 
-            var category = await _context.Categories
-                .Include(c => c.CreatedByUser)
-                .Include(c => c.ModifiedByUser)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (category == null)
+                if (category == null)
+                {
+                    return NotFound();
+                }
+
+                var categoryViewModel = _mapper.Map<CategoryViewModel>(category);
+
+                return View(categoryViewModel);
+            }
+            catch (Exception exception)
             {
-                return NotFound();
+                return RedirectToAction("ServerError", "Error");
             }
-
-            return View(category);
         }
 
         // GET: Categories/Create
         public IActionResult Create()
         {
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "City");
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "City");
+            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name");
+            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name");
             return View();
         }
 
@@ -74,8 +89,8 @@ namespace LibApp.WebApp.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "City", category.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "City", category.ModifiedByUserId);
+            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", category.CreatedByUserId);
+            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", category.ModifiedByUserId);
             return View(category);
         }
 
@@ -92,8 +107,8 @@ namespace LibApp.WebApp.Controllers
             {
                 return NotFound();
             }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "City", category.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "City", category.ModifiedByUserId);
+            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", category.CreatedByUserId);
+            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", category.ModifiedByUserId);
             return View(category);
         }
 
@@ -129,8 +144,8 @@ namespace LibApp.WebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "City", category.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "City", category.ModifiedByUserId);
+            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", category.CreatedByUserId);
+            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", category.ModifiedByUserId);
             return View(category);
         }
 

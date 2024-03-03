@@ -20,25 +20,33 @@ namespace LibApp.WebApp.Mappings
 
             CreateMap<BookViewModel, Book>();
 
+
             CreateMap<User, UserViewModel>()
                 .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.Name))
                 .ForMember(dest => dest.DateOfBirthToShow, opt => opt.MapFrom(src => src.DateOfBirth.ToString("d.M.yyyy.")));
 
             CreateMap<UserViewModel, User>();
 
+
             CreateMap<Author, AuthorViewModel>()
                 .ForMember(dest => dest.CreatedByUser, opt => opt.MapFrom(src => src.CreatedByUser.UserName))
                 .ForMember(dest => dest.ModifiedByUser, opt => opt.MapFrom(src => src.ModifiedByUser.UserName));
 
-
             CreateMap<AuthorViewModel, Author>();
+
 
             CreateMap<Department, DepartmentViewModel>()
                 .ForMember(dest => dest.CreatedByUser, opt => opt.MapFrom(src => src.CreatedByUser.UserName))
                 .ForMember(dest => dest.ModifiedByUser, opt => opt.MapFrom(src => src.ModifiedByUser.UserName));
 
-
             CreateMap<DepartmentViewModel, Department>();
+
+
+            CreateMap<Category, CategoryViewModel>()
+                .ForMember(dest => dest.CreatedByUser, opt => opt.MapFrom(src => src.CreatedByUser.UserName))
+                .ForMember(dest => dest.ModifiedByUser, opt => opt.MapFrom(src => src.ModifiedByUser.UserName));
+
+            CreateMap<CategoryViewModel, Category>();
         }
 
         private IEnumerable<(int AuthorId, string AuthorName)> MapAuthors(IEnumerable<Author> authors)
