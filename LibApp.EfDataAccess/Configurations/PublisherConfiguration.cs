@@ -18,7 +18,6 @@ namespace EfDataAccess.Configurations
                 .HasMaxLength(100)
                 .IsRequired(false);
 
-            //TODO: Check behaviour
             entity.HasMany(p => p.Books)
                 .WithOne(b => b.Publisher)
                 .OnDelete(DeleteBehavior.Restrict);

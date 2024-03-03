@@ -1,6 +1,5 @@
 ﻿namespace Domain.Models.Common
 {
-    //TODO: Maybe move somewhere more appropriate
     public enum LogType
     {
         None = 0,

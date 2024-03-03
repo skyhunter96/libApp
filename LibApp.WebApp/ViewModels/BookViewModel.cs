@@ -6,8 +6,6 @@ namespace LibApp.WebApp.ViewModels
 {
     public class BookViewModel : IValidatableObject
     {
-        //TODO: Maybe create a constructor
-
         public int Id { get; set; }
 
         [Required]

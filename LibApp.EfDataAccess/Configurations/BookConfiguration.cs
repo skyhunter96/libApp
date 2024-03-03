@@ -32,7 +32,6 @@ namespace EfDataAccess.Configurations
                 .HasColumnType("decimal(10,2)")
                 .IsRequired(false);
 
-            //TODO: delete behavior should prolly be restrict to all except many-to-many
             entity.HasOne(b => b.Publisher)
                 .WithMany(p => p.Books)
                 .OnDelete(DeleteBehavior.Restrict);

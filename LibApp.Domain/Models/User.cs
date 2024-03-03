@@ -9,13 +9,13 @@ public class User : IdentityUser<int>
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Password { get; set; }
+
     //UserName, Pass, Email & Phone in Base Class
 
     public bool IsActive { get; set; }
     public int RoleId { get; set; }
     public string ImagePath { get; set; }
 
-    //TODO: Check during registering how is entered
     public DateTime DateOfBirth { get; set; }
     public string City { get; set; }
     public string Address { get; set; }
