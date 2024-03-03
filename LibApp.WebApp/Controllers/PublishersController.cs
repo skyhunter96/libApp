@@ -1,166 +1,254 @@
-﻿using Domain.Models;
+﻿using AutoMapper;
+using Domain.Models;
 using EfDataAccess;
+using LibApp.Services.Interfaces;
+using LibApp.WebApp.Utilities;
+using LibApp.WebApp.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+using X.PagedList;
 
 namespace LibApp.WebApp.Controllers
 {
+    [Authorize(Roles = AppRoles.Admin + "," + AppRoles.Librarian)]
     public class PublishersController : Controller
     {
         private readonly LibraryContext _context;
+        private readonly IPublisherService _publisherService;
+        private readonly UserManager<User> _userManager;
+        private readonly IMapper _mapper;
 
-        public PublishersController(LibraryContext context)
+        private const int PageSize = 10;
+        private const string SortNameOrder = "name_desc";
+
+        public PublishersController(LibraryContext context, IPublisherService publisherService, UserManager<User> userManager, IMapper mapper)
         {
             _context = context;
+            _publisherService = publisherService;
+            _userManager = userManager;
+            _mapper = mapper;
         }
 
         // GET: Publishers
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortNameOrder, string currentNameFilter, string searchNameString,
+            int? page)
         {
-            var libraryContext = _context.Publishers.Include(p => p.CreatedByUser).Include(p => p.ModifiedByUser);
-            return View(await libraryContext.ToListAsync());
+            ViewBag.CurrentSortName = sortNameOrder;
+            ViewBag.SortNameParm = String.IsNullOrEmpty(sortNameOrder) ? SortNameOrder : "";
+
+            if (searchNameString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchNameString = currentNameFilter;
+            }
+
+            ViewBag.CurrentNameFilter = searchNameString;
+
+            try
+            {
+                var publishers = await _publisherService.GetPublishersAsync();
+                var publisherViewModels = _mapper.Map<IEnumerable<PublisherViewModel>>(publishers);
+
+                if (!string.IsNullOrEmpty(searchNameString))
+                {
+                    publisherViewModels = publisherViewModels.Where(a => a.Name.ToLower().Contains(searchNameString.ToLower()));
+                }
+
+                publisherViewModels = sortNameOrder switch
+                {
+                    SortNameOrder => publisherViewModels.OrderByDescending(a => a.Name),
+                    _ => publisherViewModels.OrderBy(a => a.Name)
+                };
+                var pageNumber = (page ?? 1);
+
+                ViewBag.Publishers = publisherViewModels.ToPagedList(pageNumber, PageSize);
+
+                return View();
+            }
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
 
         // GET: Publishers/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                var publisher = await _publisherService.GetPublisherAsync(id);
 
-            var publisher = await _context.Publishers
-                .Include(p => p.CreatedByUser)
-                .Include(p => p.ModifiedByUser)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (publisher == null)
+                if (publisher == null)
+                {
+                    return NotFound();
+                }
+
+                var publisherViewModel = _mapper.Map<PublisherViewModel>(publisher);
+
+                return View(publisherViewModel);
+            }
+            catch (Exception exception)
             {
-                return NotFound();
+                return RedirectToAction("ServerError", "Error");
             }
-
-            return View(publisher);
         }
 
         // GET: Publishers/Create
         public IActionResult Create()
         {
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "City");
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "City");
-            return View();
+            try
+            {
+                ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name");
+                ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name");
+
+                return View();
+            }
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
 
         // POST: Publishers/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Description,Id,CreatedDateTime,ModifiedDateTime,CreatedByUserId,ModifiedByUserId")] Publisher publisher)
+        public async Task<IActionResult> Create(PublisherViewModel publisherViewModel)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(publisher);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (_publisherService.PublisherExists(publisherViewModel.Name))
+                {
+                    ModelState.AddModelError("Name", "A Publisher with this Name already exists.");
+                }
+
+                if (ModelState.IsValid)
+                {
+                    var publisher = _mapper.Map<Publisher>(publisherViewModel);
+
+                    var loggedInUserId = _userManager.GetUserId(User);
+
+                    publisher.CreatedByUserId = publisher.ModifiedByUserId = Convert.ToInt32(loggedInUserId);
+
+                    await _publisherService.AddPublisherAsync(publisher);
+
+                    TempData["SuccessMessage"] = "Publisher added successfully.";
+
+                    return RedirectToAction(nameof(Index));
+                }
+                ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", publisherViewModel.CreatedByUserId);
+                ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", publisherViewModel.ModifiedByUserId);
+
+                return View(publisherViewModel);
             }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "City", publisher.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "City", publisher.ModifiedByUserId);
-            return View(publisher);
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
 
         // GET: Publishers/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var publisher = await _context.Publishers.FindAsync(id);
-            if (publisher == null)
+            try
             {
-                return NotFound();
+                var publisher = await _context.Publishers.FindAsync(id);
+
+                if (publisher == null)
+                {
+                    return NotFound();
+                }
+
+                var publisherViewModel = _mapper.Map<PublisherViewModel>(publisher);
+
+                ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", publisher.CreatedByUserId);
+                ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", publisher.ModifiedByUserId);
+                return View(publisherViewModel);
             }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "City", publisher.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "City", publisher.ModifiedByUserId);
-            return View(publisher);
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
 
         // POST: Publishers/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Name,Description,Id,CreatedDateTime,ModifiedDateTime,CreatedByUserId,ModifiedByUserId")] Publisher publisher)
+        public async Task<IActionResult> Edit(int id, PublisherViewModel publisherViewModel)
         {
-            if (id != publisher.Id)
+            if (id != publisherViewModel.Id)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            try
             {
-                try
+                if (_publisherService.PublisherExistsInOtherPublishers(publisherViewModel.Id, publisherViewModel.Name))
                 {
-                    _context.Update(publisher);
-                    await _context.SaveChangesAsync();
+                    ModelState.AddModelError("Name", "An Publisher with this Name already exists.");
                 }
-                catch (DbUpdateConcurrencyException)
+
+                if (ModelState.IsValid)
                 {
-                    if (!PublisherExists(publisher.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    var publisher = _mapper.Map<Publisher>(publisherViewModel);
+
+                    var loggedInUserId = _userManager.GetUserId(User);
+
+                    publisher.ModifiedByUserId = Convert.ToInt32(loggedInUserId);
+
+                    await _publisherService.UpdatePublisherAsync(publisher);
+
+                    TempData["SuccessMessage"] = "Publisher updated successfully.";
+
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
+                ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", publisherViewModel.CreatedByUserId);
+                ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", publisherViewModel.ModifiedByUserId);
+                return View(publisherViewModel);
             }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "City", publisher.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "City", publisher.ModifiedByUserId);
-            return View(publisher);
-        }
-
-        // GET: Publishers/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
+            catch (Exception exception)
             {
-                return NotFound();
+                return RedirectToAction("ServerError", "Error");
             }
-
-            var publisher = await _context.Publishers
-                .Include(p => p.CreatedByUser)
-                .Include(p => p.ModifiedByUser)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (publisher == null)
-            {
-                return NotFound();
-            }
-
-            return View(publisher);
         }
 
         // POST: Publishers/Delete/5
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var publisher = await _context.Publishers.FindAsync(id);
-            if (publisher != null)
+            try
             {
-                _context.Publishers.Remove(publisher);
+                var publisher = await _publisherService.GetPublisherAsync(id);
+                if (publisher != null)
+                {
+                    var isDeletable = _publisherService.IsDeletable(publisher);
+                    if (isDeletable)
+                    {
+                        await _publisherService.RemovePublisherAsync(publisher);
+                        TempData["SuccessMessage"] = "Publisher deleted successfully.";
+                        return Json(new { success = true, message = "Publisher deleted successfully." });
+                    }
+
+                    TempData["ErrorMessage"] = "Publisher cannot be deleted because it has associated books.";
+                    return Json(new { success = false, message = "Publisher cannot be deleted because it has associated books." });
+                }
+
+                TempData["ErrorMessage"] = "Publisher was not deleted. An error occurred while processing your request.";
+                return Json(new { success = false, message = "Publisher not found." });
             }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool PublisherExists(int id)
-        {
-            return _context.Publishers.Any(e => e.Id == id);
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
     }
 }

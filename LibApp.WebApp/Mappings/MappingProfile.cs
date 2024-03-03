@@ -47,6 +47,13 @@ namespace LibApp.WebApp.Mappings
                 .ForMember(dest => dest.ModifiedByUser, opt => opt.MapFrom(src => src.ModifiedByUser.UserName));
 
             CreateMap<CategoryViewModel, Category>();
+
+
+            CreateMap<Publisher, PublisherViewModel>()
+                .ForMember(dest => dest.CreatedByUser, opt => opt.MapFrom(src => src.CreatedByUser.UserName))
+                .ForMember(dest => dest.ModifiedByUser, opt => opt.MapFrom(src => src.ModifiedByUser.UserName));
+
+            CreateMap<PublisherViewModel, Publisher>();
         }
 
         private IEnumerable<(int AuthorId, string AuthorName)> MapAuthors(IEnumerable<Author> authors)
