@@ -1,22 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AutoMapper;
+using Domain.Models;
+using EfDataAccess;
+using LibApp.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Domain.Models;
-using EfDataAccess;
 
 namespace LibApp.WebApp.Controllers
 {
     public class CategoriesController : Controller
     {
         private readonly LibraryContext _context;
+        private readonly ICategoryService _categoryService;
+        private readonly UserManager<User> _userManager;
+        private readonly IMapper _mapper;
 
-        public CategoriesController(LibraryContext context)
+        //TODO: Cannot delete if has relations
+
+        public CategoriesController(LibraryContext context, UserManager<User> userManager, IMapper mapper, ICategoryService categoryService)
         {
             _context = context;
+            _userManager = userManager;
+            _mapper = mapper;
+            _categoryService = categoryService;
         }
 
         // GET: Categories

@@ -4,12 +4,6 @@ namespace Domain.Models;
 
 public class User : IdentityUser<int>
 {
-    //From BaseEntity:
-    public DateTime CreatedDateTime { get; set; }
-    public DateTime ModifiedDateTime { get; set; }
-    public int CreatedByUserId { get; set; }
-    public int ModifiedByUserId { get; set; }
-
     //TODO: Verify Id is not bigger than 13 and isUnique
     public string DocumentId { get; set; }
     public string FirstName { get; set; }
@@ -31,8 +25,12 @@ public class User : IdentityUser<int>
     public string? Notes { get; set; }
 
     //From BaseEntity:
-    public virtual User CreatedByUser { get; set; }
-    public virtual User ModifiedByUser { get; set; }
+    public DateTime CreatedDateTime { get; set; }
+    public DateTime ModifiedDateTime { get; set; }
+    public int? CreatedByUserId { get; set; }
+    public int? ModifiedByUserId { get; set; }
+    public virtual User? CreatedByUser { get; set; }
+    public virtual User? ModifiedByUser { get; set; }
 
     public virtual ICollection<Reservation> Reservations { get; set; }
     public virtual Role Role { get; set; }

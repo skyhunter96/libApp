@@ -13,23 +13,6 @@ namespace EfDataAccess.Configurations
 
             entity.Property(u => u.Id).ValueGeneratedOnAdd();
 
-            entity.Property(u => u.CreatedDateTime)
-                .HasDefaultValueSql("SYSDATETIME()");
-
-            entity.Property(u => u.ModifiedDateTime)
-                .HasDefaultValueSql("SYSDATETIME()");
-
-            entity.HasOne(e => e.CreatedByUser)
-                .WithMany()
-                .HasForeignKey(e => e.CreatedByUserId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            entity.HasOne(u => u.ModifiedByUser)
-                .WithMany()
-                .HasForeignKey(u => u.ModifiedByUserId)
-                .OnDelete(DeleteBehavior.Restrict);
-            
-
             entity.ToTable("User");
 
             entity.Ignore(u => u.Password);
@@ -77,6 +60,24 @@ namespace EfDataAccess.Configurations
             entity.Property(u => u.Notes)
                 .HasMaxLength(1000)
                 .IsRequired(false);
+
+            entity.Property(u => u.CreatedDateTime)
+                .HasDefaultValueSql("SYSDATETIME()");
+
+            entity.Property(u => u.ModifiedDateTime)
+                .HasDefaultValueSql("SYSDATETIME()");
+
+            entity.HasOne(e => e.CreatedByUser)
+                .WithMany()
+                .HasForeignKey(e => e.CreatedByUserId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(u => u.ModifiedByUser)
+                .WithMany()
+                .HasForeignKey(u => u.ModifiedByUserId)
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasOne(u => u.Role)
                 .WithMany(r => r.Users)
