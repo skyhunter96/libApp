@@ -187,6 +187,44 @@
             });
         </script>
 
+    
+        <!-- Image -->
+        <script>
+            function showFileName() {
+                var input = document.getElementById('inputImageFile');
+                var fileNameDisplay = document.getElementById('fileNameDisplay');
+                var btnClearImage = document.getElementById('btnClearImage');
+                var file = input.files[0];
+
+                if (file) {
+                    var fileSize = file.size; // Size in bytes
+                    var fileType = file.type; // MIME type
+
+                    // Check if the file type is an image and the size is within the limit
+                    if (fileType.startsWith('image/') && fileSize <= 25 * 1024 * 1024) {
+                        fileNameDisplay.textContent = file.name;
+                        btnClearImage.style.display = 'inline-block'; // Show the "Clear" button
+                    } else {
+                        // Reset the file input and display an error message
+                        input.value = '';
+                        fileNameDisplay.textContent = 'Invalid file. Please select an image file (up to 25 MB).';
+                        btnClearImage.style.display = 'none'; // Hide the "Clear" button
+                    }
+                } else {
+                    fileNameDisplay.textContent = '';
+                    btnClearImage.style.display = 'none'; // Hide the "Clear" button
+                }
+            }
+
+            document.getElementById('btnClearImage').addEventListener('click', function () {
+                var input = document.getElementById('inputImageFile');
+                var fileNameDisplay = document.getElementById('fileNameDisplay');
+
+                input.value = ''; // Clear the selected file
+                fileNameDisplay.textContent = ''; // Clear the displayed file name
+                this.style.display = 'none'; // Hide the "Clear" button
+            });
+        </script>
     </body>
 
 </html>

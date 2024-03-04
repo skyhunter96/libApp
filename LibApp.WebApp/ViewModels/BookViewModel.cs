@@ -71,6 +71,9 @@ namespace LibApp.WebApp.ViewModels
         [Range(0, 1000)]
         public int ReservedQuantity { get; set; }
 
+        public string? ImagePath { get; set; }
+        public IFormFile? ImageFile { get; set; }
+
         [Display(Name = "Created")]
         public DateTime CreatedDateTime { get; set; }
 

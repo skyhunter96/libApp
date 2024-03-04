@@ -184,6 +184,32 @@ namespace LibApp.WebApp.Controllers
 
                 if (ModelState.IsValid)
                 {
+                    if (bookViewModel.ImageFile is { Length: > 0 })
+                    {
+                        //TODO: File name to book name
+                        //TODO: Validation
+                        //TODO: What happens if same name exists?
+
+                        var fileName = Path.GetFileName(bookViewModel.ImageFile.FileName);
+                        var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "books");
+
+                        // Check if the directory exists, if not, create it
+                        if (!Directory.Exists(directoryPath))
+                        {
+                            Directory.CreateDirectory(directoryPath);
+                        }
+
+                        var filePath = Path.Combine(directoryPath, fileName);
+
+                        await using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await bookViewModel.ImageFile.CopyToAsync(stream);
+                        }
+
+                        // Save the file path to the user object or database
+                        bookViewModel.ImagePath = "~/img/books/" + fileName;
+                    }
+
                     var book = _mapper.Map<Book>(bookViewModel);
 
                     var loggedInUserId = _userManager.GetUserId(User);

@@ -188,7 +188,7 @@ namespace LibApp.WebApp.Controllers
             }
         }
 
-        // POST: Authors/Delete/5
+        // POST: Departments/Delete/5
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> Delete(int id)
         {
