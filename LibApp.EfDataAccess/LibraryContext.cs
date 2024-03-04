@@ -29,8 +29,6 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
 
     public virtual DbSet<Publisher> Publishers { get; set; }
 
-    public virtual DbSet<Rate> Rates { get; set; }
-
     public virtual DbSet<Reservation> Reservations { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
@@ -51,7 +49,6 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
         modelBuilder.ApplyConfiguration(new DepartmentConfiguration());
         modelBuilder.ApplyConfiguration(new LanguageConfiguration());
         modelBuilder.ApplyConfiguration(new PublisherConfiguration());
-        modelBuilder.ApplyConfiguration(new RateConfiguration());
         modelBuilder.ApplyConfiguration(new ReservationConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new BookReservationConfiguration());
@@ -348,15 +345,6 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
             new { BookId = book2.Id, AuthorId = author2.Id }
         };
 
-        var rate = new Rate
-        {
-            Id = 1,
-            RateFee = 50,
-            ApplyAfterDays = 21,
-            CreatedByUserId = admin.Id,
-            ModifiedByUserId = admin.Id
-        };
-
         modelBuilder.Entity<User>().HasData(users);
         modelBuilder.Entity<Author>().HasData(authors);
         modelBuilder.Entity<Category>().HasData(categories);
@@ -366,6 +354,5 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
         modelBuilder.Entity<Book>().HasData(books);
         modelBuilder.Entity<Book>().HasMany(b => b.Authors).WithMany(a => a.Books)
             .UsingEntity(j => j.HasData(bookAuthors));
-        modelBuilder.Entity<Rate>().HasData(rate);
     }
 }

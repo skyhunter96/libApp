@@ -146,16 +146,6 @@ namespace LibApp.Services
                 reservation.ModifiedByUser = null;
             }
 
-            foreach (var rate in _context.Rates.Where(b => b.CreatedByUserId == user.Id))
-            {
-                rate.CreatedByUser = null;
-            }
-
-            foreach (var rate in _context.Rates.Where(b => b.ModifiedByUserId == user.Id))
-            {
-                rate.ModifiedByUser = null;
-            }
-
             foreach (var userToChange in _context.Users.Where(b => b.CreatedByUserId == user.Id))
             {
                 userToChange.CreatedByUser = null;

@@ -4,12 +4,14 @@
 
 @inject UserManager<User> UserManager
 
-
 @{
     Layout = null;
 
     var user = await UserManager.GetUserAsync(User);
 }
+
+@*TODO: Links*@
+
 <div class="sidebar" data-color="white" data-active-color="danger">
     <div class="logo">
         <a class="simple-text logo-mini" asp-controller="Home" asp-action="Index">
@@ -21,7 +23,6 @@
             LibApp
         </a>
     </div>
-    @*TODO: Links*@
     <div class="sidebar-wrapper">
         <ul class="nav">
             <li>
@@ -67,12 +68,6 @@
                     <a asp-controller="Users" asp-action="Index">
                         <i class="nc-icon nc-single-02"></i>
                         <p>Users</p>
-                    </a>
-                </li>
-                <li>
-                    <a asp-controller="Rates" asp-action="Index">
-                        <i class="nc-icon nc-money-coins"></i>
-                        <p>Rates</p>
                     </a>
                 </li>
                 <li>
