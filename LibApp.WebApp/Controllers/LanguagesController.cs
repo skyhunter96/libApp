@@ -1,152 +1,208 @@
-﻿using Domain.Models;
+﻿using AutoMapper;
+using Domain.Models;
 using EfDataAccess;
+using LibApp.Services.Interfaces;
+using LibApp.WebApp.Utilities;
+using LibApp.WebApp.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace LibApp.WebApp.Controllers
 {
+    [Authorize(Roles = AppRoles.Admin + "," + AppRoles.Librarian)]
     public class LanguagesController : Controller
     {
         private readonly LibraryContext _context;
+        private readonly ILanguageService _languageService;
+        private readonly UserManager<User> _userManager;
+        private readonly IMapper _mapper;
 
-        public LanguagesController(LibraryContext context)
+        public LanguagesController(LibraryContext context, ILanguageService languageService, UserManager<User> userManager, IMapper mapper)
         {
             _context = context;
+            _languageService = languageService;
+            _userManager = userManager;
+            _mapper = mapper;
         }
 
         // GET: Languages
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Languages.ToListAsync());
+            try
+            {
+                var languages = await _languageService.GetLanguagesAsync();
+                var languageViewModels = _mapper.Map<IEnumerable<LanguageViewModel>>(languages);
+
+                return View(languageViewModels);
+            }
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
 
         // GET: Languages/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                var language = await _languageService.GetLanguageAsync(id);
 
-            var language = await _context.Languages
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (language == null)
+                if (language == null)
+                {
+                    return NotFound();
+                }
+
+                var languageViewModel = _mapper.Map<LanguageViewModel>(language);
+
+                return View(languageViewModel);
+            }
+            catch (Exception exception)
             {
-                return NotFound();
+                return RedirectToAction("ServerError", "Error");
             }
-
-            return View(language);
         }
 
         // GET: Languages/Create
         public IActionResult Create()
         {
-            return View();
+            try
+            {
+                return View();
+            }
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
 
         // POST: Languages/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] Language language)
+        public async Task<IActionResult> Create(LanguageViewModel languageViewModel)
         {
-            if (ModelState.IsValid)
+            try
             {
-                _context.Add(language);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (_languageService.LanguageExists(languageViewModel.Name))
+                {
+                    ModelState.AddModelError("Name", "A language with this Name already exists.");
+                }
+
+                if (ModelState.IsValid)
+                {
+                    var language = _mapper.Map<Language>(languageViewModel);
+
+                    var loggedInUserId = _userManager.GetUserId(User);
+
+                    await _languageService.AddLanguageAsync(language);
+
+                    TempData["SuccessMessage"] = "Language added successfully.";
+
+                    return RedirectToAction(nameof(Index));
+                }
+
+                return View(languageViewModel);
             }
-            return View(language);
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
 
         // GET: Languages/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var language = await _context.Languages.FindAsync(id);
-            if (language == null)
+            try
             {
-                return NotFound();
+                var language = await _context.Languages.FindAsync(id);
+
+                if (language == null)
+                {
+                    return NotFound();
+                }
+
+                var languageViewModel = _mapper.Map<LanguageViewModel>(language);
+
+                return View(languageViewModel);
             }
-            return View(language);
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
 
         // POST: Languages/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Language language)
+        public async Task<IActionResult> Edit(int id, LanguageViewModel languageViewModel)
         {
-            if (id != language.Id)
+            if (id != languageViewModel.Id)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            try
             {
-                try
+                if (_languageService.LanguageExistsInOtherLanguages(languageViewModel.Id, languageViewModel.Name))
                 {
-                    _context.Update(language);
-                    await _context.SaveChangesAsync();
+                    ModelState.AddModelError("Name", "An language with this Name already exists.");
                 }
-                catch (DbUpdateConcurrencyException)
+
+                if (ModelState.IsValid)
                 {
-                    if (!LanguageExists(language.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    var language = _mapper.Map<Language>(languageViewModel);
+
+                    var loggedInUserId = _userManager.GetUserId(User);
+
+                    await _languageService.UpdateLanguageAsync(language);
+
+                    TempData["SuccessMessage"] = "Language updated successfully.";
+
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(language);
-        }
 
-        // GET: Languages/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
+                return View(languageViewModel);
+            }
+            catch (Exception exception)
             {
-                return NotFound();
+                return RedirectToAction("ServerError", "Error");
             }
-
-            var language = await _context.Languages
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (language == null)
-            {
-                return NotFound();
-            }
-
-            return View(language);
         }
 
         // POST: Languages/Delete/5
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var language = await _context.Languages.FindAsync(id);
-            if (language != null)
+            try
             {
-                _context.Languages.Remove(language);
+                var language = await _languageService.GetLanguageAsync(id);
+                if (language != null)
+                {
+                    var isDeletable = _languageService.IsDeletable(language);
+                    if (isDeletable)
+                    {
+                        await _languageService.RemoveLanguageAsync(language);
+                        TempData["SuccessMessage"] = "Language deleted successfully.";
+                        return Json(new { success = true, message = "Language deleted successfully." });
+                    }
+
+                    TempData["ErrorMessage"] = "Language cannot be deleted because it has associated books.";
+                    return Json(new { success = false, message = "Language cannot be deleted because it has associated books." });
+                }
+
+                TempData["ErrorMessage"] = "Language was not deleted. An error occurred while processing your request.";
+                return Json(new { success = false, message = "Language not found." });
             }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool LanguageExists(int id)
-        {
-            return _context.Languages.Any(e => e.Id == id);
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
     }
 }
