@@ -4,7 +4,6 @@ namespace Domain.Models;
 
 public class User : IdentityUser<int>
 {
-    //TODO: Verify Id is not bigger than 13 and isUnique
     public string DocumentId { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }

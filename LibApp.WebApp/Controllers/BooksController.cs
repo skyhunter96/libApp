@@ -128,8 +128,6 @@ namespace LibApp.WebApp.Controllers
         {
             try
             {
-                //TODO: Process image - prerequisite create
-
                 var book = await _bookService.GetBookAsync(id);
 
                 if (book == null)
@@ -175,8 +173,6 @@ namespace LibApp.WebApp.Controllers
         {
             try
             {
-                //TODO: Insert image
-
                 if (_bookService.IsbnExists(bookViewModel.Isbn))
                 {
                     ModelState.AddModelError("Isbn", "A book with this ISBN already exists.");
@@ -290,8 +286,6 @@ namespace LibApp.WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, BookViewModel bookViewModel)
         {
-            //TODO: Edit image
-
             if (id != bookViewModel.Id)
             {
                 return NotFound();
