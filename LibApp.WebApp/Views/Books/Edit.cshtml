@@ -10,7 +10,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Title" class="control-label"></label>
@@ -82,12 +82,34 @@
                 <select asp-for="LanguageId" class="form-control" asp-items="ViewBag.LanguageId"></select>
                 <span asp-validation-for="LanguageId" class="text-danger"></span>
             </div>
-            @*TODO: Image file upload*@
-            @*<div class="form-group">
-                <label asp-for="ImagePath" class="control-label"></label>
-                <input asp-for="ImagePath" class="form-control" />
-                <span asp-validation-for="ImagePath" class="text-danger"></span>
-            </div> *@
+            
+            <div>
+                <hr />
+                <dl class="row">
+                    @if (!string.IsNullOrEmpty(Model.ImagePath))
+                    {
+                        <dt class="col-sm-2">
+                            Current Image
+                        </dt>
+                        <dd class="col-sm-10">
+                            <img src="@Model.ImagePath" alt="Book Image not Loaded" class="img-fluid" style="max-width: 200px; height: auto;" />
+                        </dd>
+                    }
+                </dl>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">Add New Image</label>
+                <div class="custom-file">
+                    <input asp-for="ImageFile" type="file" class="custom-file-input" id="inputImageFile" onchange="showFileName()">
+                    <label class="custom-file-label" for="inputImageFile">Choose file</label>
+                    <br />
+                    <button type="button" class="btn btn-outline-secondary btn-sm" id="btnClearImage">Clear</button>
+                </div>
+                <span id="fileNameDisplay" class="text-muted"></span>
+                <span asp-validation-for="ImageFile" class="text-danger"></span>
+            </div>
+
             <div class="form-group">
                 <label asp-for="Cost" class="control-label"></label>
                 <input asp-for="Cost" class="form-control" />
@@ -120,6 +142,7 @@
             <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="CreatedDateTime" />
             <input type="hidden" asp-for="ModifiedDateTime" />
+            <input type="hidden" asp-for="ImagePath" />
 
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

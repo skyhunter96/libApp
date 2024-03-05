@@ -176,6 +176,7 @@ namespace LibApp.Services
                 bookToUpdate.Language = newLanguage!;
             }
 
+            bookToUpdate.ImagePath = book.ImagePath;
             bookToUpdate.Cost = book.Cost;
             bookToUpdate.IsAvailable = book.IsAvailable;
             bookToUpdate.Quantity = book.Quantity;

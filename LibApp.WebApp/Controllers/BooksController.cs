@@ -306,6 +306,41 @@ namespace LibApp.WebApp.Controllers
 
                 if (ModelState.IsValid)
                 {
+                    if (bookViewModel.ImageFile is { Length: > 0 })
+                    {
+                        // Delete the old image file
+                        if (!string.IsNullOrEmpty(bookViewModel.ImagePath))
+                        {
+                            var oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", bookViewModel.ImagePath.TrimStart('/'));
+                            if (System.IO.File.Exists(oldFilePath))
+                            {
+                                System.IO.File.Delete(oldFilePath);
+                            }
+                        }
+
+                        var fileName = bookViewModel.Title.Replace(" ", "_").ToLower();
+                        fileName = Regex.Replace(fileName, @"[^\u0000-\u007F]+", string.Empty);
+                        fileName = fileName + "_" + DateTime.Now.Ticks + Path.GetExtension(bookViewModel.ImageFile.FileName);
+
+                        var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "books");
+
+                        // Check if the directory exists, if not, create it
+                        if (!Directory.Exists(directoryPath))
+                        {
+                            Directory.CreateDirectory(directoryPath);
+                        }
+
+                        var filePath = Path.Combine(directoryPath, fileName);
+
+                        await using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await bookViewModel.ImageFile.CopyToAsync(stream);
+                        }
+
+                        // Save the file path to the user object or database
+                        bookViewModel.ImagePath = "/img/books/" + fileName;
+                    }
+
                     var book = _mapper.Map<Book>(bookViewModel);
 
                     var loggedInUserId = _userManager.GetUserId(User);
