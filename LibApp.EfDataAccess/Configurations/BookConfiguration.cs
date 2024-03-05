@@ -25,7 +25,6 @@ namespace EfDataAccess.Configurations
                 .HasMaxLength(100);
 
             entity.Property(b => b.ImagePath)
-                .HasColumnType("char(255)")
                 .IsRequired(false);
 
             entity.Property(b => b.Cost)
