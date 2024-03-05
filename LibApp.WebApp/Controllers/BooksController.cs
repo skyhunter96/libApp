@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Text.RegularExpressions;
 using X.PagedList;
 
 namespace LibApp.WebApp.Controllers
@@ -34,10 +35,9 @@ namespace LibApp.WebApp.Controllers
         //Filter by isAvailable
         //Bulk Delete? after pagination?
         //Delete on Details & Edit?
-        //TODO: Sever relations with all entities for createdby and modifiedby User
-        //TODO: Delete behavior with existing related entities - don't allow, alert - not possible cuz related? on all entities
-        //TODO: Reservation ReservedBy User relation - don't allow, need to finish or delete reservation
-        //TODO: Links from details and other pages to resources (authors, departments etc)
+        //TODO: Needs to check whether files work on laptop
+        //TODO: CHECK - Sever relations with all entities for createdby and modifiedby User 
+        //TODO: Reservation ReservedBy User relation - don't allow - not possible cuz related, need to finish or delete reservation
         //TODO: Reservation timer job
 
         // GET: Books
@@ -186,11 +186,10 @@ namespace LibApp.WebApp.Controllers
                 {
                     if (bookViewModel.ImageFile is { Length: > 0 })
                     {
-                        //TODO: File name to book name
-                        //TODO: Validation
-                        //TODO: What happens if same name exists?
+                        var fileName = bookViewModel.Title.Replace(" ", "_").ToLower();
+                        fileName = Regex.Replace(fileName, @"[^\u0000-\u007F]+", string.Empty);
+                        fileName = fileName + "_" + DateTime.Now.Ticks + Path.GetExtension(bookViewModel.ImageFile.FileName);
 
-                        var fileName = Path.GetFileName(bookViewModel.ImageFile.FileName);
                         var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "books");
 
                         // Check if the directory exists, if not, create it
@@ -207,7 +206,7 @@ namespace LibApp.WebApp.Controllers
                         }
 
                         // Save the file path to the user object or database
-                        bookViewModel.ImagePath = "~/img/books/" + fileName;
+                        bookViewModel.ImagePath = "/img/books/" + fileName;
                     }
 
                     var book = _mapper.Map<Book>(bookViewModel);
