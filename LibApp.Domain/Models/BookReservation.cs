@@ -6,7 +6,6 @@
         public Reservation Reservation { get; set; }
         public int BookId { get; set; }
         public Book Book { get; set; }
-        public bool Status { get; set; }
 
         public DateTime CreatedDateTime { get; set; }
         public DateTime ModifiedDateTime { get; set; }
