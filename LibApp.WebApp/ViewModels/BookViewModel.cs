@@ -41,6 +41,7 @@ namespace LibApp.WebApp.ViewModels
 
         [Display(Name = "Authors")]
         public IEnumerable<(int AuthorId, string AuthorName)>? Authors { get; set; }
+
         [Display(Name = "Authors")]
         public IEnumerable<int>? AuthorIds { get; set; }
 

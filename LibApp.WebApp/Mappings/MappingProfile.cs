@@ -62,6 +62,8 @@ namespace LibApp.WebApp.Mappings
 
 
             CreateMap<Reservation, ReservationViewModel>()
+                .ForMember(dest => dest.Books, opt => opt.MapFrom(src => MapBooks(src.BookReservations)))
+                .ForMember(dest => dest.BookIds, opt => opt.MapFrom(src => src.BookReservations.Select(book => book.BookId)))
                 .ForMember(dest => dest.ReservedByUser, opt => opt.MapFrom(src => src.ReservedByUser.UserName))
                 .ForMember(dest => dest.CreatedByUser, opt => opt.MapFrom(src => src.CreatedByUser.UserName))
                 .ForMember(dest => dest.ModifiedByUser, opt => opt.MapFrom(src => src.ModifiedByUser.UserName));
@@ -72,6 +74,11 @@ namespace LibApp.WebApp.Mappings
         private IEnumerable<(int AuthorId, string AuthorName)> MapAuthors(IEnumerable<Author> authors)
         {
             return authors.Select(author => (AuthorId: author.Id, AuthorName: author.Name));
+        }
+
+        private IEnumerable<(int? BookId, string? BookName)> MapBooks(IEnumerable<BookReservation> books)
+        {
+            return books.Select(book => (BookId: book?.BookId, BookName: book?.Book?.Title));
         }
     }
 }

@@ -57,9 +57,6 @@ namespace LibApp.WebApp.Controllers
 
                 var reservationViewModels = _mapper.Map<IEnumerable<ReservationViewModel>>(reservations);
 
-                // Validate mappings
-                
-
                 if (!string.IsNullOrEmpty(searchNameString))
                 {
                     reservationViewModels = reservationViewModels.Where(a => a.ReservedByUser.ToLower().Contains(searchNameString.ToLower()));
@@ -84,24 +81,25 @@ namespace LibApp.WebApp.Controllers
         }
 
         // GET: Reservations/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                var reservation = await _reservationService.GetReservationAsync(id);
 
-            var reservation = await _context.Reservations
-                .Include(r => r.CreatedByUser)
-                .Include(r => r.ModifiedByUser)
-                .Include(r => r.ReservedByUser)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (reservation == null)
+                if (reservation == null)
+                {
+                    return NotFound();
+                }
+
+                var reservationViewModel = _mapper.Map<ReservationViewModel>(reservation);
+
+                return View(reservationViewModel);
+            }
+            catch (Exception exception)
             {
-                return NotFound();
+                return RedirectToAction("ServerError", "Error");
             }
-
-            return View(reservation);
         }
 
         [HttpPost, ActionName("Reserve")]
@@ -131,6 +129,34 @@ namespace LibApp.WebApp.Controllers
             catch (Exception exception)
             {
                 Console.WriteLine(exception);
+                return RedirectToAction("ServerError", "Error");
+            }
+        }
+
+        public IActionResult Start(int id)
+        {
+            try
+            {
+                TempData["SuccessMessage"] = "Reservation started successfully.";
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
+        }
+
+        public IActionResult Finish(int id)
+        {
+            try
+            {
+                TempData["SuccessMessage"] = "Reservation finished successfully.";
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception exception)
+            {
                 return RedirectToAction("ServerError", "Error");
             }
         }

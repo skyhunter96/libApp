@@ -34,6 +34,7 @@ namespace LibApp.Services
         {
             var reservation = await _context.Reservations
                 .Include(r => r.BookReservations)
+                .ThenInclude(br => br.Book)
                 .Include(a => a.ReservedByUser)
                 .Include(a => a.CreatedByUser)
                 .Include(a => a.ModifiedByUser)

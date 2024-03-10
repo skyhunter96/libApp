@@ -1,5 +1,4 @@
-﻿@model Domain.Models.Reservation
-
+﻿@model LibApp.WebApp.ViewModels.ReservationViewModel
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -11,63 +10,52 @@
     <h4>Reservation</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LoanDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LoanDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DueDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DueDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ActualReturnDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ActualReturnDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LateFee)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LateFee)
-        </dd>
-        <dt class = "col-sm-2">
+
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.ReservedByUser)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ReservedByUser.City)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReservedByUser)
         </dd>
-        <dt class = "col-sm-2">
+
+        @if (Model.Books.Any())
+        {
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Books)
+            </dt>
+            <dd class="col-sm-10">
+                @foreach (var book in Model.Books)
+                {
+                    <a href="@Url.Action("Details", "Books", new { id = book.BookId })">
+                        <span>@book.BookName</span><br/>
+                    </a>
+                }
+            </dd>
+        }
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.LoanDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.LoanDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DueDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DueDate)
+        </dd>
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.CreatedDateTime)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.CreatedDateTime)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ModifiedDateTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ModifiedDateTime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedByUser)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedByUser.City)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ModifiedByUser)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ModifiedByUser.City)
-        </dd>
+
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Back to List</a> |
+    <a asp-action="Start" asp-route-id="@Model?.Id">Start</a> |
+    <a asp-action="Finish" asp-route-id="@Model?.Id">Finish</a>
 </div>
