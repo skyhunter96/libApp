@@ -23,9 +23,9 @@ namespace EfDataAccess.Configurations
             entity.Property(r => r.LateFee)
                 .HasColumnType("decimal(10,2)");
 
-            //TODO: Reservation ReservedBy User relation - don't allow, need to finish or delete reservation
             entity.HasOne(r => r.ReservedByUser)
                 .WithMany(u => u.Reservations)
+                .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

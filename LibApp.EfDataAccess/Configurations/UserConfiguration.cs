@@ -86,6 +86,7 @@ namespace EfDataAccess.Configurations
 
             entity.HasMany(u => u.Reservations)
                 .WithOne(r => r.ReservedByUser)
+                .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }
