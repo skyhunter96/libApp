@@ -3,11 +3,13 @@ using Domain.Models;
 using EfDataAccess;
 using LibApp.Services.Interfaces;
 using LibApp.WebApp.Utilities;
+using LibApp.WebApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using X.PagedList;
 
 namespace LibApp.WebApp.Controllers
 {
@@ -19,6 +21,9 @@ namespace LibApp.WebApp.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
 
+        private const int PageSize = 10;
+        private const string SortNameOrder = "name_desc";
+
         public ReservationsController(LibraryContext context, IReservationService reservationService, UserManager<User> userManager, IMapper mapper)
         {
             _context = context;
@@ -28,10 +33,49 @@ namespace LibApp.WebApp.Controllers
         }
 
         // GET: Reservations
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortNameOrder, string currentNameFilter, string searchNameString,
+            int? page)
         {
-            var libraryContext = _context.Reservations.Include(r => r.CreatedByUser).Include(r => r.ModifiedByUser).Include(r => r.ReservedByUser);
-            return View(await libraryContext.ToListAsync());
+            ViewBag.CurrentSortName = sortNameOrder;
+            ViewBag.SortNameParm = String.IsNullOrEmpty(sortNameOrder) ? SortNameOrder : "";
+
+            if (searchNameString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchNameString = currentNameFilter;
+            }
+
+            ViewBag.CurrentNameFilter = searchNameString;
+
+            try
+            {
+                var reservations = await _reservationService.GetReservationsAsync();
+                var reservationViewModels = _mapper.Map<IEnumerable<ReservationViewModel>>(reservations);
+
+                if (!string.IsNullOrEmpty(searchNameString))
+                {
+                    reservationViewModels = reservationViewModels.Where(a => a.ReservedByUser.ToLower().Contains(searchNameString.ToLower()));
+                }
+
+                reservationViewModels = sortNameOrder switch
+                {
+                    SortNameOrder => reservationViewModels.OrderByDescending(a => a.ReservedByUser),
+                    _ => reservationViewModels.OrderBy(a => a.ReservedByUser)
+                };
+
+                var pageNumber = (page ?? 1);
+
+                ViewBag.Reservations = reservationViewModels.ToPagedList(pageNumber, PageSize);
+
+                return View();
+            }
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
 
         // GET: Reservations/Details/5

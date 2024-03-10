@@ -55,9 +55,18 @@ namespace LibApp.WebApp.Mappings
 
             CreateMap<PublisherViewModel, Publisher>();
 
+
             CreateMap<Language, LanguageViewModel>();
 
             CreateMap<LanguageViewModel, Language>();
+
+
+            CreateMap<Reservation, ReservationViewModel>()
+                .ForMember(dest => dest.ReservedByUser, opt => opt.MapFrom(src => src.ReservedByUser.UserName))
+                .ForMember(dest => dest.CreatedByUser, opt => opt.MapFrom(src => src.CreatedByUser.UserName))
+                .ForMember(dest => dest.ModifiedByUser, opt => opt.MapFrom(src => src.ModifiedByUser.UserName));
+
+            CreateMap<ReservationViewModel, Reservation>();
         }
 
         private IEnumerable<(int AuthorId, string AuthorName)> MapAuthors(IEnumerable<Author> authors)

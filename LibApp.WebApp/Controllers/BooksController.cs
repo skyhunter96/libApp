@@ -36,9 +36,7 @@ namespace LibApp.WebApp.Controllers
         //Bulk Delete? after pagination?
         //Delete on Details & Edit?
         //TODO: Needs to check whether files work on laptop
-        //TODO: CHECK - Sever relations with all entities for createdby and modifiedby User
-        //TODO: Reservations: for regular users link to his reservation to confirm
-        //TODO: Reservation ReservedBy User relation - don't allow - not possible cuz related, need to finish or delete reservation
+        //TODO: Reservations: Admin - start reservation and finish reservation
         //TODO: Reservation timer job
 
         // GET: Books
