@@ -9,7 +9,6 @@ namespace LibApp.WebApp.ViewModels
         public DateTime DueDate { get; set; }
         public DateTime? ActualReturnDate { get; set; }
         public decimal LateFee { get; set; }
-        public ICollection<BookReservationViewModel> BookReservations { get; set; }
 
         [Display(Name = "ReservedBy")]
         public string? ReservedByUser { get; set; }
@@ -26,8 +25,8 @@ namespace LibApp.WebApp.ViewModels
         [Display(Name = "ModifiedBy")]
         public string? ModifiedByUser { get; set; }
 
-        public int ReservedByUserId { get; set; }
-        public int CreatedByUserId { get; set; }
-        public int ModifiedByUserId { get; set; }
+        public int? ReservedByUserId { get; set; }
+        public int? CreatedByUserId { get; set; }
+        public int? ModifiedByUserId { get; set; }
     }
 }

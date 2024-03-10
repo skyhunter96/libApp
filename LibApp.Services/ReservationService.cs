@@ -20,6 +20,7 @@ namespace LibApp.Services
         public async Task<IEnumerable<Reservation>> GetReservationsAsync()
         {
             var reservations = await _context.Reservations
+                .Include(r => r.BookReservations)
                 .Include(a => a.ReservedByUser)
                 .Include(a => a.CreatedByUser)
                 .Include(a => a.ModifiedByUser)
@@ -29,6 +30,25 @@ namespace LibApp.Services
             return reservations;
         }
 
+        public async Task<Reservation> GetReservationAsync(int id)
+        {
+            var reservation = await _context.Reservations
+                .Include(r => r.BookReservations)
+                .Include(a => a.ReservedByUser)
+                .Include(a => a.CreatedByUser)
+                .Include(a => a.ModifiedByUser)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            return reservation;
+        }
+
+        public async Task RemoveReservationAsync(Reservation reservation)
+        {
+            _context.BookReservations.RemoveRange(reservation.BookReservations);
+            _context.Reservations.Remove(reservation);
+            await _context.SaveChangesAsync();
+        }
 
         //Reservation can have up to three bookReservations (books)
         public bool UserCanReserve(int loggedInUserId)

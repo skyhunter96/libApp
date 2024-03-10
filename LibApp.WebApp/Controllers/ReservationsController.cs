@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Domain.Models;
 using EfDataAccess;
+using LibApp.Services;
 using LibApp.Services.Interfaces;
 using LibApp.WebApp.Utilities;
 using LibApp.WebApp.ViewModels;
@@ -53,7 +54,11 @@ namespace LibApp.WebApp.Controllers
             try
             {
                 var reservations = await _reservationService.GetReservationsAsync();
+
                 var reservationViewModels = _mapper.Map<IEnumerable<ReservationViewModel>>(reservations);
+
+                // Validate mappings
+                
 
                 if (!string.IsNullOrEmpty(searchNameString))
                 {
@@ -130,126 +135,27 @@ namespace LibApp.WebApp.Controllers
             }
         }
 
-        // GET: Reservations/Create
-        public IActionResult Create()
-        {
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name");
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name");
-            ViewData["ReservedByUserId"] = new SelectList(_context.Users, "Id", "Name");
-            return View();
-        }
-
-        // POST: Reservations/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("LoanDate,DueDate,ActualReturnDate,LateFee,ReservedByUserId,Id,CreatedDateTime,ModifiedDateTime,CreatedByUserId,ModifiedByUserId")] Reservation reservation)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(reservation);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", reservation.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", reservation.ModifiedByUserId);
-            ViewData["ReservedByUserId"] = new SelectList(_context.Users, "Id", "Name", reservation.ReservedByUserId);
-            return View(reservation);
-        }
-
-        // GET: Reservations/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var reservation = await _context.Reservations.FindAsync(id);
-            if (reservation == null)
-            {
-                return NotFound();
-            }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", reservation.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", reservation.ModifiedByUserId);
-            ViewData["ReservedByUserId"] = new SelectList(_context.Users, "Id", "Name", reservation.ReservedByUserId);
-            return View(reservation);
-        }
-
-        // POST: Reservations/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("LoanDate,DueDate,ActualReturnDate,LateFee,ReservedByUserId,Id,CreatedDateTime,ModifiedDateTime,CreatedByUserId,ModifiedByUserId")] Reservation reservation)
-        {
-            if (id != reservation.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(reservation);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ReservationExists(reservation.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", reservation.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", reservation.ModifiedByUserId);
-            ViewData["ReservedByUserId"] = new SelectList(_context.Users, "Id", "Name", reservation.ReservedByUserId);
-            return View(reservation);
-        }
-
-        // GET: Reservations/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var reservation = await _context.Reservations
-                .Include(r => r.CreatedByUser)
-                .Include(r => r.ModifiedByUser)
-                .Include(r => r.ReservedByUser)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (reservation == null)
-            {
-                return NotFound();
-            }
-
-            return View(reservation);
-        }
-
         // POST: Reservations/Delete/5
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var reservation = await _context.Reservations.FindAsync(id);
-            if (reservation != null)
+            try
             {
-                _context.Reservations.Remove(reservation);
+                var reservation = await _reservationService.GetReservationAsync(id);
+                if (reservation != null)
+                {
+                    await _reservationService.RemoveReservationAsync(reservation);
+                    TempData["SuccessMessage"] = "Reservation deleted successfully.";
+                    return Json(new { success = true, message = "Reservation deleted successfully." });
+                }
+
+                TempData["ErrorMessage"] = "Reservation was not deleted. An error occurred while processing your request.";
+                return Json(new { success = false, message = "Reservation not found." });
             }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool ReservationExists(int id)
-        {
-            return _context.Reservations.Any(e => e.Id == id);
+            catch (Exception exception)
+            {
+                return RedirectToAction("ServerError", "Error");
+            }
         }
     }
 }

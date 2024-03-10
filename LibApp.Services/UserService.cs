@@ -136,14 +136,18 @@ namespace LibApp.Services
                 department.ModifiedByUser = null;
             }
 
-            foreach (var reservation in _context.Reservations.Where(b => b.CreatedByUserId == user.Id))
+            foreach (var reservation in _context.Reservations.Where(b => b.CreatedByUserId == user.Id)
+                         .Include(reservation => reservation.BookReservations))
             {
-                reservation.CreatedByUser = null;
+                _context.BookReservations.RemoveRange(reservation.BookReservations);
+                _context.Reservations.Remove(reservation);
             }
 
-            foreach (var reservation in _context.Reservations.Where(b => b.ModifiedByUserId == user.Id))
+            foreach (var reservation in _context.Reservations.Where(b => b.ModifiedByUserId == user.Id)
+                         .Include(reservation => reservation.BookReservations))
             {
-                reservation.ModifiedByUser = null;
+                _context.BookReservations.RemoveRange(reservation.BookReservations);
+                _context.Reservations.Remove(reservation);
             }
 
             foreach (var userToChange in _context.Users.Where(b => b.CreatedByUserId == user.Id))
