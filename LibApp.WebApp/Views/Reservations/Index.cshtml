@@ -63,6 +63,8 @@
 
             <th>DueDate</th>
 
+            <th>IsStarted</th>
+
             <th></th>
         </tr>
     </thead>
@@ -86,6 +88,9 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.DueDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsStarted)
                 </td>
                 <td>
                     <a asp-action="Details" asp-route-id="@item.Id">Details</a> |

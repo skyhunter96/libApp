@@ -46,6 +46,12 @@
             @Html.DisplayFor(model => model.DueDate)
         </dd>
         <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.IsStarted)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.IsStarted)
+        </dd>
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.CreatedDateTime)
         </dt>
         <dd class="col-sm-10">
@@ -56,6 +62,12 @@
 </div>
 <div>
     <a asp-action="Index">Back to List</a> |
-    <a asp-action="Start" asp-route-id="@Model?.Id">Start</a> |
-    <a asp-action="Finish" asp-route-id="@Model?.Id">Finish</a>
+    @if (!Model.IsStarted)
+    {
+        <a asp-action="Start" asp-route-id="@Model?.Id">Start</a>
+    }
+    else
+    {
+        <a asp-action="Finish" asp-route-id="@Model?.Id">Finish</a>
+    }
 </div>

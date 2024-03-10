@@ -100,7 +100,8 @@ namespace LibApp.Services
             }
             reservation.ModifiedDateTime = DateTime.Now;
             reservation.ModifiedByUserId = loggedInUserId;
-            
+            reservation.IsStarted = false;
+
             //Then add single bookReservation object
 
             var bookReservation = new BookReservation();
@@ -122,6 +123,51 @@ namespace LibApp.Services
             }
 
             _context.SaveChanges();
+        }
+
+        public void StartReservation(int id, int loggedInUserId)
+        {
+            var reservation = _context.Reservations
+                .Include(r => r.BookReservations)
+                .ThenInclude(br => br.Book)
+                .Include(a => a.ReservedByUser)
+                .Include(a => a.CreatedByUser)
+                .Include(a => a.ModifiedByUser)
+                .FirstOrDefault(r => r.Id == id);
+
+            reservation.LoanDate = DateTime.Now;
+            reservation.DueDate = DateTime.Now.AddDays(21);
+            reservation.ModifiedByUserId = loggedInUserId;
+            reservation.IsStarted = true;
+
+            _context.SaveChanges();
+        }
+
+        public void FinishReservation(int id, int loggedInUserId)
+        {
+            var reservation = _context.Reservations
+                .Include(r => r.BookReservations)
+                .ThenInclude(br => br.Book)
+                .Include(a => a.ReservedByUser)
+                .Include(a => a.CreatedByUser)
+                .Include(a => a.ModifiedByUser)
+                .FirstOrDefault(r => r.Id == id);
+
+            if (reservation != null)
+            {
+                foreach (var bookReservation in reservation.BookReservations)
+                {
+                    bookReservation.Book.ReservedQuantity--;
+                    bookReservation.Book.AvailableQuantity++;
+                }
+
+                if (reservation.BookReservations != null)
+                    _context.BookReservations.RemoveRange(reservation.BookReservations);
+
+                _context.Reservations.Remove(reservation);
+
+                _context.SaveChanges();
+            }
         }
     }
 }

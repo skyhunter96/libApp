@@ -137,6 +137,10 @@ namespace LibApp.WebApp.Controllers
         {
             try
             {
+                var loggedInUserId = _userManager.GetUserId(User);
+
+                _reservationService.StartReservation(id, Convert.ToInt32(loggedInUserId));
+
                 TempData["SuccessMessage"] = "Reservation started successfully.";
 
                 return RedirectToAction(nameof(Index));
@@ -151,6 +155,10 @@ namespace LibApp.WebApp.Controllers
         {
             try
             {
+                var loggedInUserId = _userManager.GetUserId(User);
+
+                _reservationService.FinishReservation(id, Convert.ToInt32(loggedInUserId));
+
                 TempData["SuccessMessage"] = "Reservation finished successfully.";
 
                 return RedirectToAction(nameof(Index));

@@ -10,6 +10,9 @@ namespace LibApp.WebApp.ViewModels
         public DateTime? ActualReturnDate { get; set; }
         public decimal LateFee { get; set; }
 
+        [Display(Name = "IsStarted")]
+        public bool IsStarted { get; set; }
+
         [Display(Name = "Books")]
         public IEnumerable<(int? BookId, string? BookName)>? Books { get; set; }
 

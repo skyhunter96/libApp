@@ -10,5 +10,7 @@ namespace LibApp.Services.Interfaces
         bool UserCanReserve(int loggedInUserId);
         bool BookCanBeReserved(int bookId);
         void ReserveBook(int bookId, int loggedInUserId);
+        void StartReservation(int id, int loggedInUserId);
+        void FinishReservation(int id, int loggedInUserId);
     }
 }
