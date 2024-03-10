@@ -1,6 +1,7 @@
 ﻿using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace EfDataAccess.Configurations
 {
@@ -8,6 +9,8 @@ namespace EfDataAccess.Configurations
     {
         public void Configure(EntityTypeBuilder<BookReservation> entity)
         {
+            entity.ToTable("BookReservations", "lib");
+
             entity.HasKey(br => new { br.ReservationId, br.BookId });
 
             entity.HasOne(br => br.Reservation)
