@@ -213,4 +213,16 @@
     }
     |
     <a asp-action="Index">Back to List</a>
+    |
+    @if (user?.RoleId is (int)RoleEnum.Admin or (int)RoleEnum.Librarian or (int)RoleEnum.Regular)
+    {
+        <a class="reserve-button" 
+           data-controller="Reservations" 
+           data-action="Reserve" 
+           data-id="@Model.Id" 
+           style="color: #51cbce; text-decoration: none; cursor: pointer;"
+           onmouseover="this.style.textDecoration='underline';"
+           onmouseout="this.style.textDecoration='none';">Reserve
+        </a>
+    }
 </div>

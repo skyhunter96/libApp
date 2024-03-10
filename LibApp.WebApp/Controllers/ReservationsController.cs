@@ -55,28 +55,35 @@ namespace LibApp.WebApp.Controllers
             return View(reservation);
         }
 
+        [HttpPost, ActionName("Reserve")]
         public IActionResult Reserve(int bookId)
         {
-            var loggedInUserId = _userManager.GetUserId(User);
-
-            var url = Url.Action("Index", "Books");
-
-            if (!_reservationService.UserCanReserve(Convert.ToInt32(loggedInUserId)))
+            try
             {
-                TempData["ErrorMessage"] = "Book was not reserved. The user has max reservations.";
-                return Json(new { redirectUrl = url, success = false, message = "Book was not reserved" });
-            }
+                var loggedInUserId = _userManager.GetUserId(User);
 
-            if (!_reservationService.BookCanBeReserved(bookId))
+                if (!_reservationService.UserCanReserve(Convert.ToInt32(loggedInUserId)))
+                {
+                    TempData["ErrorMessage"] = "Book was not reserved. The user has max reservations.";
+                    return Json(new { success = false, message = "Book was not reserved" });
+                }
+
+                if (!_reservationService.BookCanBeReserved(bookId))
+                {
+                    TempData["ErrorMessage"] = "Book was not reserved. It is not available.";
+                    return Json(new { success = false, message = "Book was not reserved" });
+                }
+
+                _reservationService.ReserveBook(bookId, Convert.ToInt32(loggedInUserId));
+
+                TempData["SuccessMessage"] = "Book reserved successfully.";
+                return Json(new { success = true, message = "Book reserved successfully." });
+            }
+            catch (Exception exception)
             {
-                TempData["ErrorMessage"] = "Book was not reserved. It is not available.";
-                return Json(new { redirectUrl = url, success = false, message = "Book was not reserved" });
+                Console.WriteLine(exception);
+                return RedirectToAction("ServerError", "Error");
             }
-
-            _reservationService.ReserveBook(bookId, Convert.ToInt32(loggedInUserId));
-
-            TempData["SuccessMessage"] = "Book reserved successfully.";
-            return Json(new { redirectUrl = url, success = true, message = "Book reserved successfully." });
         }
 
         // GET: Reservations/Create

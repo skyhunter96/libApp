@@ -187,6 +187,30 @@
             });
         </script>
 
+        <!-- Reserve -->
+    
+        <script>
+            $(document).ready(function () {
+                $(".reserve-button").on("click", function (event) {
+                    event.preventDefault();
+                
+                    var bookId = $(this).data("id");
+
+                    $.ajax({
+                        url: '/Reservations/Reserve',
+                        type: "POST", 
+                        data: { bookId: bookId }, 
+                        dataType: "json",
+                        success: function (data) {
+                            location.reload();
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            alert('Error: ' + xhr.responseText);
+                        }
+                    });
+                });
+            });
+        </script>
     
         <!-- Image -->
         <script>
