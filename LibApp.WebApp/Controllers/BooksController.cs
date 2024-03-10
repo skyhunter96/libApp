@@ -36,7 +36,6 @@ namespace LibApp.WebApp.Controllers
         //Bulk Delete? after pagination?
         //Delete on Details & Edit?
         //TODO: Needs to check whether files work on laptop
-        //TODO: Reservations: User - check ur reservation
         //TODO: Reservation timer job
 
         // GET: Books
