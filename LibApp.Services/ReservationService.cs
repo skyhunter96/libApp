@@ -38,14 +38,33 @@ namespace LibApp.Services
                 .Include(a => a.ReservedByUser)
                 .Include(a => a.CreatedByUser)
                 .Include(a => a.ModifiedByUser)
-                .AsNoTracking()
                 .FirstOrDefaultAsync(r => r.Id == id);
 
             return reservation;
         }
 
+        public async Task<int> GetReservationIdForUserAsync(int userId)
+        {
+            var reservation = await _context.Reservations
+                .Include(r => r.BookReservations)
+                .ThenInclude(br => br.Book)
+                .Include(a => a.ReservedByUser)
+                .Include(a => a.CreatedByUser)
+                .Include(a => a.ModifiedByUser)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(r => r.ReservedByUserId == userId);
+
+            return reservation?.Id ?? 0;
+        }
+
         public async Task RemoveReservationAsync(Reservation reservation)
         {
+            foreach (var bookReservation in reservation.BookReservations)
+            {
+                bookReservation.Book.ReservedQuantity--;
+                bookReservation.Book.AvailableQuantity++;
+            }
+
             _context.BookReservations.RemoveRange(reservation.BookReservations);
             _context.Reservations.Remove(reservation);
             await _context.SaveChangesAsync();

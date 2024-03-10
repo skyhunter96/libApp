@@ -29,6 +29,18 @@ namespace LibApp.Services
             return users;
         }
 
+        public User GetUser(int id)
+        {
+            var user = _context.Users
+                .Include(u => u.CreatedByUser)
+                .Include(u => u.ModifiedByUser)
+                .Include(u => u.Role)
+                .AsNoTracking()
+                .FirstOrDefault(u => u.Id == id);
+
+            return user;
+        }
+
         public async Task<User> GetUserAsync(int id)
         {
             var user = await _context.Users

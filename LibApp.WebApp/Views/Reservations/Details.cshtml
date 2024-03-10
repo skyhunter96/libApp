@@ -1,7 +1,14 @@
-﻿@model LibApp.WebApp.ViewModels.ReservationViewModel
+﻿@using Domain.Models
+@using Microsoft.AspNetCore.Identity
+
+@model LibApp.WebApp.ViewModels.ReservationViewModel
+@inject UserManager<User> UserManager
+
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var user = await UserManager.GetUserAsync(User);
 }
 
 <h1>Details</h1>
@@ -62,12 +69,16 @@
 </div>
 <div>
     <a asp-action="Index">Back to List</a> |
-    @if (!Model.IsStarted)
+    @if (user?.RoleId is (int)RoleEnum.Admin or (int)RoleEnum.Librarian)
     {
-        <a asp-action="Start" asp-route-id="@Model?.Id">Start</a>
+        @if (!Model.IsStarted)
+        {
+            <a asp-action="Start" asp-route-id="@Model?.Id">Start</a>
+        }
+        else
+        {
+            <a asp-action="Finish" asp-route-id="@Model?.Id">Finish</a>
+        }
     }
-    else
-    {
-        <a asp-action="Finish" asp-route-id="@Model?.Id">Finish</a>
-    }
+    <a asp-action="Finish" asp-route-id="@Model?.Id">Delete</a>
 </div>

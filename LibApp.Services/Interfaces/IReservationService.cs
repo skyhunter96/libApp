@@ -6,6 +6,7 @@ namespace LibApp.Services.Interfaces
     {
         Task<IEnumerable<Reservation>> GetReservationsAsync();
         Task<Reservation> GetReservationAsync(int id);
+        Task<int> GetReservationIdForUserAsync(int userId);
         Task RemoveReservationAsync(Reservation reservation);
         bool UserCanReserve(int loggedInUserId);
         bool BookCanBeReserved(int bookId);

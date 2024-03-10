@@ -20,17 +20,19 @@ namespace LibApp.WebApp.Controllers
         private readonly LibraryContext _context;
         private readonly IReservationService _reservationService;
         private readonly UserManager<User> _userManager;
+        private readonly IUserService _userService;
         private readonly IMapper _mapper;
 
         private const int PageSize = 10;
         private const string SortNameOrder = "name_desc";
 
-        public ReservationsController(LibraryContext context, IReservationService reservationService, UserManager<User> userManager, IMapper mapper)
+        public ReservationsController(LibraryContext context, IReservationService reservationService, UserManager<User> userManager, IMapper mapper, IUserService userService)
         {
             _context = context;
             _reservationService = reservationService;
             _userManager = userManager;
             _mapper = mapper;
+            _userService = userService;
         }
 
         // GET: Reservations
@@ -85,6 +87,16 @@ namespace LibApp.WebApp.Controllers
         {
             try
             {
+                if (id == 0)
+                {
+                    var loggedInUserId = _userManager.GetUserId(User);
+
+                    var currentReservationId = await _reservationService.GetReservationIdForUserAsync(Convert.ToInt32(loggedInUserId));
+
+                    if (currentReservationId != 0)
+                        id = currentReservationId;
+                }
+
                 var reservation = await _reservationService.GetReservationAsync(id);
 
                 if (reservation == null)
@@ -161,7 +173,9 @@ namespace LibApp.WebApp.Controllers
 
                 TempData["SuccessMessage"] = "Reservation finished successfully.";
 
-                return RedirectToAction(nameof(Index));
+                var loggedInUser = _userService.GetUser(Convert.ToInt32(loggedInUserId));
+
+                return loggedInUser?.RoleId is (int)RoleEnum.Regular ? RedirectToAction("Index", "Home") : RedirectToAction(nameof(Index));
             }
             catch (Exception exception)
             {
