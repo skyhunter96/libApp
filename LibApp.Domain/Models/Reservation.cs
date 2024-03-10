@@ -8,6 +8,7 @@ public class Reservation : BaseEntity
     public DateTime DueDate { get; set; }
     public DateTime? ActualReturnDate { get; set; }
     public decimal LateFee { get; set; }
+    public bool IsStarted { get; set; }
     public int? ReservedByUserId { get; set; }
 
     public virtual User? ReservedByUser { get; set; }
