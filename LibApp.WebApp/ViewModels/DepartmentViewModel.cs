@@ -29,7 +29,7 @@ namespace LibApp.WebApp.ViewModels
         [Display(Name = "ModifiedBy")]
         public string? ModifiedByUser { get; set; }
 
-        public int CreatedByUserId { get; set; }
-        public int ModifiedByUserId { get; set; }
+        public int? CreatedByUserId { get; set; }
+        public int? ModifiedByUserId { get; set; }
     }
 }

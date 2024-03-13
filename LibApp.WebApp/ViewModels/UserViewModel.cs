@@ -83,10 +83,10 @@ namespace LibApp.WebApp.ViewModels
         public string? ModifiedByUser { get; set; }
 
         [Display(Name = "CreatedBy")]
-        public int CreatedByUserId { get; set; }
+        public int? CreatedByUserId { get; set; }
 
         [Display(Name = "ModifiedBy")]
-        public int ModifiedByUserId { get; set; }
+        public int? ModifiedByUserId { get; set; }
 
         private const string DocumentIdPattern = @"^\d{13}$";
 
