@@ -118,6 +118,16 @@ namespace LibApp.Services
                 book.ModifiedByUser = null;
             }
 
+            foreach (var category in _context.Categories.Where(b => b.CreatedByUserId == user.Id))
+            {
+                category.CreatedByUser = null;
+            }
+
+            foreach (var category in _context.Categories.Where(b => b.ModifiedByUserId == user.Id))
+            {
+                category.ModifiedByUser = null;
+            }
+
             foreach (var author in _context.Authors.Where(b => b.CreatedByUserId == user.Id))
             {
                 author.CreatedByUser = null;
@@ -220,7 +230,7 @@ namespace LibApp.Services
 
             user.IsActive = true;
 
-            _context.SaveChangesAsync();
+            _context.SaveChanges();
         }
 
         public void Deactivate(int id)
@@ -232,7 +242,7 @@ namespace LibApp.Services
 
             user.IsActive = false;
 
-            _context.SaveChangesAsync();
+            _context.SaveChanges();
         }
     }
 }
