@@ -2,6 +2,7 @@
 using EfDataAccess;
 using LibApp.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace LibApp.Services
 {
@@ -58,6 +59,9 @@ namespace LibApp.Services
 
         public bool CategoryExists(string name)
         {
+            if (name.IsNullOrEmpty())
+                return false;
+
             var exists = _context.Categories.Any(d => d.Name.ToLower() == name.ToLower());
             return exists;
         }

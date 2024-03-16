@@ -2,7 +2,8 @@
 using EfDataAccess;
 using LibApp.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
+using Microsoft.IdentityModel.Tokens;
+
 
 namespace LibApp.Services
 {
@@ -60,6 +61,9 @@ namespace LibApp.Services
 
         public bool DepartmentExists(string name)
         {
+            if (name.IsNullOrEmpty())
+                return false;
+
             var exists = _context.Departments.Any(d => d.Name.ToLower() == name.ToLower());
             return exists;
         }

@@ -1,8 +1,8 @@
 ﻿using Domain.Models;
 using EfDataAccess;
 using LibApp.Services.Interfaces;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace LibApp.Services
 {
@@ -66,6 +66,9 @@ namespace LibApp.Services
 
         public bool AuthorExists(string name)
         {
+            if (name.IsNullOrEmpty())
+                return false;
+
             var exists = _context.Authors.Any(a => a.Name.ToLower() == name.ToLower());
             return exists;
         }
