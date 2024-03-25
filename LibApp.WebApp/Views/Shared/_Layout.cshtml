@@ -1,0 +1,254 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8"/>
+        <link rel="apple-touch-icon" sizes="76x76" href="/img/apple-icon.png">
+        <link rel="icon" type="image/png" href="/img/favicon.png">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+
+        <title>@ViewData["Title"] - LibApp.WebApp</title>
+
+        <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport'/>
+
+        @*<meta name="RequestVerificationToken" content="your-token-value" /> *@
+
+        <!--     Fonts and icons     -->
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700,200" rel="stylesheet"/>
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
+
+        <!-- CSS Files -->
+        <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+        <link href="/css/paper-dashboard.css?v=2.0.1" rel="stylesheet"/>
+        <link href="/demo/demo.css" rel="stylesheet"/>
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <link href="~/css/PagedList.css" rel="stylesheet" type="text/css" />
+        
+        @RenderSection("Scripts", required: false)
+    </head>
+
+    <body>
+
+        <div class="wrapper ">
+                    
+            @Html.Partial("Partials/_SidebarPartial")
+                    
+            <div class="main-panel">
+
+                <!-- Navbar -->
+
+                @Html.Partial("Partials/_NavbarPartial")
+                <!-- End Navbar -->
+
+                <div class="content">
+
+                    <!-- Success & Error -->
+
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            @TempData["SuccessMessage"]
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    }
+
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @TempData["ErrorMessage"]
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    }
+
+                    <!-- Success & Error End -->
+
+                    @RenderBody()
+                </div>
+
+                @Html.Partial("Partials/_FooterPartial")
+
+            </div>
+        </div>
+
+        <!--   Core JS Files   -->
+        <script src="/js/core/jquery.min.js"></script>
+        <script src="/js/core/popper.min.js"></script>
+        <script src="/js/core/bootstrap.min.js"></script>
+        <script src="/js/plugins/perfect-scrollbar.jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+        <!--  Google Maps Plugin    -->
+        <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script>
+        <!-- Chart JS -->
+        <script src="/js/plugins/chartjs.min.js"></script>
+        <!--  Notifications Plugin    -->
+        <script src="/js/plugins/bootstrap-notify.js"></script>
+
+        <script src="/demo/demo.js"></script>
+    
+        <!-- Select2 -->
+        <script>
+            $(document).ready(function () {
+                $("#AuthorId").select2({
+                    placeholder: "Select author", // Placeholder text
+                });
+            });
+
+            $(document).ready(function () {
+                $("#AuthorIds").select2({
+                    placeholder: "Select authors", // Placeholder text
+                });
+            });
+
+            $(document).ready(function () {
+                $("#PublisherId").select2({
+                    placeholder: "Select publishers", // Placeholder text
+                });
+            });
+
+            $(document).ready(function () {
+                $("#CategoryId").select2({
+                    placeholder: "Select categories", // Placeholder text
+                });
+            });
+
+            $(document).ready(function () {
+                $("#DepartmentId").select2({
+                    placeholder: "Select departments", // Placeholder text
+                });
+            });
+
+            $(document).ready(function () {
+                $("#LanguageId").select2({
+                    placeholder: "Select languages", // Placeholder text
+                });
+            });
+
+            var releaseYearInput = document.getElementById("ReleaseYear");
+            if (releaseYearInput.value === "") {
+                releaseYearInput.value = new Date().getFullYear();
+            }
+        </script>
+        
+        <!-- Clear Button -->
+        <script>
+            function clearInputs() {
+                clearInput("SearchNameString");
+                clearSelect("RoleId");
+                clearInput("SearchTitleString");
+                clearSelect("AuthorId");
+                clearSelect("PublisherId");
+                clearSelect("CategoryId");
+                clearSelect("DepartmentId");
+                clearSelect("LanguageId");
+            }
+
+            function clearInput(inputId) {
+                var input = document.getElementById(inputId);
+                if (input) {
+                    input.value = "";
+                }
+            }
+
+            function clearSelect(selectId) {
+                $("#" + selectId).val(null).trigger('change');
+            }
+        </script>
+
+        <!-- Delete -->
+        <script>
+            $(document).ready(function () {
+                $('.delete-button').on('click', function (event) {
+                    event.preventDefault();
+
+                    var entityController = $(this).data('controller');
+                    var entityAction = $(this).data('action');
+                    var entityId = $(this).data('id');
+                    var confirmation = confirm('Are you sure you want to delete this item?');
+
+                    if (confirmation) {
+                        $.ajax({
+                            url: '/' + entityController + '/' + entityAction,
+                            data: { id: entityId },
+                            type: 'POST',
+                            success: function (data) {
+                                location.reload();
+                            },
+                            error: function (xhr, ajaxOptions, thrownError) {
+                                alert('Error: ' + xhr.responseText);
+                            }
+                        });
+                    }
+                });
+            });
+        </script>
+
+        <!-- Reserve -->
+    
+        <script>
+            $(document).ready(function () {
+                $(".reserve-button").on("click", function (event) {
+                    event.preventDefault();
+                
+                    var bookId = $(this).data("id");
+
+                    $.ajax({
+                        url: '/Reservations/Reserve',
+                        type: "POST", 
+                        data: { bookId: bookId }, 
+                        dataType: "json",
+                        success: function (data) {
+                            location.reload();
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            alert('Error: ' + xhr.responseText);
+                        }
+                    });
+                });
+            });
+        </script>
+    
+        <!-- Image -->
+        <script>
+            function showFileName() {
+                var input = document.getElementById('inputImageFile');
+                var fileNameDisplay = document.getElementById('fileNameDisplay');
+                var btnClearImage = document.getElementById('btnClearImage');
+                var file = input.files[0];
+
+                if (file) {
+                    var fileSize = file.size; // Size in bytes
+                    var fileType = file.type; // MIME type
+
+                    // Check if the file type is an image and the size is within the limit
+                    if (fileType.startsWith('image/') && fileSize <= 25 * 1024 * 1024) {
+                        fileNameDisplay.textContent = file.name;
+                        btnClearImage.style.display = 'inline-block'; // Show the "Clear" button
+                    } else {
+                        // Reset the file input and display an error message
+                        input.value = '';
+                        fileNameDisplay.textContent = 'Invalid file. Please select an image file (up to 25 MB).';
+                        btnClearImage.style.display = 'none'; // Hide the "Clear" button
+                    }
+                } else {
+                    fileNameDisplay.textContent = '';
+                    btnClearImage.style.display = 'none'; // Hide the "Clear" button
+                }
+            }
+
+            document.getElementById('btnClearImage').addEventListener('click', function () {
+                var input = document.getElementById('inputImageFile');
+                var fileNameDisplay = document.getElementById('fileNameDisplay');
+
+                input.value = ''; // Clear the selected file
+                fileNameDisplay.textContent = ''; // Clear the displayed file name
+                this.style.display = 'none'; // Hide the "Clear" button
+            });
+        </script>
+    </body>
+
+</html>

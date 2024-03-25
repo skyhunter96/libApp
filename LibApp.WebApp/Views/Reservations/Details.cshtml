@@ -1,0 +1,84 @@
+﻿@using Domain.Models
+@using Microsoft.AspNetCore.Identity
+
+@model LibApp.WebApp.ViewModels.ReservationViewModel
+@inject UserManager<User> UserManager
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var user = await UserManager.GetUserAsync(User);
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Reservation</h4>
+    <hr />
+    <dl class="row">
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReservedByUser)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReservedByUser)
+        </dd>
+
+        @if (Model.Books.Any())
+        {
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Books)
+            </dt>
+            <dd class="col-sm-10">
+                @foreach (var book in Model.Books)
+                {
+                    <a href="@Url.Action("Details", "Books", new { id = book.BookId })">
+                        <span>@book.BookName</span><br/>
+                    </a>
+                }
+            </dd>
+        }
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.LoanDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.LoanDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DueDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DueDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.IsStarted)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.IsStarted)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.CreatedDateTime)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.CreatedDateTime)
+        </dd>
+
+    </dl>
+</div>
+<div>
+    <a asp-action="Index">Back to List</a> |
+    @if (user?.RoleId is (int)RoleEnum.Admin or (int)RoleEnum.Librarian)
+    {
+        @if (!Model.IsStarted)
+        {
+            <a asp-action="Start" asp-route-id="@Model?.Id">Start</a>
+        }
+        else
+        {
+            <a asp-action="Finish" asp-route-id="@Model?.Id">Finish</a>
+        }
+    }
+    <a asp-action="Finish" asp-route-id="@Model?.Id">Delete</a>
+</div>

@@ -1,0 +1,228 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Domain.Models
+@using Microsoft.IdentityModel.Tokens
+
+@inject UserManager<User> UserManager
+
+@model LibApp.WebApp.ViewModels.BookViewModel
+
+@{
+    ViewData["Title"] = "Details";
+
+    var user = await UserManager.GetUserAsync(User);
+}
+
+<h1>Details</h1>
+
+@* TODO: Add reserve for user *@
+
+<div>
+    <h4>Book</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+        
+        @if (Model.Authors.Any())
+        {
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Authors)
+            </dt>
+            <dd class="col-sm-10">
+                @foreach (var author in Model.Authors)
+                {
+                    <a href="@Url.Action("Details", "Authors", new { id = author.AuthorId })">
+                        <span>@author.AuthorName</span><br />
+                    </a>
+                }
+            </dd>
+        }
+
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Isbn)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Isbn)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Edition)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Edition)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ReleaseYear)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ReleaseYear)
+        </dd>
+        
+
+        @if (Model.Cost.HasValue)
+        {
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.Cost)
+            </dt>
+            <dd class = "col-sm-10">
+                @Html.DisplayFor(model => model.Cost)
+            </dd>
+        }
+
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IsAvailable)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IsAvailable)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Quantity)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Quantity)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.AvailableQuantity)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.AvailableQuantity)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ReservedQuantity)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ReservedQuantity)
+        </dd>
+        
+        @if (!Model.Publisher.IsNullOrEmpty())
+        {
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.Publisher)
+            </dt>
+            <dd class = "col-sm-10">
+                <a href="@Url.Action("Details", "Publishers", new { id = Model.PublisherId })">
+                    @Model.Publisher
+                </a>
+            </dd>
+        }
+
+        @if (!Model.Category.IsNullOrEmpty())
+        {
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.Category)
+            </dt>
+            <dd class = "col-sm-10">
+                <a href="@Url.Action("Details", "Categories", new { id = Model.CategoryId })">
+                    @Model.Category
+                </a>
+            </dd>
+        }
+        
+        @if (!Model.Department.IsNullOrEmpty())
+        {
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.Department)
+            </dt>
+            <dd class = "col-sm-10">
+                <a href="@Url.Action("Details", "Departments", new { id = Model.DepartmentId })">
+                    @Model.Department
+                </a>
+            </dd>
+        }
+        
+        @if (!Model.Language.IsNullOrEmpty())
+        {
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.Language)
+            </dt>
+            <dd class = "col-sm-10">
+                <a href="@Url.Action("Details", "Languages", new { id = Model.LanguageId })">
+                    @Model.Language
+                </a>
+            </dd>
+        }
+
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CreatedDateTime)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CreatedDateTime)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ModifiedDateTime)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ModifiedDateTime)
+        </dd>
+
+        @if (!Model.CreatedByUser.IsNullOrEmpty())
+        {
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.CreatedByUser)
+            </dt>
+            <dd class="col-sm-10">
+                <a href="@Url.Action("Details", "Users", new { id = Model.CreatedByUserId })">
+                    @Model.CreatedByUser
+                </a>
+            </dd>
+        }
+        
+        @if (!Model.ModifiedByUser.IsNullOrEmpty())
+        {
+            <dt class = "col-sm-2">
+                @Html.DisplayNameFor(model => model.ModifiedByUser)
+            </dt>
+            <dd class="col-sm-10">
+                <a href="@Url.Action("Details", "Users", new { id = Model.ModifiedByUserId })">
+                    @Model.ModifiedByUser
+                </a>
+            </dd>
+        }
+
+    </dl>
+</div>
+
+<div>
+    <hr />
+    <dl class="row">
+        @if (!string.IsNullOrEmpty(Model.ImagePath))
+        {
+            <dt class="col-sm-2">
+                Image
+            </dt>
+            <dd class="col-sm-10">
+                <img src="@Model.ImagePath" alt="Book Image not Loaded" class="img-fluid" style="max-width: 200px; height: auto;" />
+            </dd>
+        }
+    </dl>
+</div>
+
+<div>
+    @if (user?.RoleId is (int)RoleEnum.Admin or (int)RoleEnum.Librarian)
+    {
+        <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
+    }
+    |
+    <a asp-action="Index">Back to List</a>
+    |
+    @if (user?.RoleId is (int)RoleEnum.Admin or (int)RoleEnum.Librarian or (int)RoleEnum.Regular)
+    {
+        <a class="reserve-button" 
+           data-controller="Reservations" 
+           data-action="Reserve" 
+           data-id="@Model.Id" 
+           style="color: #51cbce; text-decoration: none; cursor: pointer;"
+           onmouseover="this.style.textDecoration='underline';"
+           onmouseout="this.style.textDecoration='none';">Reserve
+        </a>
+    }
+</div>

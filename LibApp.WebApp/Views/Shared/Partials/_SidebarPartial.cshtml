@@ -1,0 +1,84 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.IdentityModel.Tokens
+@using Domain.Models
+
+@inject UserManager<User> UserManager
+
+@{
+    Layout = null;
+
+    var user = await UserManager.GetUserAsync(User);
+}
+
+@*TODO: Links*@
+
+<div class="sidebar" data-color="white" data-active-color="danger">
+    <div class="logo">
+        <a class="simple-text logo-mini" asp-controller="Home" asp-action="Index">
+            <div class="logo-image-small">
+                <img src="/img/logo-color-small.png">
+            </div>
+        </a>
+        <a class="simple-text logo-normal" asp-controller="Home" asp-action="Index">
+            LibApp
+        </a>
+    </div>
+    <div class="sidebar-wrapper">
+        <ul class="nav">
+            <li>
+                <a asp-controller="Books" asp-action="Index">
+                    <i class="nc-icon nc-book-bookmark"></i>
+                    <p>Books</p>
+                </a>
+            </li>
+            
+            @if (user?.RoleId is (int)RoleEnum.Admin or (int)RoleEnum.Librarian)
+            {
+                <li>
+                    <a asp-controller="Categories" asp-action="Index">
+                        <i class="nc-icon nc-tag-content"></i>
+                        <p>Categories</p>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Authors" asp-action="Index">
+                        <i class="nc-icon nc-badge"></i>
+                        <p>Authors</p>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Publishers" asp-action="Index">
+                        <i class="nc-icon nc-bold"></i>
+                        <p>Publishers</p>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Departments" asp-action="Index">
+                        <i class="nc-icon nc-tile-56"></i>
+                        <p>Departments</p>
+                    </a>
+                </li>
+                @* TODO: Remove if not using *@
+                <li>
+                    <a asp-controller="Reservations" asp-action="Index">
+                        <i class="nc-icon nc-check-2"></i>
+                        <p>Reservations</p>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Users" asp-action="Index">
+                        <i class="nc-icon nc-single-02"></i>
+                        <p>Users</p>
+                    </a>
+                </li>
+                <li>
+                    <a asp-controller="Languages" asp-action="Index">
+                        <i class="nc-icon nc-globe"></i>
+                        <p>Languages</p>
+                    </a>
+                </li>
+            }
+
+        </ul>
+    </div>
+</div>
