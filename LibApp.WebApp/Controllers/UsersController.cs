@@ -272,6 +272,7 @@ namespace LibApp.WebApp.Controllers
         // POST: Users/Delete/5
         [Authorize(Roles = AppRoles.Admin)]
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -308,6 +309,8 @@ namespace LibApp.WebApp.Controllers
         }
 
         [Authorize(Roles = AppRoles.Admin)]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Activate(int id)
         {
             try
@@ -330,6 +333,8 @@ namespace LibApp.WebApp.Controllers
         }
 
         [Authorize(Roles = AppRoles.Admin)]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Deactivate(int id)
         {
             try

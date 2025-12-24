@@ -223,7 +223,8 @@ namespace LibApp.WebApp.Controllers
 
         // POST: Publishers/Delete/5
         [HttpPost, ActionName("Delete")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {

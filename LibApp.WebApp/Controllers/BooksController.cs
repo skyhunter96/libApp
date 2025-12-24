@@ -35,7 +35,8 @@ namespace LibApp.WebApp.Controllers
         //Filter by isAvailable
         //Bulk Delete? after pagination?
         //Delete on Details & Edit?
-        //TODO: Needs to check whether files work on laptop
+        //TODO: Instructions to install on another machine
+        //TODO: Index page on all resources should have filters one by the other (no one under other like it's now)
         //TODO: Reservation timer job
 
         // GET: Books
@@ -363,7 +364,7 @@ namespace LibApp.WebApp.Controllers
         // POST: Books/Delete/5
         [Authorize(Roles = AppRoles.Admin + "," + AppRoles.Librarian)]
         [HttpPost, ActionName("Delete")]
-        //Validate anti-forgery is left on purpose
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
             try
