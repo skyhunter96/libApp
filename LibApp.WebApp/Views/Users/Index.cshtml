@@ -91,7 +91,9 @@
     @foreach (var item in userPages) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.FullName)
+                <a asp-action="Details" asp-route-id="@item.Id">
+                    <span style="color: black;">@item.FullName</span>
+                </a>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.UserName)
