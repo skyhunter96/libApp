@@ -12,7 +12,7 @@
 
 }
 
-<h1>Index</h1>
+<h1>Authors</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -71,7 +71,9 @@
         {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                <a asp-action="Details" asp-route-id="@item.Id">
+                    <span style="color: black;">@item.Name</span>
+                </a>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CreatedDateTime)
