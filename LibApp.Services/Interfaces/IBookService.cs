@@ -1,4 +1,4 @@
-﻿using Domain.Models;
+﻿using LibApp.Domain.Models;
 
 namespace LibApp.Services.Interfaces;
 

@@ -1,248 +1,247 @@
-﻿using Domain.Models;
-using EfDataAccess;
+﻿using LibApp.Domain.Models;
+using LibApp.EfDataAccess;
 using LibApp.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace LibApp.Services
+namespace LibApp.Services;
+
+public class UserService : IUserService
 {
-    public class UserService : IUserService
+    private readonly LibraryContext _context;
+    private readonly UserManager<User> _userManager;
+
+    public UserService(LibraryContext context, UserManager<User> userManager)
     {
-        private readonly LibraryContext _context;
-        private readonly UserManager<User> _userManager;
+        _context = context;
+        _userManager = userManager;
+    }
 
-        public UserService(LibraryContext context, UserManager<User> userManager)
+    public async Task<IEnumerable<User>> GetUsersAsync()
+    {
+        var users = await _context.Users
+            .Include(u => u.CreatedByUser)
+            .Include(u => u.ModifiedByUser)
+            .Include(u => u.Role)
+            .AsNoTracking()
+            .ToListAsync();
+
+        return users;
+    }
+
+    public User GetUser(int id)
+    {
+        var user = _context.Users
+            .Include(u => u.CreatedByUser)
+            .Include(u => u.ModifiedByUser)
+            .Include(u => u.Role)
+            .AsNoTracking()
+            .FirstOrDefault(u => u.Id == id);
+
+        return user;
+    }
+
+    public async Task<User> GetUserAsync(int id)
+    {
+        var user = await _context.Users
+            .Include(u => u.CreatedByUser)
+            .Include(u => u.ModifiedByUser)
+            .Include(u => u.Role)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == id);
+
+        return user;
+    }
+
+    public async Task<User> GetUserByUserNameAsync(string userName)
+    {
+        var user = await _context.Users
+            .Include(u => u.CreatedByUser)
+            .Include(u => u.ModifiedByUser)
+            .Include(u => u.Role)
+            .FirstOrDefaultAsync(u => u.UserName == userName);
+
+        return user;
+    }
+
+    public async Task AddUserAsync(User user)
+    {
+        user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, user.Password);
+
+        var result = await _userManager.CreateAsync(user);
+
+        if (!result.Succeeded)
         {
-            _context = context;
-            _userManager = userManager;
+            var errors = result.Errors.Select(e => e.Description);
+            throw new ApplicationException($"User update failed: {string.Join(", ", errors)}");
         }
+    }
 
-        public async Task<IEnumerable<User>> GetUsersAsync()
+    public async Task UpdateUserAsync(User user)
+    {
+        user.ModifiedDateTime = DateTime.Now;
+
+        var result = await _userManager.UpdateAsync(user);
+
+        if (!result.Succeeded)
         {
-            var users = await _context.Users
-                .Include(u => u.CreatedByUser)
-                .Include(u => u.ModifiedByUser)
-                .Include(u => u.Role)
-                .AsNoTracking()
-                .ToListAsync();
-
-            return users;
+            var errors = result.Errors.Select(e => e.Description);
+            throw new ApplicationException($"User update failed: {string.Join(", ", errors)}");
         }
+    }
 
-        public User GetUser(int id)
+    public async Task RemoveUserAsync(User user)
+    {
+        try
         {
-            var user = _context.Users
-                .Include(u => u.CreatedByUser)
-                .Include(u => u.ModifiedByUser)
-                .Include(u => u.Role)
-                .AsNoTracking()
-                .FirstOrDefault(u => u.Id == id);
+            await SeverRelations(user);
 
-            return user;
-        }
-
-        public async Task<User> GetUserAsync(int id)
-        {
-            var user = await _context.Users
-                .Include(u => u.CreatedByUser)
-                .Include(u => u.ModifiedByUser)
-                .Include(u => u.Role)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == id);
-
-            return user;
-        }
-
-        public async Task<User> GetUserByUserNameAsync(string userName)
-        {
-            var user = await _context.Users
-                .Include(u => u.CreatedByUser)
-                .Include(u => u.ModifiedByUser)
-                .Include(u => u.Role)
-                .FirstOrDefaultAsync(u => u.UserName == userName);
-
-            return user;
-        }
-
-        public async Task AddUserAsync(User user)
-        {
-            user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, user.Password);
-
-            var result = await _userManager.CreateAsync(user);
-
-            if (!result.Succeeded)
-            {
-                var errors = result.Errors.Select(e => e.Description);
-                throw new ApplicationException($"User update failed: {string.Join(", ", errors)}");
-            }
-        }
-
-        public async Task UpdateUserAsync(User user)
-        {
-            user.ModifiedDateTime = DateTime.Now;
-
-            var result = await _userManager.UpdateAsync(user);
-
-            if (!result.Succeeded)
-            {
-                var errors = result.Errors.Select(e => e.Description);
-                throw new ApplicationException($"User update failed: {string.Join(", ", errors)}");
-            }
-        }
-
-        public async Task RemoveUserAsync(User user)
-        {
-            try
-            {
-                await SeverRelations(user);
-
-                _context.Users.Remove(user);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine(exception);
-                throw;
-            }
-        }
-
-        private async Task SeverRelations(User user)
-        {
-            foreach (var book in _context.Books.Where(b => b.CreatedByUserId == user.Id))
-            {
-                book.CreatedByUser = null;
-            }
-
-            foreach (var book in _context.Books.Where(b => b.ModifiedByUserId == user.Id))
-            {
-                book.ModifiedByUser = null;
-            }
-
-            foreach (var category in _context.Categories.Where(b => b.CreatedByUserId == user.Id))
-            {
-                category.CreatedByUser = null;
-            }
-
-            foreach (var category in _context.Categories.Where(b => b.ModifiedByUserId == user.Id))
-            {
-                category.ModifiedByUser = null;
-            }
-
-            foreach (var author in _context.Authors.Where(b => b.CreatedByUserId == user.Id))
-            {
-                author.CreatedByUser = null;
-            }
-
-            foreach (var author in _context.Authors.Where(b => b.ModifiedByUserId == user.Id))
-            {
-                author.ModifiedByUser = null;
-            }
-
-            foreach (var publisher in _context.Publishers.Where(b => b.CreatedByUserId == user.Id))
-            {
-                publisher.CreatedByUser = null;
-            }
-
-            foreach (var publisher in _context.Publishers.Where(b => b.ModifiedByUserId == user.Id))
-            {
-                publisher.ModifiedByUser = null;
-            }
-
-            foreach (var department in _context.Departments.Where(b => b.CreatedByUserId == user.Id))
-            {
-                department.CreatedByUser = null;
-            }
-
-            foreach (var department in _context.Departments.Where(b => b.ModifiedByUserId == user.Id))
-            {
-                department.ModifiedByUser = null;
-            }
-
-            foreach (var reservation in _context.Reservations.Where(b => b.CreatedByUserId == user.Id)
-                         .Include(reservation => reservation.BookReservations))
-            {
-                _context.BookReservations.RemoveRange(reservation.BookReservations);
-                _context.Reservations.Remove(reservation);
-            }
-
-            foreach (var reservation in _context.Reservations.Where(b => b.ModifiedByUserId == user.Id)
-                         .Include(reservation => reservation.BookReservations))
-            {
-                _context.BookReservations.RemoveRange(reservation.BookReservations);
-                _context.Reservations.Remove(reservation);
-            }
-
-            foreach (var userToChange in _context.Users.Where(b => b.CreatedByUserId == user.Id))
-            {
-                userToChange.CreatedByUser = null;
-            }
-
-            foreach (var userToChange in _context.Users.Where(b => b.ModifiedByUserId == user.Id))
-            {
-                userToChange.ModifiedByUser = null;
-            }
-
+            _context.Users.Remove(user);
             await _context.SaveChangesAsync();
         }
-
-        public bool DocumentIdExists(string documentId)
+        catch (Exception exception)
         {
-            var exists = _context.Users.Any(u => u.DocumentId == documentId);
-            return exists;
+            Console.WriteLine(exception);
+            throw;
+        }
+    }
+
+    private async Task SeverRelations(User user)
+    {
+        foreach (var book in _context.Books.Where(b => b.CreatedByUserId == user.Id))
+        {
+            book.CreatedByUser = null;
         }
 
-        public bool DocumentIdExistsInOtherBooks(int id, string documentId)
+        foreach (var book in _context.Books.Where(b => b.ModifiedByUserId == user.Id))
         {
-            var exists = _context.Users.Any(u => u.Id != id && u.DocumentId == documentId);
-            return exists;
+            book.ModifiedByUser = null;
         }
 
-        public bool EmailExists(string email)
+        foreach (var category in _context.Categories.Where(b => b.CreatedByUserId == user.Id))
         {
-            var exists = _context.Users.Any(u => u.Email == email);
-            return exists;
+            category.CreatedByUser = null;
         }
 
-        public bool EmailExistsInOtherBooks(int id, string email)
+        foreach (var category in _context.Categories.Where(b => b.ModifiedByUserId == user.Id))
         {
-            var exists = _context.Users.Any(u => u.Id != id && u.Email == email);
-            return exists;
+            category.ModifiedByUser = null;
         }
 
-        public bool UserNameExists(string userName)
+        foreach (var author in _context.Authors.Where(b => b.CreatedByUserId == user.Id))
         {
-            var exists = _context.Users.Any(u => u.UserName == userName);
-            return exists;
+            author.CreatedByUser = null;
         }
 
-        public bool UserNameExistsInOtherBooks(int id, string userName)
+        foreach (var author in _context.Authors.Where(b => b.ModifiedByUserId == user.Id))
         {
-            var exists = _context.Users.Any(u => u.Id != id && u.UserName == userName);
-            return exists;
+            author.ModifiedByUser = null;
         }
 
-        public void Activate(int id)
+        foreach (var publisher in _context.Publishers.Where(b => b.CreatedByUserId == user.Id))
         {
-            var user = _context.Users
-                .FirstOrDefault(u => u.Id == id);
-
-            if (user == null) return;
-
-            user.IsActive = true;
-
-            _context.SaveChanges();
+            publisher.CreatedByUser = null;
         }
 
-        public void Deactivate(int id)
+        foreach (var publisher in _context.Publishers.Where(b => b.ModifiedByUserId == user.Id))
         {
-            var user = _context.Users
-                .FirstOrDefault(u => u.Id == id);
-
-            if (user == null) return;
-
-            user.IsActive = false;
-
-            _context.SaveChanges();
+            publisher.ModifiedByUser = null;
         }
+
+        foreach (var department in _context.Departments.Where(b => b.CreatedByUserId == user.Id))
+        {
+            department.CreatedByUser = null;
+        }
+
+        foreach (var department in _context.Departments.Where(b => b.ModifiedByUserId == user.Id))
+        {
+            department.ModifiedByUser = null;
+        }
+
+        foreach (var reservation in _context.Reservations.Where(b => b.CreatedByUserId == user.Id)
+                     .Include(reservation => reservation.BookReservations))
+        {
+            _context.BookReservations.RemoveRange(reservation.BookReservations);
+            _context.Reservations.Remove(reservation);
+        }
+
+        foreach (var reservation in _context.Reservations.Where(b => b.ModifiedByUserId == user.Id)
+                     .Include(reservation => reservation.BookReservations))
+        {
+            _context.BookReservations.RemoveRange(reservation.BookReservations);
+            _context.Reservations.Remove(reservation);
+        }
+
+        foreach (var userToChange in _context.Users.Where(b => b.CreatedByUserId == user.Id))
+        {
+            userToChange.CreatedByUser = null;
+        }
+
+        foreach (var userToChange in _context.Users.Where(b => b.ModifiedByUserId == user.Id))
+        {
+            userToChange.ModifiedByUser = null;
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
+    public bool DocumentIdExists(string documentId)
+    {
+        var exists = _context.Users.Any(u => u.DocumentId == documentId);
+        return exists;
+    }
+
+    public bool DocumentIdExistsInOtherBooks(int id, string documentId)
+    {
+        var exists = _context.Users.Any(u => u.Id != id && u.DocumentId == documentId);
+        return exists;
+    }
+
+    public bool EmailExists(string email)
+    {
+        var exists = _context.Users.Any(u => u.Email == email);
+        return exists;
+    }
+
+    public bool EmailExistsInOtherBooks(int id, string email)
+    {
+        var exists = _context.Users.Any(u => u.Id != id && u.Email == email);
+        return exists;
+    }
+
+    public bool UserNameExists(string userName)
+    {
+        var exists = _context.Users.Any(u => u.UserName == userName);
+        return exists;
+    }
+
+    public bool UserNameExistsInOtherBooks(int id, string userName)
+    {
+        var exists = _context.Users.Any(u => u.Id != id && u.UserName == userName);
+        return exists;
+    }
+
+    public void Activate(int id)
+    {
+        var user = _context.Users
+            .FirstOrDefault(u => u.Id == id);
+
+        if (user == null) return;
+
+        user.IsActive = true;
+
+        _context.SaveChanges();
+    }
+
+    public void Deactivate(int id)
+    {
+        var user = _context.Users
+            .FirstOrDefault(u => u.Id == id);
+
+        if (user == null) return;
+
+        user.IsActive = false;
+
+        _context.SaveChanges();
     }
 }

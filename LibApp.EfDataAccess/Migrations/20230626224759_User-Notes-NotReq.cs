@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace EfDataAccess.Migrations
+namespace LibApp.EfDataAccess.Migrations
 {
     /// <inheritdoc />
     public partial class UserNotesNotReq : Migration
@@ -38,3 +38,4 @@ namespace EfDataAccess.Migrations
         }
     }
 }
+

@@ -1,4 +1,4 @@
-﻿namespace Domain.Models;
+﻿namespace LibApp.Domain.Models;
 
 public class Language
 {

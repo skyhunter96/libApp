@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace EfDataAccess.Migrations
+namespace LibApp.EfDataAccess.Migrations
 {
     /// <inheritdoc />
     public partial class userdocumentIdaddition : Migration
@@ -102,3 +102,4 @@ namespace EfDataAccess.Migrations
         }
     }
 }
+

@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace EfDataAccess.Migrations
+namespace LibApp.EfDataAccess.Migrations
 {
     /// <inheritdoc />
     public partial class seeddatacategories : Migration
@@ -70,3 +70,4 @@ namespace EfDataAccess.Migrations
         }
     }
 }
+

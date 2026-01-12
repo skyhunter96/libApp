@@ -1,15 +1,14 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Domain.Models
+namespace LibApp.Domain.Models;
+
+public class Role : IdentityRole<int>
 {
-    public class Role : IdentityRole<int>
-    {
-        public ICollection<User> Users { get; set; }
-    }
-    public enum RoleEnum
-    {
-        Admin = 1,
-        Librarian = 2,
-        Regular = 3
-    }
+    public ICollection<User> Users { get; set; }
+}
+public enum RoleEnum
+{
+    Admin = 1,
+    Librarian = 2,
+    Regular = 3
 }

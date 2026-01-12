@@ -1,6 +1,5 @@
 ﻿#nullable disable
 
-using Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +8,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Encodings.Web;
+using LibApp.Domain.Models;
 
 namespace LibApp.WebApp.Areas.Identity.Pages.Account
 {

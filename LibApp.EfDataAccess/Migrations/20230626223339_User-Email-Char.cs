@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace EfDataAccess.Migrations
+namespace LibApp.EfDataAccess.Migrations
 {
     /// <inheritdoc />
     public partial class UserEmailChar : Migration
@@ -50,3 +50,4 @@ namespace EfDataAccess.Migrations
         }
     }
 }
+

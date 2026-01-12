@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace EfDataAccess.Migrations
+namespace LibApp.EfDataAccess.Migrations
 {
     /// <inheritdoc />
     public partial class bookreservationauthorcomposite : Migration
@@ -95,3 +95,4 @@ namespace EfDataAccess.Migrations
         }
     }
 }
+

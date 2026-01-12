@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace EfDataAccess.Migrations
+namespace LibApp.EfDataAccess.Migrations
 {
     /// <inheritdoc />
     public partial class Userconfigfirstnamelastname : Migration
@@ -52,3 +52,4 @@ namespace EfDataAccess.Migrations
         }
     }
 }
+

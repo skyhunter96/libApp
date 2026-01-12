@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace EfDataAccess.Migrations
+namespace LibApp.EfDataAccess.Migrations
 {
     /// <inheritdoc />
     public partial class reservationisStartedaddition : Migration
@@ -71,3 +71,4 @@ namespace EfDataAccess.Migrations
         }
     }
 }
+

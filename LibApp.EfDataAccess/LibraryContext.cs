@@ -1,10 +1,9 @@
-﻿using Domain.Models;
-using EfDataAccess.Configurations;
+﻿using LibApp.Domain.Models;
 using LibApp.EfDataAccess.Configurations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace EfDataAccess;
+namespace LibApp.EfDataAccess;
 
 public class LibraryContext : IdentityDbContext<User, Role, int>
 {
@@ -36,7 +35,7 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
     public DbSet<BookReservation> BookReservations { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=LibApp;Integrated Security=True")
+        => optionsBuilder.UseSqlServer("Server=DESKTOP-2PE2GHS;Database=LibApp;Trusted_Connection=True;TrustServerCertificate=True;")
             .EnableSensitiveDataLogging();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -58,7 +57,7 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
         modelBuilder.Entity<Role>().Property(r => r.Id).ValueGeneratedOnAdd();
 
         // Seed your data here
-        SeedData(modelBuilder);
+        //SeedData(modelBuilder);
     }
 
     private static void SeedData(ModelBuilder modelBuilder)

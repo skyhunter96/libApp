@@ -1,9 +1,9 @@
-﻿using Domain.Models;
-using EfDataAccess.Configurations.Common;
+﻿using LibApp.Domain.Models;
+using LibApp.EfDataAccess.Configurations.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace EfDataAccess.Configurations
+namespace LibApp.EfDataAccess.Configurations
 {
     public class RateConfiguration : BaseEntityConfiguration<Rate>
     {

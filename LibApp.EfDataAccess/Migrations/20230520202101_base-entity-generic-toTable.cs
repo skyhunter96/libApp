@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace EfDataAccess.Migrations
+namespace LibApp.EfDataAccess.Migrations
 {
     /// <inheritdoc />
     public partial class baseentitygenerictoTable : Migration
@@ -689,3 +689,4 @@ namespace EfDataAccess.Migrations
         }
     }
 }
+

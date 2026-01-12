@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace EfDataAccess.Migrations
+namespace LibApp.EfDataAccess.Migrations
 {
     /// <inheritdoc />
     public partial class usercreatedBymodifiedBynullablerelation : Migration
@@ -94,3 +94,4 @@ namespace EfDataAccess.Migrations
         }
     }
 }
+

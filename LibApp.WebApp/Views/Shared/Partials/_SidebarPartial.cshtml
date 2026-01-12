@@ -1,6 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using Microsoft.IdentityModel.Tokens
-@using Domain.Models
+@using LibApp.Domain.Models
 
 @inject UserManager<User> UserManager
 
@@ -9,8 +9,6 @@
 
     var user = await UserManager.GetUserAsync(User);
 }
-
-@*TODO: Links*@
 
 <div class="sidebar" data-color="white" data-active-color="danger">
     <div class="logo">
@@ -58,7 +56,6 @@
                         <p>Departments</p>
                     </a>
                 </li>
-                @* TODO: Remove if not using *@
                 <li>
                     <a asp-controller="Reservations" asp-action="Index">
                         <i class="nc-icon nc-check-2"></i>

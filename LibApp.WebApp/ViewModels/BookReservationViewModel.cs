@@ -1,17 +1,15 @@
-﻿using Domain.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace LibApp.WebApp.ViewModels
+namespace LibApp.WebApp.ViewModels;
+
+public class BookReservationViewModel
 {
-    public class BookReservationViewModel
-    {
-        public int ReservationId { get; set; }
-        public int BookId { get; set; }
+    public int ReservationId { get; set; }
+    public int BookId { get; set; }
 
-        [Display(Name = "Created")]
-        public DateTime CreatedDateTime { get; set; }
+    [Display(Name = "Created")]
+    public DateTime CreatedDateTime { get; set; }
 
-        [Display(Name = "Modified")]
-        public DateTime ModifiedDateTime { get; set; }
-    }
+    [Display(Name = "Modified")]
+    public DateTime ModifiedDateTime { get; set; }
 }
