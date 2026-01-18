@@ -1,4 +1,4 @@
-﻿@using Domain.Models
+﻿@using LibApp.Domain.Models
 @using Microsoft.AspNetCore.Identity
 
 @inject UserManager<User> UserManager
@@ -100,6 +100,7 @@
             <input type="hidden" asp-for="CreatedByUserId" />
             <input type="hidden" asp-for="CreatedDateTime" />
             <input type="hidden" asp-for="ModifiedDateTime" />
+            <input type="hidden" asp-for="IsActive" />
 
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
@@ -113,11 +114,21 @@
     
     @if (Model.IsActive)
     {
-        <a asp-action="Deactivate" asp-route-id="@Model.Id">Deactivate</a>
+        <form asp-action="Deactivate" asp-route-id="@Model.Id" method="post" style="display:inline">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-warning btn-sm">
+                Deactivate
+            </button>
+        </form>
     }
     else
     {
-        <a asp-action="Activate" asp-route-id="@Model.Id">Activate</a>
+        <form asp-action="Activate" asp-route-id="@Model.Id" method="post" style="display:inline">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-success btn-sm">
+                Activate
+            </button>
+        </form>
     }
     | 
     @if (user?.RoleId == (int)RoleEnum.Admin)

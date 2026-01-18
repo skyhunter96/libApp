@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace EfDataAccess.Migrations
+namespace LibApp.EfDataAccess.Migrations
 {
     /// <inheritdoc />
     public partial class hopefullyfinalfixeschar3forcurrency : Migration
@@ -34,3 +34,4 @@ namespace EfDataAccess.Migrations
         }
     }
 }
+

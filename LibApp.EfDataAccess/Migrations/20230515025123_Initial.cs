@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace EfDataAccess.Migrations
+namespace LibApp.EfDataAccess.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration
@@ -310,3 +310,4 @@ namespace EfDataAccess.Migrations
         }
     }
 }
+

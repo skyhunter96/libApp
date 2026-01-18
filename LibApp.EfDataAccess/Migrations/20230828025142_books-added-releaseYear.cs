@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace EfDataAccess.Migrations
+namespace LibApp.EfDataAccess.Migrations
 {
     /// <inheritdoc />
     public partial class booksaddedreleaseYear : Migration
@@ -29,3 +29,4 @@ namespace EfDataAccess.Migrations
         }
     }
 }
+

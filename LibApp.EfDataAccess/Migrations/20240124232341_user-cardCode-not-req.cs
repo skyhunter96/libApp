@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace EfDataAccess.Migrations
+namespace LibApp.EfDataAccess.Migrations
 {
     /// <inheritdoc />
     public partial class usercardCodenotreq : Migration
@@ -76,3 +76,4 @@ namespace EfDataAccess.Migrations
         }
     }
 }
+

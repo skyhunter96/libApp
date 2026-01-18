@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace EfDataAccess.Migrations
+namespace LibApp.EfDataAccess.Migrations
 {
     /// <inheritdoc />
     public partial class globalnullablefixes : Migration
@@ -132,3 +132,4 @@ namespace EfDataAccess.Migrations
         }
     }
 }
+

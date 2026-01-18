@@ -1,0 +1,17 @@
+# Set default behavior to normalize line endings
+* text=auto
+
+# Explicitly handle common types
+*.cs     text
+*.sql    text
+*.xaml   text
+*.cshtml text
+*.html   text
+*.js     text
+*.css    text
+
+# Ignore binaries
+*.png    binary
+*.jpg    binary
+*.docx   binary
+*.bak    binary

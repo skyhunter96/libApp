@@ -10,6 +10,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibApp.WebApp", "LibApp.Web
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibApp.Services", "LibApp.Services\LibApp.Services.csproj", "{988EBEE1-1555-4D61-BAF0-8380C2C53E01}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibApp.Services.Abstractions", "LibApp.Services.Abstractions\LibApp.Services.Abstractions.csproj", "{B0E247BE-36B4-4B02-9E61-10D15F6A86ED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{988EBEE1-1555-4D61-BAF0-8380C2C53E01}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{988EBEE1-1555-4D61-BAF0-8380C2C53E01}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{988EBEE1-1555-4D61-BAF0-8380C2C53E01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0E247BE-36B4-4B02-9E61-10D15F6A86ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0E247BE-36B4-4B02-9E61-10D15F6A86ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0E247BE-36B4-4B02-9E61-10D15F6A86ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0E247BE-36B4-4B02-9E61-10D15F6A86ED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

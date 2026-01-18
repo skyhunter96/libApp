@@ -1,7 +1,7 @@
-using Domain.Models;
-using EfDataAccess;
+using LibApp.Domain.Models;
+using LibApp.EfDataAccess;
 using LibApp.Services;
-using LibApp.Services.Interfaces;
+using LibApp.Services.Abstractions.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 

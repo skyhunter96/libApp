@@ -1,209 +1,206 @@
 ﻿using AutoMapper;
-using Domain.Models;
-using EfDataAccess;
-using LibApp.Services;
-using LibApp.Services.Interfaces;
+using LibApp.Domain.Models;
+using LibApp.EfDataAccess;
+using LibApp.Services.Abstractions.Interfaces;
 using LibApp.WebApp.Utilities;
 using LibApp.WebApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using X.PagedList;
 
-namespace LibApp.WebApp.Controllers
+namespace LibApp.WebApp.Controllers;
+
+[Authorize(Roles = AppRoles.Admin + "," + AppRoles.Librarian + "," + AppRoles.Regular)]
+public class ReservationsController : Controller
 {
-    [Authorize(Roles = AppRoles.Admin + "," + AppRoles.Librarian + "," + AppRoles.Regular)]
-    public class ReservationsController : Controller
+    private readonly LibraryContext _context;
+    private readonly IReservationService _reservationService;
+    private readonly UserManager<User> _userManager;
+    private readonly IUserService _userService;
+    private readonly IMapper _mapper;
+
+    private const int PageSize = 10;
+    private const string SortNameOrder = "name_desc";
+
+    public ReservationsController(LibraryContext context, IReservationService reservationService, UserManager<User> userManager, IMapper mapper, IUserService userService)
     {
-        private readonly LibraryContext _context;
-        private readonly IReservationService _reservationService;
-        private readonly UserManager<User> _userManager;
-        private readonly IUserService _userService;
-        private readonly IMapper _mapper;
+        _context = context;
+        _reservationService = reservationService;
+        _userManager = userManager;
+        _mapper = mapper;
+        _userService = userService;
+    }
 
-        private const int PageSize = 10;
-        private const string SortNameOrder = "name_desc";
+    // GET: Reservations
+    public async Task<IActionResult> Index(string sortNameOrder, string currentNameFilter, string searchNameString,
+        int? page)
+    {
+        ViewBag.CurrentSortName = sortNameOrder;
+        ViewBag.SortNameParm = String.IsNullOrEmpty(sortNameOrder) ? SortNameOrder : "";
 
-        public ReservationsController(LibraryContext context, IReservationService reservationService, UserManager<User> userManager, IMapper mapper, IUserService userService)
+        if (searchNameString != null)
         {
-            _context = context;
-            _reservationService = reservationService;
-            _userManager = userManager;
-            _mapper = mapper;
-            _userService = userService;
+            page = 1;
+        }
+        else
+        {
+            searchNameString = currentNameFilter;
         }
 
-        // GET: Reservations
-        public async Task<IActionResult> Index(string sortNameOrder, string currentNameFilter, string searchNameString,
-            int? page)
+        ViewBag.CurrentNameFilter = searchNameString;
+
+        try
         {
-            ViewBag.CurrentSortName = sortNameOrder;
-            ViewBag.SortNameParm = String.IsNullOrEmpty(sortNameOrder) ? SortNameOrder : "";
+            var reservations = await _reservationService.GetReservationsAsync();
 
-            if (searchNameString != null)
+            var reservationViewModels = _mapper.Map<IEnumerable<ReservationViewModel>>(reservations);
+
+            if (!string.IsNullOrEmpty(searchNameString))
             {
-                page = 1;
-            }
-            else
-            {
-                searchNameString = currentNameFilter;
+                reservationViewModels = reservationViewModels.Where(a => a.ReservedByUser != null && a.ReservedByUser.ToLower().Contains(searchNameString.ToLower()));
             }
 
-            ViewBag.CurrentNameFilter = searchNameString;
-
-            try
+            reservationViewModels = sortNameOrder switch
             {
-                var reservations = await _reservationService.GetReservationsAsync();
+                SortNameOrder => reservationViewModels.OrderByDescending(a => a.ReservedByUser),
+                _ => reservationViewModels.OrderBy(a => a.ReservedByUser)
+            };
 
-                var reservationViewModels = _mapper.Map<IEnumerable<ReservationViewModel>>(reservations);
+            var pageNumber = (page ?? 1);
 
-                if (!string.IsNullOrEmpty(searchNameString))
-                {
-                    reservationViewModels = reservationViewModels.Where(a => a.ReservedByUser.ToLower().Contains(searchNameString.ToLower()));
-                }
+            ViewBag.Reservations = reservationViewModels.ToPagedList(pageNumber, PageSize);
 
-                reservationViewModels = sortNameOrder switch
-                {
-                    SortNameOrder => reservationViewModels.OrderByDescending(a => a.ReservedByUser),
-                    _ => reservationViewModels.OrderBy(a => a.ReservedByUser)
-                };
-
-                var pageNumber = (page ?? 1);
-
-                ViewBag.Reservations = reservationViewModels.ToPagedList(pageNumber, PageSize);
-
-                return View();
-            }
-            catch (Exception exception)
-            {
-                return RedirectToAction("ServerError", "Error");
-            }
+            return View();
         }
-
-        // GET: Reservations/Details/5
-        public async Task<IActionResult> Details(int id)
+        catch (Exception exception)
         {
-            try
-            {
-                if (id == 0)
-                {
-                    var loggedInUserId = _userManager.GetUserId(User);
-
-                    var currentReservationId = await _reservationService.GetReservationIdForUserAsync(Convert.ToInt32(loggedInUserId));
-
-                    if (currentReservationId != 0)
-                        id = currentReservationId;
-                }
-
-                var reservation = await _reservationService.GetReservationAsync(id);
-
-                if (reservation == null)
-                {
-                    return NotFound();
-                }
-
-                var reservationViewModel = _mapper.Map<ReservationViewModel>(reservation);
-
-                return View(reservationViewModel);
-            }
-            catch (Exception exception)
-            {
-                return RedirectToAction("ServerError", "Error");
-            }
+            return RedirectToAction("ServerError", "Error");
         }
+    }
 
-        [HttpPost, ActionName("Reserve")]
-        public IActionResult Reserve(int bookId)
+    // GET: Reservations/Details/5
+    public async Task<IActionResult> Details(int id)
+    {
+        try
         {
-            try
+            if (id == 0)
             {
                 var loggedInUserId = _userManager.GetUserId(User);
 
-                if (!_reservationService.UserCanReserve(Convert.ToInt32(loggedInUserId)))
-                {
-                    TempData["ErrorMessage"] = "Book was not reserved. The user has max reservations.";
-                    return Json(new { success = false, message = "Book was not reserved" });
-                }
+                var currentReservationId = await _reservationService.GetReservationIdForUserAsync(Convert.ToInt32(loggedInUserId));
 
-                if (!_reservationService.BookCanBeReserved(bookId))
-                {
-                    TempData["ErrorMessage"] = "Book was not reserved. It is not available.";
-                    return Json(new { success = false, message = "Book was not reserved" });
-                }
-
-                _reservationService.ReserveBook(bookId, Convert.ToInt32(loggedInUserId));
-
-                TempData["SuccessMessage"] = "Book reserved successfully.";
-                return Json(new { success = true, message = "Book reserved successfully." });
+                if (currentReservationId != 0)
+                    id = currentReservationId;
             }
-            catch (Exception exception)
+
+            var reservation = await _reservationService.GetReservationAsync(id);
+
+            if (reservation == null)
             {
-                Console.WriteLine(exception);
-                return RedirectToAction("ServerError", "Error");
+                return NotFound();
             }
+
+            var reservationViewModel = _mapper.Map<ReservationViewModel>(reservation);
+
+            return View(reservationViewModel);
         }
-
-        public IActionResult Start(int id)
+        catch (Exception exception)
         {
-            try
-            {
-                var loggedInUserId = _userManager.GetUserId(User);
-
-                _reservationService.StartReservation(id, Convert.ToInt32(loggedInUserId));
-
-                TempData["SuccessMessage"] = "Reservation started successfully.";
-
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception exception)
-            {
-                return RedirectToAction("ServerError", "Error");
-            }
+            return RedirectToAction("ServerError", "Error");
         }
+    }
 
-        public IActionResult Finish(int id)
+    [HttpPost, ActionName("Reserve")]
+    public IActionResult Reserve(int bookId)
+    {
+        try
         {
-            try
+            var loggedInUserId = _userManager.GetUserId(User);
+
+            if (!_reservationService.UserCanReserve(Convert.ToInt32(loggedInUserId)))
             {
-                var loggedInUserId = _userManager.GetUserId(User);
-
-                _reservationService.FinishReservation(id, Convert.ToInt32(loggedInUserId));
-
-                TempData["SuccessMessage"] = "Reservation finished successfully.";
-
-                var loggedInUser = _userService.GetUser(Convert.ToInt32(loggedInUserId));
-
-                return loggedInUser?.RoleId is (int)RoleEnum.Regular ? RedirectToAction("Index", "Home") : RedirectToAction(nameof(Index));
+                TempData["ErrorMessage"] = "Book was not reserved. The user has max reservations.";
+                return Json(new { success = false, message = "Book was not reserved" });
             }
-            catch (Exception exception)
+
+            if (!_reservationService.BookCanBeReserved(bookId))
             {
-                return RedirectToAction("ServerError", "Error");
+                TempData["ErrorMessage"] = "Book was not reserved. It is not available.";
+                return Json(new { success = false, message = "Book was not reserved" });
             }
+
+            _reservationService.ReserveBook(bookId, Convert.ToInt32(loggedInUserId));
+
+            TempData["SuccessMessage"] = "Book reserved successfully.";
+            return Json(new { success = true, message = "Book reserved successfully." });
         }
-
-        // POST: Reservations/Delete/5
-        [HttpPost, ActionName("Delete")]
-        public async Task<IActionResult> Delete(int id)
+        catch (Exception exception)
         {
-            try
-            {
-                var reservation = await _reservationService.GetReservationAsync(id);
-                if (reservation != null)
-                {
-                    await _reservationService.RemoveReservationAsync(reservation);
-                    TempData["SuccessMessage"] = "Reservation deleted successfully.";
-                    return Json(new { success = true, message = "Reservation deleted successfully." });
-                }
+            Console.WriteLine(exception);
+            return RedirectToAction("ServerError", "Error");
+        }
+    }
 
-                TempData["ErrorMessage"] = "Reservation was not deleted. An error occurred while processing your request.";
-                return Json(new { success = false, message = "Reservation not found." });
-            }
-            catch (Exception exception)
+    public IActionResult Start(int id)
+    {
+        try
+        {
+            var loggedInUserId = _userManager.GetUserId(User);
+
+            _reservationService.StartReservation(id, Convert.ToInt32(loggedInUserId));
+
+            TempData["SuccessMessage"] = "Reservation started successfully.";
+
+            return RedirectToAction(nameof(Index));
+        }
+        catch (Exception exception)
+        {
+            return RedirectToAction("ServerError", "Error");
+        }
+    }
+
+    public IActionResult Finish(int id)
+    {
+        try
+        {
+            var loggedInUserId = _userManager.GetUserId(User);
+
+            _reservationService.FinishReservation(id, Convert.ToInt32(loggedInUserId));
+
+            TempData["SuccessMessage"] = "Reservation finished successfully.";
+
+            var loggedInUser = _userService.GetUser(Convert.ToInt32(loggedInUserId));
+
+            return loggedInUser?.RoleId is (int)RoleEnum.Regular ? RedirectToAction("Index", "Home") : RedirectToAction(nameof(Index));
+        }
+        catch (Exception exception)
+        {
+            return RedirectToAction("ServerError", "Error");
+        }
+    }
+
+    // POST: Reservations/Delete/5
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id)
+    {
+        try
+        {
+            var reservation = await _reservationService.GetReservationAsync(id);
+            if (reservation != null)
             {
-                return RedirectToAction("ServerError", "Error");
+                await _reservationService.RemoveReservationAsync(reservation);
+                TempData["SuccessMessage"] = "Reservation deleted successfully.";
+                return Json(new { success = true, message = "Reservation deleted successfully." });
             }
+
+            TempData["ErrorMessage"] = "Reservation was not deleted. An error occurred while processing your request.";
+            return Json(new { success = false, message = "Reservation not found." });
+        }
+        catch (Exception exception)
+        {
+            return RedirectToAction("ServerError", "Error");
         }
     }
 }

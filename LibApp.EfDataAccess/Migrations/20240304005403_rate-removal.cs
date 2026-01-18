@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace EfDataAccess.Migrations
+namespace LibApp.EfDataAccess.Migrations
 {
     /// <inheritdoc />
     public partial class rateremoval : Migration
@@ -112,3 +112,4 @@ namespace EfDataAccess.Migrations
         }
     }
 }
+

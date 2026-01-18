@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+<!DOCTYPE html>
 <html lang="en">
 
     <head>
@@ -11,7 +13,7 @@
 
         <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport'/>
 
-        @*<meta name="RequestVerificationToken" content="your-token-value" /> *@
+        <meta name="RequestVerificationToken" content="@Antiforgery.GetAndStoreTokens(Context).RequestToken" />
 
         <!--     Fonts and icons     -->
         <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700,200" rel="stylesheet"/>
@@ -170,19 +172,24 @@
                     var entityId = $(this).data('id');
                     var confirmation = confirm('Are you sure you want to delete this item?');
 
-                    if (confirmation) {
-                        $.ajax({
-                            url: '/' + entityController + '/' + entityAction,
-                            data: { id: entityId },
-                            type: 'POST',
-                            success: function (data) {
-                                location.reload();
-                            },
-                            error: function (xhr, ajaxOptions, thrownError) {
-                                alert('Error: ' + xhr.responseText);
-                            }
-                        });
-                    }
+                    if (!confirmation) return;
+
+                    var token = $('meta[name="RequestVerificationToken"]').attr('content');
+
+                    $.ajax({
+                        url: '/' + entityController + '/' + entityAction,
+                        type: 'POST',
+                        data: { id: entityId },
+                        headers: {
+                            'RequestVerificationToken': token
+                        },
+                        success: function () {
+                            location.reload();
+                        },
+                        error: function (xhr) {
+                            alert('Error: ' + xhr.responseText);
+                        }
+                    });
                 });
             });
         </script>

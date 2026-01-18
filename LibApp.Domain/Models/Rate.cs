@@ -1,8 +1,8 @@
-﻿using Domain.Models.Common;
+﻿using LibApp.Domain.Models.Common;
 
-namespace Domain.Models;
+namespace LibApp.Domain.Models;
 
-public class Rate : BaseEntity
+public sealed class Rate : BaseEntity
 {
     public decimal RateFee { get; set; }
     public int? ApplyAfterDays { get; set; }

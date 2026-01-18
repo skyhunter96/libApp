@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@using Domain.Models
+@using LibApp.Domain.Models
 @using LibApp.WebApp.ViewModels
 @using X.PagedList
 @using X.PagedList.Mvc.Core
@@ -18,7 +18,7 @@
 
 }
 
-<h1>Index</h1>
+<h1>Users</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -91,7 +91,9 @@
     @foreach (var item in userPages) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.FullName)
+                <a asp-action="Details" asp-route-id="@item.Id">
+                    <span style="color: black;">@item.FullName</span>
+                </a>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.UserName)

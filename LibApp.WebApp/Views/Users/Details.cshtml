@@ -1,4 +1,4 @@
-﻿@using Domain.Models
+﻿@using LibApp.Domain.Models
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.IdentityModel.Tokens
 
@@ -143,11 +143,21 @@
     @* Only Admin Actions *@
     @if (Model.IsActive && user?.RoleId == (int)RoleEnum.Admin)
     {
-        <a asp-action="Deactivate" asp-route-id="@Model.Id">Deactivate</a>
+        <form asp-action="Deactivate" asp-route-id="@Model.Id" method="post" style="display:inline">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-warning btn-sm">
+                Deactivate
+            </button>
+        </form>
     }
     else if (!Model.IsActive && user?.RoleId == (int)RoleEnum.Admin)
     {
-        <a asp-action="Activate" asp-route-id="@Model.Id">Activate</a>
+        <form asp-action="Activate" asp-route-id="@Model.Id" method="post" style="display:inline">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-success btn-sm">
+                Activate
+            </button>
+        </form>
     }
     | 
     @if (user?.RoleId == (int)RoleEnum.Admin)

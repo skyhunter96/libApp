@@ -1,31 +1,30 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace LibApp.WebApp.ViewModels
+namespace LibApp.WebApp.ViewModels;
+
+public class PublisherViewModel
 {
-    public class PublisherViewModel
-    {
-        public int Id { get; set; }
+    public int Id { get; init; }
 
-        [Required]
-        [MaxLength(50)]
-        public string Name { get; set; }
+    [Required]
+    [MaxLength(50)]
+    public string Name { get; set; } = null!;
 
-        [MaxLength(1000)]
-        public string Description { get; set; }
+    [MaxLength(1000)]
+    public string Description { get; set; } = null!;
 
-        [Display(Name = "Created")]
-        public DateTime CreatedDateTime { get; set; }
+    [Display(Name = "Created")]
+    public DateTime CreatedDateTime { get; init; }
 
-        [Display(Name = "Modified")]
-        public DateTime ModifiedDateTime { get; set; }
+    [Display(Name = "Modified")]
+    public DateTime ModifiedDateTime { get; set; }
 
-        [Display(Name = "CreatedBy")]
-        public string? CreatedByUser { get; set; }
+    [Display(Name = "CreatedBy")]
+    public string? CreatedByUser { get; init; }
 
-        [Display(Name = "ModifiedBy")]
-        public string? ModifiedByUser { get; set; }
+    [Display(Name = "ModifiedBy")]
+    public string? ModifiedByUser { get; set; }
 
-        public int? CreatedByUserId { get; set; }
-        public int? ModifiedByUserId { get; set; }
-    }
+    public int? CreatedByUserId { get; init; }
+    public int? ModifiedByUserId { get; set; }
 }

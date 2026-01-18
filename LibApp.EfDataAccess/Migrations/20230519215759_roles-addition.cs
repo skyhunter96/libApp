@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace EfDataAccess.Migrations
+namespace LibApp.EfDataAccess.Migrations
 {
     /// <inheritdoc />
     public partial class rolesaddition : Migration
@@ -65,3 +65,4 @@ namespace EfDataAccess.Migrations
         }
     }
 }
+

@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace EfDataAccess.Migrations
+namespace LibApp.EfDataAccess.Migrations
 {
     /// <inheritdoc />
     public partial class bookReservationbookStatusfield : Migration
@@ -27,3 +27,4 @@ namespace EfDataAccess.Migrations
         }
     }
 }
+

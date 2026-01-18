@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@using Domain.Models
+@using LibApp.Domain.Models
 @using LibApp.WebApp.ViewModels
 @using X.PagedList
 @using X.PagedList.Mvc.Core
@@ -18,7 +18,7 @@
 
 }
 
-<h1>Index</h1>
+<h1>Books</h1>
 
 @if (user?.RoleId is (int)RoleEnum.Admin or (int)RoleEnum.Librarian)
 {
