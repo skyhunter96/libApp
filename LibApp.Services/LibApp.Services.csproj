@@ -9,5 +9,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LibApp.EfDataAccess\LibApp.EfDataAccess.csproj" />
+    <ProjectReference Include="..\LibApp.Services.Abstractions\LibApp.Services.Abstractions.csproj" />
   </ItemGroup>
 </Project>

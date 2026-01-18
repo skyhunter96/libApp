@@ -1,6 +1,6 @@
 ﻿using LibApp.Domain.Models;
 
-namespace LibApp.Services.Interfaces;
+namespace LibApp.Services.Abstractions.Interfaces;
 
 public interface IPublisherService
 {

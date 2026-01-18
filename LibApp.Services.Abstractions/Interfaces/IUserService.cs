@@ -1,13 +1,13 @@
 ﻿using LibApp.Domain.Models;
 
-namespace LibApp.Services.Interfaces;
+namespace LibApp.Services.Abstractions.Interfaces;
 
 public interface IUserService
 {
     Task<IEnumerable<User>> GetUsersAsync();
-    User GetUser(int id);
-    Task<User> GetUserAsync(int id);
-    Task<User> GetUserByUserNameAsync(string userName);
+    User? GetUser(int id);
+    Task<User?> GetUserAsync(int id);
+    Task<User?> GetUserByUserNameAsync(string userName);
     Task AddUserAsync(User user);
     Task UpdateUserAsync(User user);
     Task RemoveUserAsync(User user);

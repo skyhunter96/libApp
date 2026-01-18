@@ -1,6 +1,6 @@
 ﻿using LibApp.Domain.Models;
 using LibApp.EfDataAccess;
-using LibApp.Services.Interfaces;
+using LibApp.Services.Abstractions.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -45,7 +45,7 @@ public class PublisherService : IPublisherService
 
     public async Task UpdatePublisherAsync(Publisher publisher)
     {
-        publisher.ModifiedDateTime = DateTime.Now;
+        publisher.SetModifiedDateTime(DateTime.Now);
 
         _context.Update(publisher);
         await _context.SaveChangesAsync();
