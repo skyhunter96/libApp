@@ -5,7 +5,7 @@ namespace LibApp.Services.Abstractions.Interfaces;
 public interface ILanguageService
 {
     Task<IEnumerable<Language>> GetLanguagesAsync();
-    Task<Language> GetLanguageAsync(int id);
+    Task<Language?> GetLanguageAsync(int id);
     Task AddLanguageAsync(Language language);
     Task UpdateLanguageAsync(Language language);
     Task RemoveLanguageAsync(Language language);

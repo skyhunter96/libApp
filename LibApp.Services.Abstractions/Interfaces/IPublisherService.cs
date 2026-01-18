@@ -5,7 +5,7 @@ namespace LibApp.Services.Abstractions.Interfaces;
 public interface IPublisherService
 {
     Task<IEnumerable<Publisher>> GetPublishersAsync();
-    Task<Publisher> GetPublisherAsync(int id);
+    Task<Publisher?> GetPublisherAsync(int id);
     Task AddPublisherAsync(Publisher publisher);
     Task UpdatePublisherAsync(Publisher publisher);
     Task RemovePublisherAsync(Publisher publisher);

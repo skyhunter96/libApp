@@ -26,7 +26,7 @@ public class CategoryService : ICategoryService
         return categories;
     }
 
-    public async Task<Category> GetCategoryAsync(int id)
+    public async Task<Category?> GetCategoryAsync(int id)
     {
         var category = await _context.Categories
             .Include(d => d.CreatedByUser)

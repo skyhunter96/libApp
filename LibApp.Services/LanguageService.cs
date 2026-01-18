@@ -25,7 +25,7 @@ public class LanguageService : ILanguageService
         return languages;
     }
 
-    public async Task<Language> GetLanguageAsync(int id)
+    public async Task<Language?> GetLanguageAsync(int id)
     {
         var language = await _context.Languages
             .AsNoTracking()

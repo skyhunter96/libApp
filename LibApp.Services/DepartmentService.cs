@@ -28,7 +28,7 @@ public class DepartmentService : IDepartmentService
         return departments;
     }
 
-    public async Task<Department> GetDepartmentAsync(int id)
+    public async Task<Department?> GetDepartmentAsync(int id)
     {
         var department = await _context.Departments
             .Include(d => d.CreatedByUser)

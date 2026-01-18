@@ -26,7 +26,7 @@ public class PublisherService : IPublisherService
         return publishers;
     }
 
-    public async Task<Publisher> GetPublisherAsync(int id)
+    public async Task<Publisher?> GetPublisherAsync(int id)
     {
         var publisher = await _context.Publishers
             .Include(d => d.CreatedByUser)

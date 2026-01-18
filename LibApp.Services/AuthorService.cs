@@ -26,7 +26,7 @@ public class AuthorService : IAuthorService
         return authors;
     }
 
-    public async Task<Author> GetAuthorAsync(int id)
+    public async Task<Author?> GetAuthorAsync(int id)
     {
         var author = await _context.Authors
             .Include(a => a.CreatedByUser)
