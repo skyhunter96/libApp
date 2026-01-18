@@ -6,22 +6,22 @@ namespace LibApp.WebApp.ViewModels;
 
 public class BookViewModel : IValidatableObject
 {
-    public int Id { get; set; }
+    public int Id { get; init; }
 
     [Required]
     [MaxLength(100)]
-    public string Title { get; set; }
+    public string Title { get; set; } = null!;
 
     [MaxLength(1000)]
     public string? Description { get; set; }
 
     [Required]
     [MaxLength(17)]
-    public string Isbn { get; set; }
+    public string Isbn { get; set; } = null!;
 
     [Required]
     [MaxLength(100)]
-    public string Edition { get; set; }
+    public string Edition { get; set; } = null!;
 
     [Display(Name = "Released")]
     [Range(-3000, 3000)]
@@ -45,7 +45,6 @@ public class BookViewModel : IValidatableObject
     [Display(Name = "Authors")]
     public IEnumerable<int>? AuthorIds { get; set; }
 
-    //These have to be null cuz validation for create fails, best would be to split vms for diff actions but have no time
     public string? Publisher { get; set; }
     public string? Category { get; set; }
     public string? Department { get; set; }
@@ -76,7 +75,7 @@ public class BookViewModel : IValidatableObject
     public IFormFile? ImageFile { get; set; }
 
     [Display(Name = "Created")]
-    public DateTime CreatedDateTime { get; set; }
+    public DateTime CreatedDateTime { get; init; }
 
     [Display(Name = "Modified")]
     public DateTime ModifiedDateTime { get; set; }
@@ -86,10 +85,10 @@ public class BookViewModel : IValidatableObject
 
     [Display(Name = "ModifiedBy")]
     public string? ModifiedByUser { get; set; }
-    public int? CreatedByUserId { get; set; }
+    public int? CreatedByUserId { get; init; }
     public int? ModifiedByUserId { get; set; }
 
-    private const string ISBNPattern = @"^(?=.*\d)(?=.*-).+$";
+    private const string IsbnPattern = @"^(?=.*\d)(?=.*-).+$";
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
@@ -102,7 +101,7 @@ public class BookViewModel : IValidatableObject
                 new[] { nameof(AuthorIds) }));
         }
 
-        if (!Regex.IsMatch(Isbn, ISBNPattern))
+        if (!Regex.IsMatch(Isbn, IsbnPattern))
         {
             validationResults.Add(new ValidationResult(
                 "Invalid ISBN format.",

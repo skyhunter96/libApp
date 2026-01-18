@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using LibApp.Domain.Models;
 using LibApp.EfDataAccess;
-using LibApp.Services.Interfaces;
+using LibApp.Services.Abstractions.Interfaces;
 using LibApp.WebApp.Utilities;
 using LibApp.WebApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -95,11 +95,16 @@ public class CategoriesController : Controller
 
             if (ModelState.IsValid)
             {
-                var category = _mapper.Map<Category>(categoryViewModel);
+                var loggedInUserId = Convert.ToInt32(_userManager.GetUserId(User));
+                var createdByUserId = categoryViewModel.CreatedByUserId;
 
-                var loggedInUserId = _userManager.GetUserId(User);
-
-                category.CreatedByUserId = category.ModifiedByUserId = Convert.ToInt32(loggedInUserId);
+                var category = _mapper.Map<Category>(
+                    categoryViewModel,
+                    options =>
+                    {
+                        options.Items["LoggedInUserId"] = loggedInUserId;
+                        options.Items["CreatedByUserId"] = createdByUserId;
+                    });
 
                 await _categoryService.AddCategoryAsync(category);
 
@@ -121,7 +126,7 @@ public class CategoriesController : Controller
     // GET: Categories/Edit/5
     public async Task<IActionResult> Edit(int id)
     {
-        if (id == null)
+        if (id == 0)
         {
             return NotFound();
         }
@@ -166,11 +171,16 @@ public class CategoriesController : Controller
 
             if (ModelState.IsValid)
             {
-                var category = _mapper.Map<Category>(categoryViewModel);
+                var loggedInUserId = Convert.ToInt32(_userManager.GetUserId(User));
+                var createdByUserId = categoryViewModel.CreatedByUserId;
 
-                var loggedInUserId = _userManager.GetUserId(User);
-
-                category.ModifiedByUserId = Convert.ToInt32(loggedInUserId);
+                var category = _mapper.Map<Category>(
+                    categoryViewModel,
+                    options =>
+                    {
+                        options.Items["LoggedInUserId"] = loggedInUserId;
+                        options.Items["CreatedByUserId"] = createdByUserId;
+                    });
 
                 await _categoryService.UpdateCategoryAsync(category);
 

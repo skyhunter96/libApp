@@ -1,6 +1,6 @@
 ﻿using LibApp.Domain.Models;
 using LibApp.EfDataAccess;
-using LibApp.Services.Interfaces;
+using LibApp.Services.Abstractions.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibApp.Services;
@@ -29,7 +29,7 @@ public class ReservationService : IReservationService
         return reservations;
     }
 
-    public async Task<Reservation> GetReservationAsync(int id)
+    public async Task<Reservation?> GetReservationAsync(int id)
     {
         var reservation = await _context.Reservations
             .Include(r => r.BookReservations)
@@ -109,26 +109,29 @@ public class ReservationService : IReservationService
 
         if (reservation == null)
         {
-            reservation = new Reservation();
-            reservation.ReservedByUserId = (int)(reservation.CreatedByUserId = loggedInUserId);
-
-            reservation.DueDate = DateTime.Now.AddDays(21);
-
+            reservation = new Reservation
+            {
+                ReservedByUserId = loggedInUserId,
+                DueDate = DateTime.Now.AddDays(21)
+            };
+            reservation.SetCreatedByUserId(loggedInUserId);
             _context.Reservations.Add(reservation);
         }
-        reservation.ModifiedDateTime = DateTime.Now;
-        reservation.ModifiedByUserId = loggedInUserId;
+        reservation.SetModifiedDateTime(DateTime.Now);
+        reservation.SetModifiedByUserId(loggedInUserId);
         reservation.IsStarted = false;
 
         //Then add single bookReservation object
 
-        var bookReservation = new BookReservation();
-        bookReservation.CreatedDateTime = bookReservation.ModifiedDateTime = DateTime.Now;
+        var bookReservation = new BookReservation
+        {
+            CreatedDateTime = DateTime.Now
+        };
+        bookReservation.SetModifiedDateTime(DateTime.Now);
 
         bookReservation.BookId = bookId;
 
-        reservation.BookReservations ??= new List<BookReservation>();
-        reservation.BookReservations.Add(bookReservation);
+        reservation.AddBookReservations(bookReservation);
 
         //Then adjust book quantities
 
@@ -153,9 +156,14 @@ public class ReservationService : IReservationService
             .Include(a => a.ModifiedByUser)
             .FirstOrDefault(r => r.Id == id);
 
+        if (reservation == null)
+        {
+            throw new ArgumentNullException(nameof(reservation));
+        }
+
         reservation.LoanDate = DateTime.Now;
         reservation.DueDate = DateTime.Now.AddDays(21);
-        reservation.ModifiedByUserId = loggedInUserId;
+        reservation.SetModifiedByUserId(loggedInUserId);
         reservation.IsStarted = true;
 
         _context.SaveChanges();

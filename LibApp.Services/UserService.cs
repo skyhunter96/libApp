@@ -1,6 +1,6 @@
 ﻿using LibApp.Domain.Models;
 using LibApp.EfDataAccess;
-using LibApp.Services.Interfaces;
+using LibApp.Services.Abstractions.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,7 +29,7 @@ public class UserService : IUserService
         return users;
     }
 
-    public User GetUser(int id)
+    public User? GetUser(int id)
     {
         var user = _context.Users
             .Include(u => u.CreatedByUser)
@@ -41,7 +41,7 @@ public class UserService : IUserService
         return user;
     }
 
-    public async Task<User> GetUserAsync(int id)
+    public async Task<User?> GetUserAsync(int id)
     {
         var user = await _context.Users
             .Include(u => u.CreatedByUser)
@@ -53,12 +53,13 @@ public class UserService : IUserService
         return user;
     }
 
-    public async Task<User> GetUserByUserNameAsync(string userName)
+    public async Task<User?> GetUserByUserNameAsync(string userName)
     {
         var user = await _context.Users
             .Include(u => u.CreatedByUser)
             .Include(u => u.ModifiedByUser)
             .Include(u => u.Role)
+            .AsNoTracking()
             .FirstOrDefaultAsync(u => u.UserName == userName);
 
         return user;
@@ -79,7 +80,7 @@ public class UserService : IUserService
 
     public async Task UpdateUserAsync(User user)
     {
-        user.ModifiedDateTime = DateTime.Now;
+        user.SetModifiedDateTime(DateTime.Now);
 
         var result = await _userManager.UpdateAsync(user);
 
@@ -94,7 +95,7 @@ public class UserService : IUserService
     {
         try
         {
-            await SeverRelations(user);
+            await SeverRelationsAsync(user);
 
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
@@ -106,56 +107,56 @@ public class UserService : IUserService
         }
     }
 
-    private async Task SeverRelations(User user)
+    private async Task SeverRelationsAsync(User user)
     {
         foreach (var book in _context.Books.Where(b => b.CreatedByUserId == user.Id))
         {
-            book.CreatedByUser = null;
+            book.SetCreatedByUserId(null);
         }
 
         foreach (var book in _context.Books.Where(b => b.ModifiedByUserId == user.Id))
         {
-            book.ModifiedByUser = null;
+            book.SetModifiedByUserId(null);
         }
 
         foreach (var category in _context.Categories.Where(b => b.CreatedByUserId == user.Id))
         {
-            category.CreatedByUser = null;
+            category.SetCreatedByUserId(null);
         }
 
         foreach (var category in _context.Categories.Where(b => b.ModifiedByUserId == user.Id))
         {
-            category.ModifiedByUser = null;
+            category.SetModifiedByUserId(null);
         }
 
         foreach (var author in _context.Authors.Where(b => b.CreatedByUserId == user.Id))
         {
-            author.CreatedByUser = null;
+            author.SetCreatedByUserId(null);
         }
 
         foreach (var author in _context.Authors.Where(b => b.ModifiedByUserId == user.Id))
         {
-            author.ModifiedByUser = null;
+            author.SetModifiedByUserId(null);
         }
 
         foreach (var publisher in _context.Publishers.Where(b => b.CreatedByUserId == user.Id))
         {
-            publisher.CreatedByUser = null;
+            publisher.SetCreatedByUserId(null);
         }
 
         foreach (var publisher in _context.Publishers.Where(b => b.ModifiedByUserId == user.Id))
         {
-            publisher.ModifiedByUser = null;
+            publisher.SetModifiedByUserId(null);
         }
 
         foreach (var department in _context.Departments.Where(b => b.CreatedByUserId == user.Id))
         {
-            department.CreatedByUser = null;
+            department.SetCreatedByUserId(null);
         }
 
         foreach (var department in _context.Departments.Where(b => b.ModifiedByUserId == user.Id))
         {
-            department.ModifiedByUser = null;
+            department.SetModifiedByUserId(null);
         }
 
         foreach (var reservation in _context.Reservations.Where(b => b.CreatedByUserId == user.Id)
@@ -174,12 +175,12 @@ public class UserService : IUserService
 
         foreach (var userToChange in _context.Users.Where(b => b.CreatedByUserId == user.Id))
         {
-            userToChange.CreatedByUser = null;
+            userToChange.SetCreatedByUserId(null);
         }
 
         foreach (var userToChange in _context.Users.Where(b => b.ModifiedByUserId == user.Id))
         {
-            userToChange.ModifiedByUser = null;
+            userToChange.SetModifiedByUserId(null);
         }
 
         await _context.SaveChangesAsync();

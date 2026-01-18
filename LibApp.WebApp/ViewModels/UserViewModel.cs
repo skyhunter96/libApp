@@ -5,41 +5,39 @@ namespace LibApp.WebApp.ViewModels;
 
 public class UserViewModel : IValidatableObject
 {
-    public int Id { get; set; }
+    public int Id { get; init; }
 
     [Required]
     [MaxLength(50)]
-    public string FirstName { get; set; }
+    public string FirstName { get; set; } = null!;
 
     [Required]
     [MaxLength(50)]
-    public string LastName { get; set; }
+    public string LastName { get; set; } = null!;
     public string FullName => $"{FirstName} {LastName}";
 
     [Required]
     [MaxLength(50)]
-    public string UserName { get; set; }
+    public string UserName { get; set; } = null!;
 
     [Required]
     [MaxLength(50)]
     [EmailAddress]
-    public string Email { get; set; }
+    public string Email { get; set; } = null!;
 
     [Required]
     [MinLength(8)]
     [MaxLength(50)]
-    public string Password { get; set; }
+    public string Password { get; set; } = null!;
 
     [Display(Name = "Phone Number")]
     [Required]
     [MaxLength(30)]
-    public string PhoneNumber { get; set; }
+    public string PhoneNumber { get; set; } = null!;
 
     [Required]
     [MaxLength(13)]
-    public string DocumentId { get; set; }
-
-    public bool IsVerified { get; set; }
+    public string DocumentId { get; set; } = null!;
 
     [Display(Name = "Active")]
     public bool IsActive { get; set; }
@@ -55,11 +53,11 @@ public class UserViewModel : IValidatableObject
 
     [Required]
     [MaxLength(50)]
-    public string City { get; set; }
+    public string City { get; set; } = null!;
 
     [Required]
     [MaxLength(100)]
-    public string Address { get; set; }
+    public string Address { get; set; } = null!;
     public string? CardCode { get; set; }
     public decimal TotalFee { get; set; }
 
@@ -71,19 +69,19 @@ public class UserViewModel : IValidatableObject
     public string? Role { get; set; }
 
     [Display(Name = "Created")]
-    public DateTime CreatedDateTime { get; set; }
+    public DateTime CreatedDateTime { get; init; }
 
     [Display(Name = "Modified")]
     public DateTime ModifiedDateTime { get; set; }
 
     [Display(Name = "CreatedBy")]
-    public string? CreatedByUser { get; set; }
+    public string? CreatedByUser { get; init; }
 
     [Display(Name = "ModifiedBy")]
     public string? ModifiedByUser { get; set; }
 
     [Display(Name = "CreatedBy")]
-    public int? CreatedByUserId { get; set; }
+    public int? CreatedByUserId { get; init; }
 
     [Display(Name = "ModifiedBy")]
     public int? ModifiedByUserId { get; set; }

@@ -9,8 +9,15 @@ public class Reservation : BaseEntity
     public DateTime? ActualReturnDate { get; set; }
     public decimal LateFee { get; set; }
     public bool IsStarted { get; set; }
-    public int? ReservedByUserId { get; set; }
+    public int? ReservedByUserId { get; init; }
 
-    public virtual User? ReservedByUser { get; set; }
-    public ICollection<BookReservation> BookReservations { get; set; }
+    public virtual User? ReservedByUser { get; init; }
+    public virtual ICollection<BookReservation> BookReservations { get; protected set; } = new List<BookReservation>();
+
+    public void AddBookReservations(BookReservation bookReservation)
+    {
+        if (bookReservation == null) return;
+            if (!BookReservations.Contains(bookReservation))
+                BookReservations.Add(bookReservation);
+    }
 }

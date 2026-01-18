@@ -4,7 +4,7 @@ namespace LibApp.Domain.Models;
 
 public class Role : IdentityRole<int>
 {
-    public ICollection<User> Users { get; set; }
+    public virtual ICollection<User> Users { get; protected set; } = new List<User>();
 }
 public enum RoleEnum
 {

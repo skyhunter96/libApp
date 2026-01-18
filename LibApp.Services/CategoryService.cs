@@ -1,6 +1,6 @@
 ﻿using LibApp.Domain.Models;
 using LibApp.EfDataAccess;
-using LibApp.Services.Interfaces;
+using LibApp.Services.Abstractions.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -45,7 +45,7 @@ public class CategoryService : ICategoryService
 
     public async Task UpdateCategoryAsync(Category category)
     {
-        category.ModifiedDateTime = DateTime.Now;
+        category.SetModifiedDateTime(DateTime.Now);
 
         _context.Update(category);
         await _context.SaveChangesAsync();

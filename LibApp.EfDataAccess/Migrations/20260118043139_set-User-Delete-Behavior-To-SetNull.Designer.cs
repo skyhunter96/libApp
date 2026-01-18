@@ -4,6 +4,7 @@ using LibApp.EfDataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LibApp.EfDataAccess.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    partial class LibraryContextModelSnapshot : ModelSnapshot
+    [Migration("20260118043139_set-User-Delete-Behavior-To-SetNull")]
+    partial class setUserDeleteBehaviorToSetNull
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -838,7 +841,7 @@ namespace LibApp.EfDataAccess.Migrations
                             Address = "nema ulice bb",
                             CardCode = "123-456-789",
                             City = "Belgrade",
-                            ConcurrencyStamp = "7a355e79-f1ad-4c57-8f89-5ae4302bdfa9",
+                            ConcurrencyStamp = "edfe142a-1e0e-4377-812f-6f3cb3d255f8",
                             CreatedByUserId = 1,
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DateOfBirth = new DateTime(1996, 2, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -865,7 +868,7 @@ namespace LibApp.EfDataAccess.Migrations
                             Address = "nema ulice bb",
                             CardCode = "111-456-789",
                             City = "Belgrade",
-                            ConcurrencyStamp = "dab098aa-dc3c-4f9f-a017-b781583c1eee",
+                            ConcurrencyStamp = "564d3527-5e27-4933-89ae-bdf9bae47e62",
                             CreatedByUserId = 1,
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DateOfBirth = new DateTime(1996, 2, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -892,7 +895,7 @@ namespace LibApp.EfDataAccess.Migrations
                             Address = "nema ulice bb",
                             CardCode = "222-456-789",
                             City = "Belgrade",
-                            ConcurrencyStamp = "72ee8eed-5af4-4d4c-89e5-db82f6bf9ca6",
+                            ConcurrencyStamp = "7617b590-deb4-4a53-9f91-945682cf5155",
                             CreatedByUserId = 1,
                             CreatedDateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DateOfBirth = new DateTime(1996, 2, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -1041,12 +1044,12 @@ namespace LibApp.EfDataAccess.Migrations
                     b.HasOne("LibApp.Domain.Models.User", "CreatedByUser")
                         .WithMany()
                         .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("LibApp.Domain.Models.User", "ModifiedByUser")
                         .WithMany()
                         .HasForeignKey("ModifiedByUserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("CreatedByUser");
 
@@ -1064,7 +1067,7 @@ namespace LibApp.EfDataAccess.Migrations
                     b.HasOne("LibApp.Domain.Models.User", "CreatedByUser")
                         .WithMany()
                         .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("LibApp.Domain.Models.Department", "Department")
                         .WithMany("Books")
@@ -1080,7 +1083,7 @@ namespace LibApp.EfDataAccess.Migrations
                     b.HasOne("LibApp.Domain.Models.User", "ModifiedByUser")
                         .WithMany()
                         .HasForeignKey("ModifiedByUserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("LibApp.Domain.Models.Publisher", "Publisher")
                         .WithMany("Books")
@@ -1125,12 +1128,12 @@ namespace LibApp.EfDataAccess.Migrations
                     b.HasOne("LibApp.Domain.Models.User", "CreatedByUser")
                         .WithMany()
                         .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("LibApp.Domain.Models.User", "ModifiedByUser")
                         .WithMany()
                         .HasForeignKey("ModifiedByUserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("CreatedByUser");
 
@@ -1142,12 +1145,12 @@ namespace LibApp.EfDataAccess.Migrations
                     b.HasOne("LibApp.Domain.Models.User", "CreatedByUser")
                         .WithMany()
                         .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("LibApp.Domain.Models.User", "ModifiedByUser")
                         .WithMany()
                         .HasForeignKey("ModifiedByUserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("CreatedByUser");
 
@@ -1159,12 +1162,12 @@ namespace LibApp.EfDataAccess.Migrations
                     b.HasOne("LibApp.Domain.Models.User", "CreatedByUser")
                         .WithMany()
                         .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("LibApp.Domain.Models.User", "ModifiedByUser")
                         .WithMany()
                         .HasForeignKey("ModifiedByUserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("CreatedByUser");
 
@@ -1176,12 +1179,12 @@ namespace LibApp.EfDataAccess.Migrations
                     b.HasOne("LibApp.Domain.Models.User", "CreatedByUser")
                         .WithMany()
                         .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("LibApp.Domain.Models.User", "ModifiedByUser")
                         .WithMany()
                         .HasForeignKey("ModifiedByUserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("LibApp.Domain.Models.User", "ReservedByUser")
                         .WithMany("Reservations")

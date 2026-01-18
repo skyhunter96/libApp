@@ -4,7 +4,7 @@ namespace LibApp.WebApp.ViewModels;
 
 public class ReservationViewModel
 {
-    public int Id { get; set; }
+    public int Id { get; init; }
     public DateTime? LoanDate { get; set; }
     public DateTime DueDate { get; set; }
     public DateTime? ActualReturnDate { get; set; }
@@ -35,6 +35,6 @@ public class ReservationViewModel
     public string? ModifiedByUser { get; set; }
 
     public int? ReservedByUserId { get; set; }
-    public int? CreatedByUserId { get; set; }
+    public int? CreatedByUserId { get; init; }
     public int? ModifiedByUserId { get; set; }
 }

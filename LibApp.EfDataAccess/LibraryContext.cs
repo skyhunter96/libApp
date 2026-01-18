@@ -57,7 +57,7 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
         modelBuilder.Entity<Role>().Property(r => r.Id).ValueGeneratedOnAdd();
 
         // Seed your data here
-        //SeedData(modelBuilder);
+        SeedData(modelBuilder);
     }
 
     private static void SeedData(ModelBuilder modelBuilder)
@@ -80,6 +80,7 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
             PhoneNumber = "0611234567",
             CardCode = "123-456-789",
         };
+        admin.SetCreatedByUserId(1);
         var librarian = new User
         {
             Id = 2,
@@ -96,6 +97,7 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
             PhoneNumber = "0621234567",
             CardCode = "111-456-789",
         };
+        librarian.SetCreatedByUserId(1);
         var regular = new User
         {
             Id = 3,
@@ -112,14 +114,12 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
             PhoneNumber = "0631234567",
             CardCode = "222-456-789",
         };
+        regular.SetCreatedByUserId(1);
 
         var users = new List<User> { admin, librarian, regular };
 
-        foreach (var user in users)
-        {
-            user.CreatedByUserId = admin.Id;
-            user.ModifiedByUserId = admin.Id;
-        }
+        foreach (var user in users) 
+            user.SetModifiedByUserId(admin.Id);
 
         //AUTHORS
 
@@ -128,24 +128,24 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
             Id = 1,
             Name = "Ivo Andrić",
         };
+        author1.SetCreatedByUserId(admin.Id);
         var author2 = new Author
         {
             Id = 2,
             Name = "Fridrih Niče",
         };
+        author2.SetCreatedByUserId(admin.Id);
         var author3 = new Author
         {
             Id = 3,
             Name = "Laza Kostić",
         };
+        author3.SetCreatedByUserId(admin.Id);
 
         var authors = new List<Author> { author1, author2, author3 };
 
-        foreach (var author in authors)
-        {
-            author.CreatedByUserId = admin.Id;
-            author.ModifiedByUserId = admin.Id;
-        }
+        foreach (var author in authors) 
+            author.SetModifiedByUserId(admin.Id);
 
         //PUBLISHERS
 
@@ -154,33 +154,27 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
             Id = 1,
             Name = "Delfi",
             Description = "Delfi knjižare",
-            CreatedByUserId = admin.Id,
-            ModifiedByUserId = admin.Id
-        };        
+        };
+        publisher1.SetCreatedByUserId(admin.Id);
         var publisher2 = new Publisher
         {
             Id = 2,
             Name = "Laguna",
             Description = "Laguna knjižare",
-            CreatedByUserId = admin.Id,
-            ModifiedByUserId = admin.Id
         };
+        publisher2.SetCreatedByUserId(admin.Id);
         var publisher3 = new Publisher
         {
             Id = 3,
             Name = "Vulkan",
             Description = "Vulkan knjižare",
-            CreatedByUserId = admin.Id,
-            ModifiedByUserId = admin.Id
         };
+        publisher3.SetCreatedByUserId(admin.Id);
 
         var publishers = new List<Publisher> { publisher1, publisher2, publisher3 };
-        
-        foreach (var publisher in publishers)
-        {
-            publisher.CreatedByUserId = admin.Id;
-            publisher.ModifiedByUserId = admin.Id;
-        }
+
+        foreach (var publisher in publishers) 
+            publisher.SetModifiedByUserId(admin.Id);
 
         //CATEGORIES
 
@@ -189,50 +183,42 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
             Id = 1,
             Name = "Klasici",
             Description = "Klasici svetske književnosti",
-            CreatedByUserId = admin.Id,
-            ModifiedByUserId = admin.Id
         };
+        category1.SetCreatedByUserId(admin.Id);
         var category2 = new Category
         {
             Id = 2,
             Name = "Trileri",
             Description = "Trileri",
-            CreatedByUserId = admin.Id,
-            ModifiedByUserId = admin.Id
         };
+        category2.SetCreatedByUserId(admin.Id);
         var category3 = new Category
         {
             Id = 3,
             Name = "Filozofija",
             Description = "Filozofija",
-            CreatedByUserId = admin.Id,
-            ModifiedByUserId = admin.Id
         };
+        category3.SetCreatedByUserId(admin.Id);
         var category4 = new Category
         {
             Id = 4,
             Name = "Istorija",
             Description = "Istorija",
-            CreatedByUserId = admin.Id,
-            ModifiedByUserId = admin.Id
         };
+        category4.SetCreatedByUserId(admin.Id);
         var category5 = new Category
         {
             Id = 5,
             Name = "Horor",
             Description = "Horor",
-            CreatedByUserId = admin.Id,
-            ModifiedByUserId = admin.Id
         };
+        category5.SetCreatedByUserId(admin.Id);
 
         var categories = new List<Category> { category1, category2, category3, category4, category5 };
 
         foreach (var category in categories)
-        {
-            category.CreatedByUserId = admin.Id;
-            category.ModifiedByUserId = admin.Id;
-        }
-
+            category.SetModifiedByUserId(admin.Id);
+        
         //DEPARTMENTS
 
         var department1 = new Department
@@ -241,57 +227,59 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
             Name = "Klasici",
             Description = "Departman klasika svetske književnosti",
             Budget = 100000,
-            CreatedByUserId = admin.Id,
-            ModifiedByUserId = admin.Id
         };
+        department1.SetCreatedByUserId(admin.Id);
         var department2 = new Department
         {
             Id = 2,
             Name = "21st century",
             Description = "Departman 21-og veka svetske književnosti",
             Budget = 100000,
-            CreatedByUserId = admin.Id,
-            ModifiedByUserId = admin.Id
         };
+        department2.SetCreatedByUserId(admin.Id);
         var department3 = new Department
         {
             Id = 3,
             Name = "20th century",
             Description = "Departman 20-og veka svetske književnosti",
             Budget = 100000,
-            CreatedByUserId = admin.Id,
-            ModifiedByUserId = admin.Id
         };
+        department3.SetCreatedByUserId(admin.Id);
         var department4 = new Department
         {
             Id = 4,
             Name = "19th century",
             Description = "Departman 20-og veka svetske književnosti",
             Budget = 100000,
-            CreatedByUserId = admin.Id,
-            ModifiedByUserId = admin.Id
         };
+        department4.SetCreatedByUserId(admin.Id);
         var department5 = new Department
         {
             Id = 5,
             Name = "Filozofija",
             Description = "Departman filozofije",
             Budget = 100000,
-            CreatedByUserId = admin.Id,
-            ModifiedByUserId = admin.Id
         };
+        department5.SetCreatedByUserId(admin.Id);
 
         var departments = new List<Department> { department1, department2, department3, department4, department5 };
+
+        foreach (var department in departments)
+        {
+            department.SetModifiedByUserId(admin.Id);
+        }
 
         //LANGUAGES
 
         var language1 = new Language
         {
-            Id = 1, Name = "Serbian",
+            Id = 1,
+            Name = "Serbian",
         };
         var language2 = new Language
         {
-            Id = 2, Name = "English",
+            Id = 2,
+            Name = "English",
         };
         var languages = new List<Language> { language1, language2 };
 
@@ -309,13 +297,12 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
             CategoryId = category1.Id,
             DepartmentId = department1.Id,
             LanguageId = language1.Id,
-            CreatedByUserId = admin.Id,
-            ModifiedByUserId = admin.Id,
             IsAvailable = true,
             Quantity = 10,
             AvailableQuantity = 10,
             ReservedQuantity = 0
         };
+        book1.SetCreatedByUserId(admin.Id);
         var book2 = new Book
         {
             Id = 2,
@@ -328,14 +315,15 @@ public class LibraryContext : IdentityDbContext<User, Role, int>
             CategoryId = category2.Id,
             DepartmentId = department2.Id,
             LanguageId = language2.Id,
-            CreatedByUserId = admin.Id,
-            ModifiedByUserId = admin.Id,
             IsAvailable = true,
             Quantity = 15,
             AvailableQuantity = 15,
             ReservedQuantity = 0
         };
+        book2.SetCreatedByUserId(admin.Id);
         var books = new List<Book> { book1, book2 };
+        book1.SetModifiedByUserId(admin.Id);
+        book2.SetModifiedByUserId(admin.Id);
 
         var bookAuthors = new List<object>
         {

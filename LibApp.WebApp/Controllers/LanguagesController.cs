@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using LibApp.Domain.Models;
 using LibApp.EfDataAccess;
-using LibApp.Services.Interfaces;
+using LibApp.Services.Abstractions.Interfaces;
 using LibApp.WebApp.Utilities;
 using LibApp.WebApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -93,8 +93,6 @@ public class LanguagesController : Controller
             {
                 var language = _mapper.Map<Language>(languageViewModel);
 
-                var loggedInUserId = _userManager.GetUserId(User);
-
                 await _languageService.AddLanguageAsync(language);
 
                 TempData["SuccessMessage"] = "Language added successfully.";
@@ -113,7 +111,7 @@ public class LanguagesController : Controller
     // GET: Languages/Edit/5
     public async Task<IActionResult> Edit(int id)
     {
-        if (id == null)
+        if (id == 0)
         {
             return NotFound();
         }
@@ -157,8 +155,6 @@ public class LanguagesController : Controller
             if (ModelState.IsValid)
             {
                 var language = _mapper.Map<Language>(languageViewModel);
-
-                var loggedInUserId = _userManager.GetUserId(User);
 
                 await _languageService.UpdateLanguageAsync(language);
 

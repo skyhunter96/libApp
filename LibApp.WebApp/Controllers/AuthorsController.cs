@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using LibApp.Domain.Models;
 using LibApp.EfDataAccess;
-using LibApp.Services.Interfaces;
+using LibApp.Services.Abstractions.Interfaces;
 using LibApp.WebApp.Utilities;
 using LibApp.WebApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -129,21 +129,25 @@ public class AuthorsController : Controller
 
             if (ModelState.IsValid)
             {
-                var author = _mapper.Map<Author>(authorViewModel);
+                var loggedInUserId = Convert.ToInt32(_userManager.GetUserId(User));
 
-                var loggedInUserId = _userManager.GetUserId(User);
-
-                author.CreatedByUserId = author.ModifiedByUserId = Convert.ToInt32(loggedInUserId);
+                var author = _mapper.Map<Author>(
+                    authorViewModel,
+                    options =>
+                    {
+                        options.Items["LoggedInUserId"] = loggedInUserId;
+                        options.Items["CreatedByUserId"] = loggedInUserId;
+                    });
 
                 await _authorService.AddAuthorAsync(author);
-
+                
                 TempData["SuccessMessage"] = "Author added successfully.";
-
+                
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", authorViewModel.CreatedByUserId);
             ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", authorViewModel.ModifiedByUserId);
-
             return View(authorViewModel);
         }
         catch (Exception exception)
@@ -155,7 +159,7 @@ public class AuthorsController : Controller
     // GET: Authors/Edit/5
     public async Task<IActionResult> Edit(int id)
     {
-        if (id == null)
+        if (id == 0)
         {
             return NotFound();
         }
@@ -200,11 +204,16 @@ public class AuthorsController : Controller
 
             if (ModelState.IsValid)
             {
-                var author = _mapper.Map<Author>(authorViewModel);
+                var loggedInUserId = Convert.ToInt32(_userManager.GetUserId(User));
+                var createdByUserId = authorViewModel.CreatedByUserId;
 
-                var loggedInUserId = _userManager.GetUserId(User);
-
-                author.ModifiedByUserId = Convert.ToInt32(loggedInUserId);
+                var author = _mapper.Map<Author>(
+                    authorViewModel,
+                    options =>
+                    {
+                        options.Items["LoggedInUserId"] = loggedInUserId;
+                        options.Items["CreatedByUserId"] = createdByUserId;
+                    });
 
                 await _authorService.UpdateAuthorAsync(author);
 

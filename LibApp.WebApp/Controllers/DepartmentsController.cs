@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using LibApp.Domain.Models;
 using LibApp.EfDataAccess;
-using LibApp.Services.Interfaces;
+using LibApp.Services.Abstractions.Interfaces;
 using LibApp.WebApp.Utilities;
 using LibApp.WebApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -95,11 +95,15 @@ public class DepartmentsController : Controller
 
             if (ModelState.IsValid)
             {
-                var department = _mapper.Map<Department>(departmentViewModel);
+                var loggedInUserId = Convert.ToInt32(_userManager.GetUserId(User));
 
-                var loggedInUserId = _userManager.GetUserId(User);
-
-                department.CreatedByUserId = department.ModifiedByUserId = Convert.ToInt32(loggedInUserId);
+                var department = _mapper.Map<Department>(
+                    departmentViewModel, 
+                    options =>
+                    {
+                        options.Items["LoggedInUserId"] = loggedInUserId;
+                        options.Items["CreatedByUserId"] = loggedInUserId;
+                    });
 
                 await _departmentService.AddDepartmentAsync(department);
 
@@ -121,7 +125,7 @@ public class DepartmentsController : Controller
     // GET: Departments/Edit/5
     public async Task<IActionResult> Edit(int id)
     {
-        if (id == null)
+        if (id == 0)
         {
             return NotFound();
         }
@@ -166,11 +170,16 @@ public class DepartmentsController : Controller
 
             if (ModelState.IsValid)
             {
-                var department = _mapper.Map<Department>(departmentViewModel);
+                var loggedInUserId = Convert.ToInt32(_userManager.GetUserId(User));
+                var createdByUserId = departmentViewModel.CreatedByUserId;
 
-                var loggedInUserId = _userManager.GetUserId(User);
-
-                department.ModifiedByUserId = Convert.ToInt32(loggedInUserId);
+                var department = _mapper.Map<Department>(
+                    departmentViewModel, 
+                    options =>
+                    {
+                        options.Items["LoggedInUserId"] = loggedInUserId;
+                        options.Items["CreatedByUserId"] = createdByUserId;
+                    });
 
                 await _departmentService.UpdateDepartmentAsync(department);
 

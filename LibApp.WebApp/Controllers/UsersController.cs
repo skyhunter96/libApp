@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using LibApp.Domain.Models;
 using LibApp.EfDataAccess;
-using LibApp.Services.Interfaces;
+using LibApp.Services.Abstractions.Interfaces;
 using LibApp.WebApp.Utilities;
 using LibApp.WebApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -151,11 +151,15 @@ public class UsersController : Controller
 
             if (ModelState.IsValid)
             {
-                var user = _mapper.Map<User>(userViewModel);
+                var loggedInUserId = Convert.ToInt32(_userManager.GetUserId(User));
 
-                var loggedInUserId = _userManager.GetUserId(User);
-
-                user.CreatedByUserId = user.ModifiedByUserId = Convert.ToInt32(loggedInUserId);
+                var user = _mapper.Map<User>(
+                    userViewModel,
+                    options =>
+                    {
+                        options.Items["LoggedInUserId"] = loggedInUserId;
+                        options.Items["CreatedByUserId"] = loggedInUserId;
+                    });
 
                 await _userService.AddUserAsync(user);
 
@@ -180,7 +184,7 @@ public class UsersController : Controller
     {
         try
         {
-            if (id == null)
+            if (id == 0)
             {
                 return NotFound();
             }
@@ -237,6 +241,9 @@ public class UsersController : Controller
 
             if (ModelState.IsValid)
             {
+                var loggedInUserId = Convert.ToInt32(_userManager.GetUserId(User));
+                var createdByUserId = userViewModel.CreatedByUserId;
+                
                 var user = await _userManager.FindByIdAsync(userViewModel.Id.ToString());
 
                 if (user == null)
@@ -244,11 +251,16 @@ public class UsersController : Controller
                     return NotFound();
                 }
 
-                _mapper.Map(userViewModel, user);
+                //TODO: This needs to be checked
 
-                var loggedInUserId = _userManager.GetUserId(User);
-
-                user.ModifiedByUserId = Convert.ToInt32(loggedInUserId);
+                _mapper.Map(
+                    userViewModel, 
+                    user,
+                    options =>
+                    {
+                        options.Items["LoggedInUserId"] = loggedInUserId;
+                        options.Items["CreatedByUserId"] = createdByUserId;
+                    });
 
                 await _userService.UpdateUserAsync(user);
 
@@ -315,7 +327,7 @@ public class UsersController : Controller
     {
         try
         {
-            if (id == null)
+            if (id == 0)
             {
                 return NotFound();
             }
@@ -339,7 +351,7 @@ public class UsersController : Controller
     {
         try
         {
-            if (id == null)
+            if (id == 0)
             {
                 return NotFound();
             }

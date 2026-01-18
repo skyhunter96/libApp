@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
-using LibApp.Services.Interfaces;
+using LibApp.Domain.Models;
+using LibApp.EfDataAccess;
+using LibApp.Services.Abstractions.Interfaces;
 using LibApp.WebApp.Utilities;
 using LibApp.WebApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -7,8 +9,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Text.RegularExpressions;
-using LibApp.Domain.Models;
-using LibApp.EfDataAccess;
 using X.PagedList;
 
 namespace LibApp.WebApp.Controllers;
@@ -33,6 +33,7 @@ public class BooksController : Controller
 
     //TODO: Sort by released, qty, created, modified
     //TODO: Filter by isAvailable
+    //TODO: Services interfaces in another project
     //TODO: Instructions to install on another machine
     //TODO: Reservation timer job
 
@@ -62,7 +63,7 @@ public class BooksController : Controller
 
         try
         {
-            var books = _bookService.GetBooks();
+            var books = await _bookService.GetBooksAsync();
             var bookViewModels = _mapper.Map<IEnumerable<BookViewModel>>(books);
 
             if (!string.IsNullOrEmpty(searchTitleString))
@@ -201,11 +202,15 @@ public class BooksController : Controller
                     bookViewModel.ImagePath = "/img/books/" + fileName;
                 }
 
-                var book = _mapper.Map<Book>(bookViewModel);
+                var loggedInUserId = Convert.ToInt32(_userManager.GetUserId(User));
 
-                var loggedInUserId = _userManager.GetUserId(User);
-
-                book.CreatedByUserId = book.ModifiedByUserId = Convert.ToInt32(loggedInUserId);
+                var book = _mapper.Map<Book>(
+                    bookViewModel,
+                    options =>
+                    {
+                        options.Items["LoggedInUserId"] = loggedInUserId;
+                        options.Items["CreatedByUserId"] = loggedInUserId;
+                    });
 
                 await _bookService.AddBookAsync(book, bookViewModel.AuthorIds, bookViewModel.NewAuthor);
 
@@ -248,7 +253,7 @@ public class BooksController : Controller
     {
         try
         {
-            if (id == null || _context.Books == null)
+            if (id == 0 || !_context.Books.Any())
             {
                 return NotFound();
             }
@@ -296,6 +301,7 @@ public class BooksController : Controller
 
             if (ModelState.IsValid)
             {
+                //TODO: Refactor to methods
                 if (bookViewModel.ImageFile is { Length: > 0 })
                 {
                     // Delete the old image file
@@ -331,11 +337,16 @@ public class BooksController : Controller
                     bookViewModel.ImagePath = "/img/books/" + fileName;
                 }
 
-                var book = _mapper.Map<Book>(bookViewModel);
+                var loggedInUserId = Convert.ToInt32(_userManager.GetUserId(User));
+                var createdByUserId = bookViewModel.CreatedByUserId;
 
-                var loggedInUserId = _userManager.GetUserId(User);
-
-                book.ModifiedByUserId = Convert.ToInt32(loggedInUserId);
+                var book = _mapper.Map<Book>(
+                    bookViewModel,
+                    options =>
+                    {
+                        options.Items["LoggedInUserId"] = loggedInUserId;
+                        options.Items["CreatedByUserId"] = createdByUserId;
+                    });
 
                 await _bookService.UpdateBookAsync(book, bookViewModel.AuthorIds, bookViewModel.NewAuthor);
 

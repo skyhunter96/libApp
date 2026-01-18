@@ -1,6 +1,6 @@
 ﻿using LibApp.Domain.Models;
 using LibApp.EfDataAccess;
-using LibApp.Services.Interfaces;
+using LibApp.Services.Abstractions.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibApp.Services;
@@ -43,7 +43,7 @@ public class BookService : IBookService
         return books;
     }
 
-    public async Task<Book> GetBookAsync(int id)
+    public async Task<Book?> GetBookAsync(int id)
     {
         var book = await _context.Books
             .Include(b => b.Authors)
@@ -70,9 +70,10 @@ public class BookService : IBookService
 
     public async Task AddBookAsync(Book book, IEnumerable<int>? existingAuthorIds, string? newAuthorName)
     {
+        var modifiedByUserId = book.ModifiedByUserId;
         var newAuthor = new Author();
-
-        newAuthor.CreatedByUserId = newAuthor.ModifiedByUserId = book.CreatedByUserId = book.ModifiedByUserId;
+        newAuthor.SetCreatedByUserId(modifiedByUserId);
+        newAuthor.SetModifiedByUserId(modifiedByUserId);
 
         if (newAuthorName != null)
         {
@@ -94,7 +95,7 @@ public class BookService : IBookService
             existingAuthors.Add(newAuthor);
         }
 
-        book.Authors = existingAuthors;
+        book.AddAuthors(existingAuthors);
 
         _context.Add(book);
         await _context.SaveChangesAsync();
@@ -103,9 +104,16 @@ public class BookService : IBookService
     public async Task UpdateBookAsync(Book book, IEnumerable<int>? selectedAuthorIds, string? newAuthorName)
     {
         var newAuthor = new Author();
+        newAuthor.SetCreatedByUserId(book.ModifiedByUserId);
+        newAuthor.SetModifiedByUserId(book.ModifiedByUserId);
 
         // Like this cuz plain 'book' does not get authors loaded
         var bookToUpdate = await GetBookAsync(book.Id);
+
+        if (bookToUpdate == null)
+        {
+            throw new InvalidOperationException($"Book with Id {book.Id} not found.");
+        }
 
         // Detach the entity from the context
         _context.Entry(bookToUpdate).State = EntityState.Detached;
@@ -113,7 +121,7 @@ public class BookService : IBookService
         // Attach the provided 'bookToUpdate' to the context
         _context.Attach(bookToUpdate);
 
-        newAuthor.CreatedByUserId = newAuthor.ModifiedByUserId = bookToUpdate.ModifiedByUserId = book.ModifiedByUserId;
+        bookToUpdate.SetModifiedByUserId(book.ModifiedByUserId);
 
         await MapBook(book, bookToUpdate, _context);
 
@@ -137,15 +145,20 @@ public class BookService : IBookService
             existingAuthors.Add(newAuthor);
         }
 
-        bookToUpdate.Authors = existingAuthors;
-        bookToUpdate.ModifiedDateTime = DateTime.Now;
+        bookToUpdate.AddAuthors(existingAuthors);
+        bookToUpdate.SetModifiedDateTime(DateTime.Now);
 
         _context.Update(bookToUpdate);
         await _context.SaveChangesAsync();
     }
 
-    private static async Task MapBook(Book book, Book bookToUpdate, LibraryContext context)
+    private static async Task MapBook(Book book, Book? bookToUpdate, LibraryContext context)
     {
+        if (bookToUpdate == null)
+        {
+            throw new ArgumentNullException(nameof(bookToUpdate));
+        }
+
         bookToUpdate.Title = book.Title;
         bookToUpdate.Description = book.Description;
         bookToUpdate.Isbn = book.Isbn;

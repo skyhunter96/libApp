@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using LibApp.Domain.Models;
 using LibApp.EfDataAccess;
-using LibApp.Services.Interfaces;
+using LibApp.Services.Abstractions.Interfaces;
 using LibApp.WebApp.Utilities;
 using LibApp.WebApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -128,11 +128,15 @@ public class PublishersController : Controller
 
             if (ModelState.IsValid)
             {
-                var publisher = _mapper.Map<Publisher>(publisherViewModel);
+                var loggedInUserId = Convert.ToInt32(_userManager.GetUserId(User));
 
-                var loggedInUserId = _userManager.GetUserId(User);
-
-                publisher.CreatedByUserId = publisher.ModifiedByUserId = Convert.ToInt32(loggedInUserId);
+                var publisher = _mapper.Map<Publisher>(
+                    publisherViewModel,
+                    options =>
+                    {
+                        options.Items["LoggedInUserId"] = loggedInUserId;
+                        options.Items["CreatedByUserId"] = loggedInUserId;
+                    });
 
                 await _publisherService.AddPublisherAsync(publisher);
 
@@ -154,7 +158,7 @@ public class PublishersController : Controller
     // GET: Publishers/Edit/5
     public async Task<IActionResult> Edit(int id)
     {
-        if (id == null)
+        if (id == 0)
         {
             return NotFound();
         }
@@ -199,11 +203,16 @@ public class PublishersController : Controller
 
             if (ModelState.IsValid)
             {
-                var publisher = _mapper.Map<Publisher>(publisherViewModel);
+                var loggedInUserId = Convert.ToInt32(_userManager.GetUserId(User));
+                var createdByUserId = publisherViewModel.CreatedByUserId;
 
-                var loggedInUserId = _userManager.GetUserId(User);
-
-                publisher.ModifiedByUserId = Convert.ToInt32(loggedInUserId);
+                var publisher = _mapper.Map<Publisher>(
+                    publisherViewModel, 
+                    options =>
+                    {
+                        options.Items["LoggedInUserId"] = loggedInUserId;
+                        options.Items["CreatedByUserId"] = createdByUserId;
+                    });
 
                 await _publisherService.UpdatePublisherAsync(publisher);
 

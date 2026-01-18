@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using LibApp.Domain.Models;
 using LibApp.EfDataAccess;
-using LibApp.Services.Interfaces;
+using LibApp.Services.Abstractions.Interfaces;
 using LibApp.WebApp.Utilities;
 using LibApp.WebApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -58,7 +58,7 @@ public class ReservationsController : Controller
 
             if (!string.IsNullOrEmpty(searchNameString))
             {
-                reservationViewModels = reservationViewModels.Where(a => a.ReservedByUser.ToLower().Contains(searchNameString.ToLower()));
+                reservationViewModels = reservationViewModels.Where(a => a.ReservedByUser != null && a.ReservedByUser.ToLower().Contains(searchNameString.ToLower()));
             }
 
             reservationViewModels = sortNameOrder switch

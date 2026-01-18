@@ -1,6 +1,6 @@
 ﻿using LibApp.Domain.Models;
 using LibApp.EfDataAccess;
-using LibApp.Services.Interfaces;
+using LibApp.Services.Abstractions.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -47,7 +47,7 @@ public class DepartmentService : IDepartmentService
 
     public async Task UpdateDepartmentAsync(Department department)
     {
-        department.ModifiedDateTime = DateTime.Now;
+        department.SetModifiedDateTime(DateTime.Now);
 
         _context.Update(department);
         await _context.SaveChangesAsync();
