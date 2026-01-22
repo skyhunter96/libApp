@@ -11,45 +11,45 @@ public class BookConfiguration : BaseEntityConfiguration<Book>
     {
         base.Configure(entity);
 
-        entity.Property(b => b.Title)
+        entity.Property(book => book.Title)
             .HasMaxLength(100);
 
-        entity.Property(b => b.Description)
+        entity.Property(book => book.Description)
             .HasMaxLength(1000)
             .IsRequired(false);
 
-        entity.Property(b => b.Isbn)
+        entity.Property(book => book.Isbn)
             .HasColumnType("char(17)");
 
-        entity.Property(b => b.Edition)
+        entity.Property(book => book.Edition)
             .HasMaxLength(100);
 
-        entity.Property(b => b.ImagePath)
+        entity.Property(book => book.ImagePath)
             .IsRequired(false);
 
-        entity.Property(b => b.Cost)
+        entity.Property(book => book.Cost)
             .HasColumnType("decimal(10,2)")
             .IsRequired(false);
 
-        entity.HasOne(b => b.Publisher)
-            .WithMany(p => p.Books)
+        entity.HasOne(book => book.Publisher)
+            .WithMany(publisher => publisher.Books)
             .OnDelete(DeleteBehavior.Restrict);
 
-        entity.HasOne(b => b.Category)
-            .WithMany(p => p.Books)
+        entity.HasOne(book => book.Category)
+            .WithMany(category => category.Books)
             .OnDelete(DeleteBehavior.Restrict);
 
-        entity.HasOne(b => b.Department)
-            .WithMany(p => p.Books)
+        entity.HasOne(book => book.Department)
+            .WithMany(department => department.Books)
             .IsRequired(false)
             .OnDelete(DeleteBehavior.Restrict);
 
-        entity.HasOne(b => b.Language)
-            .WithMany(p => p.Books)
+        entity.HasOne(book => book.Language)
+            .WithMany(language => language.Books)
             .OnDelete(DeleteBehavior.Restrict);
 
-        entity.HasMany(b => b.Authors)
-            .WithMany(a => a.Books)
+        entity.HasMany(book => book.Authors)
+            .WithMany(author => author.Books)
             .UsingEntity<Dictionary<string, object>>(
                 "BookAuthor",
                 r => r.HasOne<Author>().WithMany().HasForeignKey("AuthorId"),

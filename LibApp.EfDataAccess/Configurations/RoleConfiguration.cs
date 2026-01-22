@@ -10,19 +10,19 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
     {
         entity.ToTable("Role");
 
-        entity.HasKey(r => r.Id);
+        entity.HasKey(role => role.Id);
 
-        entity.Property(r => r.Id).ValueGeneratedNever();
+        entity.Property(role => role.Id).ValueGeneratedNever();
 
-        entity.HasMany(r => r.Users)
-            .WithOne(u => u.Role)
-            .HasForeignKey(u => u.RoleId)
+        entity.HasMany(role => role.Users)
+            .WithOne(user => user.Role)
+            .HasForeignKey(user => user.RoleId)
             .OnDelete(DeleteBehavior.Restrict);
 
         entity.HasData(
-            new Role { Id = 1, Name = RoleEnum.Admin.ToString() },
-            new Role { Id = 2, Name = RoleEnum.Librarian.ToString() },
-            new Role { Id = 3, Name = RoleEnum.Regular.ToString() }
+            new Role { Id = 1, Name = nameof(RoleEnum.Admin) },
+            new Role { Id = 2, Name = nameof(RoleEnum.Librarian) },
+            new Role { Id = 3, Name = nameof(RoleEnum.Regular) }
         );
     }
 }

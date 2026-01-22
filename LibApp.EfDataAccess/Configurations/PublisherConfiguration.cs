@@ -11,15 +11,15 @@ public class PublisherConfiguration : BaseEntityConfiguration<Publisher>
     {
         base.Configure(entity);
 
-        entity.Property(p => p.Name)
+        entity.Property(publisher => publisher.Name)
             .HasMaxLength(50);
 
-        entity.Property(p => p.Description)
+        entity.Property(publisher => publisher.Description)
             .HasMaxLength(100)
             .IsRequired(false);
 
-        entity.HasMany(p => p.Books)
-            .WithOne(b => b.Publisher)
+        entity.HasMany(publisher => publisher.Books)
+            .WithOne(book => book.Publisher)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

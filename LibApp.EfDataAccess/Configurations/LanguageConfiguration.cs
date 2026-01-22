@@ -10,13 +10,13 @@ public class LanguageConfiguration : IEntityTypeConfiguration<Language>
     {
         entity.ToTable("Languages", "lib");
 
-        entity.HasKey(l => l.Id);
+        entity.HasKey(language => language.Id);
 
-        entity.Property(l => l.Name)
+        entity.Property(language => language.Name)
             .HasMaxLength(50);
 
-        entity.HasMany(d => d.Books)
-            .WithOne(b => b.Language)
+        entity.HasMany(department => department.Books)
+            .WithOne(book => book.Language)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }
