@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using LibApp.Domain.Models;
-using LibApp.EfDataAccess;
 using LibApp.Services.Abstractions.Interfaces;
 using LibApp.WebApp.Utilities;
 using LibApp.WebApp.ViewModels;
@@ -12,24 +11,12 @@ using X.PagedList;
 
 namespace LibApp.WebApp.Controllers;
 
+//TODO: Remove LibraryContext from primary constructor in all controllers
 [Authorize(Roles = AppRoles.Admin + "," + AppRoles.Librarian)]
-public class AuthorsController : Controller
+public class AuthorsController(IAuthorService authorService, IUserService userService, IMapper mapper, UserManager<User> userManager) : Controller
 {
-    private readonly LibraryContext _context;
-    private readonly IAuthorService _authorService;
-    private readonly UserManager<User> _userManager;
-    private readonly IMapper _mapper;
-
     private const int PageSize = 10;
     private const string SortNameOrder = "name_desc";
-
-    public AuthorsController(LibraryContext context, IAuthorService authorService, IMapper mapper, UserManager<User> userManager)
-    {
-        _context = context;
-        _authorService = authorService;
-        _mapper = mapper;
-        _userManager = userManager;
-    }
 
     // GET: Authors
     public async Task<IActionResult> Index(string sortNameOrder, string currentNameFilter, string searchNameString,
@@ -51,8 +38,8 @@ public class AuthorsController : Controller
 
         try
         {
-            var authors = await _authorService.GetAuthorsAsync();
-            var authorViewModels = _mapper.Map<IEnumerable<AuthorViewModel>>(authors);
+            var authors = await authorService.GetAuthorsAsync();
+            var authorViewModels = mapper.Map<IEnumerable<AuthorViewModel>>(authors);
 
             if (!string.IsNullOrEmpty(searchNameString))
             {
@@ -82,14 +69,14 @@ public class AuthorsController : Controller
     {
         try
         {
-            var author = await _authorService.GetAuthorAsync(id);
+            var author = await authorService.GetAuthorAsync(id);
 
             if (author == null)
             {
                 return NotFound();
             }
 
-            var authorViewModel = _mapper.Map<AuthorViewModel>(author);
+            var authorViewModel = mapper.Map<AuthorViewModel>(author);
 
             return View(authorViewModel);
         }
@@ -100,12 +87,14 @@ public class AuthorsController : Controller
     }
 
     // GET: Authors/Create
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
         try
         {
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name");
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name");
+            var usersAsEnumerable = await userService.GetUsersAsync();
+            var users = usersAsEnumerable.ToList();
+            ViewData["CreatedByUserId"] = new SelectList(users, "Id", "Name");
+            ViewData["ModifiedByUserId"] = new SelectList(users, "Id", "Name");
 
             return View();
         }
@@ -122,16 +111,16 @@ public class AuthorsController : Controller
     {
         try
         {
-            if (_authorService.AuthorExists(authorViewModel.Name))
+            if (await authorService.AuthorExistsAsync(authorViewModel.Name))
             {
                 ModelState.AddModelError("Name", "An author with this Name already exists.");
             }
 
             if (ModelState.IsValid)
             {
-                var loggedInUserId = Convert.ToInt32(_userManager.GetUserId(User));
+                var loggedInUserId = Convert.ToInt32(userManager.GetUserId(User));
 
-                var author = _mapper.Map<Author>(
+                var author = mapper.Map<Author>(
                     authorViewModel,
                     options =>
                     {
@@ -139,15 +128,17 @@ public class AuthorsController : Controller
                         options.Items["CreatedByUserId"] = loggedInUserId;
                     });
 
-                await _authorService.AddAuthorAsync(author);
+                await authorService.AddAuthorAsync(author);
                 
                 TempData["SuccessMessage"] = "Author added successfully.";
                 
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", authorViewModel.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", authorViewModel.ModifiedByUserId);
+            var usersAsEnumerable = await userService.GetUsersAsync();
+            var users = usersAsEnumerable.ToList();
+            ViewData["CreatedByUserId"] = new SelectList(users, "Id", "Name", authorViewModel.CreatedByUserId);
+            ViewData["ModifiedByUserId"] = new SelectList(users, "Id", "Name", authorViewModel.ModifiedByUserId);
             return View(authorViewModel);
         }
         catch (Exception exception)
@@ -166,17 +157,19 @@ public class AuthorsController : Controller
 
         try
         {
-            var author = await _context.Authors.FindAsync(id);
+            var author = await authorService.GetAuthorAsync(id);
 
             if (author == null)
             {
                 return NotFound();
             }
 
-            var authorViewModel = _mapper.Map<AuthorViewModel>(author);
+            var authorViewModel = mapper.Map<AuthorViewModel>(author);
 
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", author.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", author.ModifiedByUserId);
+            var usersAsEnumerable = await userService.GetUsersAsync();
+            var users = usersAsEnumerable.ToList();
+            ViewData["CreatedByUserId"] = new SelectList(users, "Id", "Name", author.CreatedByUserId);
+            ViewData["ModifiedByUserId"] = new SelectList(users, "Id", "Name", author.ModifiedByUserId);
             return View(authorViewModel);
         }
         catch (Exception exception)
@@ -197,17 +190,17 @@ public class AuthorsController : Controller
 
         try
         {
-            if (_authorService.AuthorExistsInOtherAuthors(authorViewModel.Id, authorViewModel.Name))
+            if (await authorService.AuthorExistsInOtherAuthorsAsync(authorViewModel.Id, authorViewModel.Name))
             {
                 ModelState.AddModelError("Name", "An author with this Name already exists.");
             }
 
             if (ModelState.IsValid)
             {
-                var loggedInUserId = Convert.ToInt32(_userManager.GetUserId(User));
+                var loggedInUserId = Convert.ToInt32(userManager.GetUserId(User));
                 var createdByUserId = authorViewModel.CreatedByUserId;
 
-                var author = _mapper.Map<Author>(
+                var author = mapper.Map<Author>(
                     authorViewModel,
                     options =>
                     {
@@ -215,14 +208,17 @@ public class AuthorsController : Controller
                         options.Items["CreatedByUserId"] = createdByUserId;
                     });
 
-                await _authorService.UpdateAuthorAsync(author);
+                await authorService.UpdateAuthorAsync(author);
 
                 TempData["SuccessMessage"] = "Author updated successfully.";
 
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", authorViewModel.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", authorViewModel.ModifiedByUserId);
+
+            var usersAsEnumerable = await userService.GetUsersAsync();
+            var users = usersAsEnumerable.ToList();
+            ViewData["CreatedByUserId"] = new SelectList(users, "Id", "Name", authorViewModel.CreatedByUserId);
+            ViewData["ModifiedByUserId"] = new SelectList(users, "Id", "Name", authorViewModel.ModifiedByUserId);
             return View(authorViewModel);
         }
         catch (Exception exception)
@@ -238,13 +234,13 @@ public class AuthorsController : Controller
     {
         try
         {
-            var author = await _authorService.GetAuthorAsync(id);
+            var author = await authorService.GetAuthorAsync(id);
             if (author != null)
             {
-                var isDeletable = _authorService.IsDeletable(author);
+                var isDeletable = await authorService.IsDeletableAsync(author.Id);
                 if (isDeletable)
                 {
-                    await _authorService.RemoveAuthorAsync(author);
+                    await authorService.RemoveAuthorAsync(author);
                     TempData["SuccessMessage"] = "Author deleted successfully.";
                     return Json(new { success = true, message = "Author deleted successfully." });
                 }

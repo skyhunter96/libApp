@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using LibApp.Domain.Models;
-using LibApp.EfDataAccess;
 using LibApp.Services.Abstractions.Interfaces;
 using LibApp.WebApp.Utilities;
 using LibApp.WebApp.ViewModels;
@@ -12,28 +11,15 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace LibApp.WebApp.Controllers;
 
 [Authorize(Roles = AppRoles.Admin + "," + AppRoles.Librarian)]
-public class DepartmentsController : Controller
+public class DepartmentsController(IDepartmentService departmentService, IUserService userService, IMapper mapper, UserManager<User> userManager) : Controller
 {
-    private readonly LibraryContext _context;
-    private readonly IDepartmentService _departmentService;
-    private readonly UserManager<User> _userManager;
-    private readonly IMapper _mapper;
-
-    public DepartmentsController(LibraryContext context, IDepartmentService departmentService, IMapper mapper, UserManager<User> userManager)
-    {
-        _context = context;
-        _departmentService = departmentService;
-        _mapper = mapper;
-        _userManager = userManager;
-    }
-
     // GET: Departments
     public async Task<IActionResult> Index()
     {
         try
         {
-            var departments = await _departmentService.GetDepartmentsAsync();
-            var departmentViewModels = _mapper.Map<IEnumerable<DepartmentViewModel>>(departments);
+            var departments = await departmentService.GetDepartmentsAsync();
+            var departmentViewModels = mapper.Map<IEnumerable<DepartmentViewModel>>(departments);
 
             return View(departmentViewModels);
         }
@@ -48,14 +34,14 @@ public class DepartmentsController : Controller
     {
         try
         {
-            var department = await _departmentService.GetDepartmentAsync(id);
+            var department = await departmentService.GetDepartmentAsync(id);
 
             if (department == null)
             {
                 return NotFound();
             }
 
-            var departmentViewModel = _mapper.Map<DepartmentViewModel>(department);
+            var departmentViewModel = mapper.Map<DepartmentViewModel>(department);
 
             return View(departmentViewModel);
         }
@@ -66,12 +52,14 @@ public class DepartmentsController : Controller
     }
 
     // GET: Departments/Create
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
         try
         {
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name");
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name");
+            var users = await userService.GetUsersAsync();
+
+            ViewData["CreatedByUserId"] = new SelectList(users, "Id", "Name");
+            ViewData["ModifiedByUserId"] = new SelectList(users, "Id", "Name");
 
             return View();
         }
@@ -88,16 +76,16 @@ public class DepartmentsController : Controller
     {
         try
         {
-            if (_departmentService.DepartmentExists(departmentViewModel.Name))
+            if (await departmentService.DepartmentExistsAsync(departmentViewModel.Name))
             {
                 ModelState.AddModelError("Name", "A department with this Name already exists.");
             }
 
             if (ModelState.IsValid)
             {
-                var loggedInUserId = Convert.ToInt32(_userManager.GetUserId(User));
+                var loggedInUserId = Convert.ToInt32(userManager.GetUserId(User));
 
-                var department = _mapper.Map<Department>(
+                var department = mapper.Map<Department>(
                     departmentViewModel, 
                     options =>
                     {
@@ -105,14 +93,17 @@ public class DepartmentsController : Controller
                         options.Items["CreatedByUserId"] = loggedInUserId;
                     });
 
-                await _departmentService.AddDepartmentAsync(department);
+                await departmentService.AddDepartmentAsync(department);
 
                 TempData["SuccessMessage"] = "Department added successfully.";
 
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", departmentViewModel.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", departmentViewModel.ModifiedByUserId);
+
+            var users = await userService.GetUsersAsync();
+
+            ViewData["CreatedByUserId"] = new SelectList(users, "Id", "Name", departmentViewModel.CreatedByUserId);
+            ViewData["ModifiedByUserId"] = new SelectList(users, "Id", "Name", departmentViewModel.ModifiedByUserId);
 
             return View(departmentViewModel);
         }
@@ -132,17 +123,19 @@ public class DepartmentsController : Controller
 
         try
         {
-            var department = await _context.Departments.FindAsync(id);
+            var department = await departmentService.GetDepartmentAsync(id);
 
             if (department == null)
             {
                 return NotFound();
             }
 
-            var departmentViewModel = _mapper.Map<DepartmentViewModel>(department);
+            var departmentViewModel = mapper.Map<DepartmentViewModel>(department);
 
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", department.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", department.ModifiedByUserId);
+            var users = await userService.GetUsersAsync();
+
+            ViewData["CreatedByUserId"] = new SelectList(users, "Id", "Name", department.CreatedByUserId);
+            ViewData["ModifiedByUserId"] = new SelectList(users, "Id", "Name", department.ModifiedByUserId);
             return View(departmentViewModel);
         }
         catch (Exception exception)
@@ -163,17 +156,17 @@ public class DepartmentsController : Controller
 
         try
         {
-            if (_departmentService.DepartmentExistsInOtherDepartments(departmentViewModel.Id, departmentViewModel.Name))
+            if (await departmentService.DepartmentExistsInOtherDepartmentsAsync(departmentViewModel.Id, departmentViewModel.Name))
             {
                 ModelState.AddModelError("Name", "An department with this Name already exists.");
             }
 
             if (ModelState.IsValid)
             {
-                var loggedInUserId = Convert.ToInt32(_userManager.GetUserId(User));
+                var loggedInUserId = Convert.ToInt32(userManager.GetUserId(User));
                 var createdByUserId = departmentViewModel.CreatedByUserId;
 
-                var department = _mapper.Map<Department>(
+                var department = mapper.Map<Department>(
                     departmentViewModel, 
                     options =>
                     {
@@ -181,14 +174,17 @@ public class DepartmentsController : Controller
                         options.Items["CreatedByUserId"] = createdByUserId;
                     });
 
-                await _departmentService.UpdateDepartmentAsync(department);
+                await departmentService.UpdateDepartmentAsync(department);
 
                 TempData["SuccessMessage"] = "Department updated successfully.";
 
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", departmentViewModel.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", departmentViewModel.ModifiedByUserId);
+
+            var users = await userService.GetUsersAsync();
+
+            ViewData["CreatedByUserId"] = new SelectList(users, "Id", "Name", departmentViewModel.CreatedByUserId);
+            ViewData["ModifiedByUserId"] = new SelectList(users, "Id", "Name", departmentViewModel.ModifiedByUserId);
             return View(departmentViewModel);
         }
         catch (Exception exception)
@@ -204,13 +200,13 @@ public class DepartmentsController : Controller
     {
         try
         {
-            var department = await _departmentService.GetDepartmentAsync(id);
+            var department = await departmentService.GetDepartmentAsync(id);
             if (department != null)
             {
-                var isDeletable = _departmentService.IsDeletable(department);
+                var isDeletable = await departmentService.IsDeletableAsync(id);
                 if (isDeletable)
                 {
-                    await _departmentService.RemoveDepartmentAsync(department);
+                    await departmentService.RemoveDepartmentAsync(department);
                     TempData["SuccessMessage"] = "Department deleted successfully.";
                     return Json(new { success = true, message = "Department deleted successfully." });
                 }

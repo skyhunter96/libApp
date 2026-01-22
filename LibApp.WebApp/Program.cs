@@ -1,5 +1,9 @@
+using LibApp.Data.Abstractions.Interfaces;
+using LibApp.Data.Abstractions.Interfaces.Common;
 using LibApp.Domain.Models;
 using LibApp.EfDataAccess;
+using LibApp.EfDataAccess.Repositories;
+using LibApp.EfDataAccess.Repositories.Common;
 using LibApp.Services;
 using LibApp.Services.Abstractions.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -37,6 +41,17 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IPublisherService, PublisherService>();
 builder.Services.AddScoped<ILanguageService, LanguageService>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
+
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
+builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+builder.Services.AddScoped<ILanguageRepository, LanguageRepository>();
+builder.Services.AddScoped<IPublisherRepository, PublisherRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
 
 var app = builder.Build();
 
