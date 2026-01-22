@@ -26,11 +26,10 @@ public class BooksController(
     private const int PageSize = 10;
     private const string SortTitleOrder = "title_desc";
 
-    //TODO: Sort by released, qty, created, modified
-    //TODO: Filter by isAvailable
-    //TODO: Services interfaces in another project
     //TODO: Instructions to install on another machine
     //TODO: Reservation timer job
+    //TODO: Sort by released, qty, created, modified
+    //TODO: Filter by isAvailable
 
     // GET: Books
     public async Task<IActionResult> Index(string sortTitleOrder, string currentTitleFilter, string searchTitleString, 
@@ -39,22 +38,7 @@ public class BooksController(
         ViewBag.CurrentSortTitle = sortTitleOrder;
         ViewBag.SortTitleParm = String.IsNullOrEmpty(sortTitleOrder) ? SortTitleOrder : "";
 
-        var authorsAsEnumerable = await authorService.GetAuthorsAsync();
-        var authors = authorsAsEnumerable.ToList();
-        var publishersAsEnumerable = await publisherService.GetPublishersAsync();
-        var publishers = publishersAsEnumerable.ToList();
-        var categoriesAsEnumerable = await categoryService.GetCategoriesAsync();
-        var categories = categoriesAsEnumerable.ToList();
-        var departmentsAsEnumerable = await departmentService.GetDepartmentsAsync();
-        var departments = departmentsAsEnumerable.ToList();
-        var languagesAsEnumerable = await languageService.GetLanguagesAsync();
-        var languages = languagesAsEnumerable.ToList();
-
-        ViewData["AuthorId"] = new SelectList(authors, "Id", "Name");
-        ViewData["PublisherId"] = new SelectList(publishers, "Id", "Name");
-        ViewData["CategoryId"] = new SelectList(categories, "Id", "Name");
-        ViewData["DepartmentId"] = new SelectList(departments, "Id", "Name");
-        ViewData["LanguageId"] = new SelectList(languages, "Id", "Name");
+        await PopulateBookLookupsAsyncForIndex();
 
         if (searchTitleString != null)
         {
@@ -126,6 +110,8 @@ public class BooksController(
         }
     }
 
+    
+
     // GET: Books/Details/5
     public async Task<IActionResult> Details(int id)
     {
@@ -154,22 +140,7 @@ public class BooksController(
     {
         try
         {
-            var authorsAsEnumerable = await authorService.GetAuthorsAsync();
-            var authors = authorsAsEnumerable.ToList();
-            var publishersAsEnumerable = await publisherService.GetPublishersAsync();
-            var publishers = publishersAsEnumerable.ToList();
-            var categoriesAsEnumerable = await categoryService.GetCategoriesAsync();
-            var categories = categoriesAsEnumerable.ToList();
-            var departmentsAsEnumerable = await departmentService.GetDepartmentsAsync();
-            var departments = departmentsAsEnumerable.ToList();
-            var languagesAsEnumerable = await languageService.GetLanguagesAsync();
-            var languages = languagesAsEnumerable.ToList();
-
-            ViewData["CategoryId"] = new SelectList(categories, "Id", "Name");
-            ViewData["DepartmentId"] = new SelectList(departments, "Id", "Name");
-            ViewData["LanguageId"] = new SelectList(languages, "Id", "Name");
-            ViewData["PublisherId"] = new SelectList(publishers, "Id", "Name");
-            ViewData["AuthorIds"] = new MultiSelectList(authors, "Id", "Name");
+            await PopulateBookLookupsAsync();
 
             return View();
         }
@@ -196,27 +167,7 @@ public class BooksController(
             {
                 if (bookViewModel.ImageFile is { Length: > 0 })
                 {
-                    var fileName = bookViewModel.Title.Replace(" ", "_").ToLower();
-                    fileName = Regex.Replace(fileName, @"[^\u0000-\u007F]+", string.Empty);
-                    fileName = fileName + "_" + DateTime.Now.Ticks + Path.GetExtension(bookViewModel.ImageFile.FileName);
-
-                    var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "books");
-
-                    // Check if the directory exists, if not, create it
-                    if (!Directory.Exists(directoryPath))
-                    {
-                        Directory.CreateDirectory(directoryPath);
-                    }
-
-                    var filePath = Path.Combine(directoryPath, fileName);
-
-                    await using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await bookViewModel.ImageFile.CopyToAsync(stream);
-                    }
-
-                    // Save the file path to the user object or database
-                    bookViewModel.ImagePath = "/img/books/" + fileName;
+                    await SetImageFileAsync(bookViewModel);
                 }
 
                 var loggedInUserId = Convert.ToInt32(userManager.GetUserId(User));
@@ -250,22 +201,7 @@ public class BooksController(
                 }
             }
 
-            var authorsAsEnumerable = await authorService.GetAuthorsAsync();
-            var authors = authorsAsEnumerable.ToList();
-            var publishersAsEnumerable = await publisherService.GetPublishersAsync();
-            var publishers = publishersAsEnumerable.ToList();
-            var categoriesAsEnumerable = await categoryService.GetCategoriesAsync();
-            var categories = categoriesAsEnumerable.ToList();
-            var departmentsAsEnumerable = await departmentService.GetDepartmentsAsync();
-            var departments = departmentsAsEnumerable.ToList();
-            var languagesAsEnumerable = await languageService.GetLanguagesAsync();
-            var languages = languagesAsEnumerable.ToList();
-
-            ViewData["CategoryId"] = new SelectList(categories, "Id", "Name", bookViewModel.CategoryId);
-            ViewData["DepartmentId"] = new SelectList(departments, "Id", "Name", bookViewModel.DepartmentId);
-            ViewData["LanguageId"] = new SelectList(languages, "Id", "Name", bookViewModel.LanguageId);
-            ViewData["PublisherId"] = new SelectList(publishers, "Id", "Name", bookViewModel.PublisherId);
-            ViewData["AuthorIds"] = new MultiSelectList(authors, "Id", "Name", bookViewModel.AuthorIds);
+            await PopulateBookLookupsAsync(selectedAuthorIds: bookViewModel.AuthorIds, publisherId: bookViewModel.PublisherId, categoryId: bookViewModel.CategoryId, departmentId: bookViewModel.DepartmentId, languageId: bookViewModel.LanguageId);
 
             return View(bookViewModel);
         }
@@ -290,22 +226,7 @@ public class BooksController(
 
             var bookViewModel = mapper.Map<BookViewModel>(book);
 
-            var authorsAsEnumerable = await authorService.GetAuthorsAsync();
-            var authors = authorsAsEnumerable.ToList();
-            var publishersAsEnumerable = await publisherService.GetPublishersAsync();
-            var publishers = publishersAsEnumerable.ToList();
-            var categoriesAsEnumerable = await categoryService.GetCategoriesAsync();
-            var categories = categoriesAsEnumerable.ToList();
-            var departmentsAsEnumerable = await departmentService.GetDepartmentsAsync();
-            var departments = departmentsAsEnumerable.ToList();
-            var languagesAsEnumerable = await languageService.GetLanguagesAsync();
-            var languages = languagesAsEnumerable.ToList();
-
-            ViewData["CategoryId"] = new SelectList(categories, "Id", "Name", bookViewModel.CategoryId);
-            ViewData["DepartmentId"] = new SelectList(departments, "Id", "Name", bookViewModel.DepartmentId);
-            ViewData["LanguageId"] = new SelectList(languages, "Id", "Name", bookViewModel.LanguageId);
-            ViewData["PublisherId"] = new SelectList(publishers, "Id", "Name", bookViewModel.PublisherId);
-            ViewData["AuthorIds"] = new MultiSelectList(authors, "Id", "Name", bookViewModel.AuthorIds);
+            await PopulateBookLookupsAsync(selectedAuthorIds: bookViewModel.AuthorIds, publisherId: bookViewModel.PublisherId, categoryId: bookViewModel.CategoryId, departmentId: bookViewModel.DepartmentId, languageId: bookViewModel.LanguageId);
 
             return View(bookViewModel);
         }
@@ -335,40 +256,9 @@ public class BooksController(
 
             if (ModelState.IsValid)
             {
-                //TODO: Refactor to methods
                 if (bookViewModel.ImageFile is { Length: > 0 })
                 {
-                    // Delete the old image file
-                    if (!string.IsNullOrEmpty(bookViewModel.ImagePath))
-                    {
-                        var oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", bookViewModel.ImagePath.TrimStart('/'));
-                        if (System.IO.File.Exists(oldFilePath))
-                        {
-                            System.IO.File.Delete(oldFilePath);
-                        }
-                    }
-
-                    var fileName = bookViewModel.Title.Replace(" ", "_").ToLower();
-                    fileName = Regex.Replace(fileName, @"[^\u0000-\u007F]+", string.Empty);
-                    fileName = fileName + "_" + DateTime.Now.Ticks + Path.GetExtension(bookViewModel.ImageFile.FileName);
-
-                    var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "books");
-
-                    // Check if the directory exists, if not, create it
-                    if (!Directory.Exists(directoryPath))
-                    {
-                        Directory.CreateDirectory(directoryPath);
-                    }
-
-                    var filePath = Path.Combine(directoryPath, fileName);
-
-                    await using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await bookViewModel.ImageFile.CopyToAsync(stream);
-                    }
-
-                    // Save the file path to the user object or database
-                    bookViewModel.ImagePath = "/img/books/" + fileName;
+                    await SetImageFileAsync(bookViewModel);
                 }
 
                 var loggedInUserId = Convert.ToInt32(userManager.GetUserId(User));
@@ -389,22 +279,7 @@ public class BooksController(
                 return RedirectToAction(nameof(Index));
             }
 
-            var authorsAsEnumerable = await authorService.GetAuthorsAsync();
-            var authors = authorsAsEnumerable.ToList();
-            var publishersAsEnumerable = await publisherService.GetPublishersAsync();
-            var publishers = publishersAsEnumerable.ToList();
-            var categoriesAsEnumerable = await categoryService.GetCategoriesAsync();
-            var categories = categoriesAsEnumerable.ToList();
-            var departmentsAsEnumerable = await departmentService.GetDepartmentsAsync();
-            var departments = departmentsAsEnumerable.ToList();
-            var languagesAsEnumerable = await languageService.GetLanguagesAsync();
-            var languages = languagesAsEnumerable.ToList();
-
-            ViewData["CategoryId"] = new SelectList(categories, "Id", "Name", bookViewModel.CategoryId);
-            ViewData["DepartmentId"] = new SelectList(departments, "Id", "Name", bookViewModel.DepartmentId);
-            ViewData["LanguageId"] = new SelectList(languages, "Id", "Name", bookViewModel.LanguageId);
-            ViewData["PublisherId"] = new SelectList(publishers, "Id", "Name", bookViewModel.PublisherId);
-            ViewData["AuthorIds"] = new MultiSelectList(authors, "Id", "Name", bookViewModel.AuthorIds);
+            await PopulateBookLookupsAsync(selectedAuthorIds: bookViewModel.AuthorIds, publisherId: bookViewModel.PublisherId, categoryId: bookViewModel.CategoryId, departmentId: bookViewModel.DepartmentId, languageId: bookViewModel.LanguageId);
 
             return View(bookViewModel);
         }
@@ -437,5 +312,73 @@ public class BooksController(
         {
             return RedirectToAction("ServerError", "Error");
         }
+    }
+
+    private async Task PopulateBookLookupsAsyncForIndex()
+    {
+        var (authors, publishers, categories, departments, languages) = await GetRelevantBookLookupsValues();
+
+        ViewData["AuthorId"] = new SelectList(authors, "Id", "Name");
+        ViewData["PublisherId"] = new SelectList(publishers, "Id", "Name");
+        ViewData["CategoryId"] = new SelectList(categories, "Id", "Name");
+        ViewData["DepartmentId"] = new SelectList(departments, "Id", "Name");
+        ViewData["LanguageId"] = new SelectList(languages, "Id", "Name");
+    }
+
+    private async Task PopulateBookLookupsAsync(IEnumerable<int>? selectedAuthorIds = null, int? publisherId = null, int? categoryId = null, int? departmentId = null, int? languageId = null)
+    {
+        var (authors, publishers, categories, departments, languages) = await GetRelevantBookLookupsValues();
+
+        ViewData["AuthorIds"] = new MultiSelectList(authors, "Id", "Name", selectedAuthorIds);
+        ViewData["PublisherId"] = new SelectList(publishers, "Id", "Name", publisherId);
+        ViewData["CategoryId"] = new SelectList(categories, "Id", "Name", categoryId);
+        ViewData["DepartmentId"] = new SelectList(departments, "Id", "Name", departmentId);
+        ViewData["LanguageId"] = new SelectList(languages, "Id", "Name", languageId);
+    }
+
+    private async Task<(List<Author> authors, List<Publisher> publishers, List<Category> categories, List<Department> departments, List<Language> languages)> GetRelevantBookLookupsValues()
+    {
+        var authors = (await authorService.GetAuthorsAsync()).ToList();
+        var publishers = (await publisherService.GetPublishersAsync()).ToList();
+        var categories = (await categoryService.GetCategoriesAsync()).ToList();
+        var departments = (await departmentService.GetDepartmentsAsync()).ToList();
+        var languages = (await languageService.GetLanguagesAsync()).ToList();
+
+        return (authors, publishers, categories, departments, languages);
+    }
+
+    private static async Task SetImageFileAsync(BookViewModel bookViewModel)
+    {
+        // Delete the old image file
+        if (!string.IsNullOrEmpty(bookViewModel.ImagePath))
+        {
+            var oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", bookViewModel.ImagePath.TrimStart('/'));
+            if (System.IO.File.Exists(oldFilePath))
+            {
+                System.IO.File.Delete(oldFilePath);
+            }
+        }
+
+        var fileName = bookViewModel.Title.Replace(" ", "_").ToLower();
+        fileName = Regex.Replace(fileName, @"[^\u0000-\u007F]+", string.Empty);
+        fileName = fileName + "_" + DateTime.Now.Ticks + Path.GetExtension(bookViewModel.ImageFile.FileName);
+
+        var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "books");
+
+        // Check if the directory exists, if not, create it
+        if (!Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+
+        var filePath = Path.Combine(directoryPath, fileName);
+
+        await using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await bookViewModel.ImageFile.CopyToAsync(stream);
+        }
+
+        // Save the file path to the user object or database
+        bookViewModel.ImagePath = "/img/books/" + fileName;
     }
 }
