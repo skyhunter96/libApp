@@ -1,86 +1,59 @@
-﻿using LibApp.Domain.Models;
-using LibApp.EfDataAccess;
+﻿using LibApp.Data.Abstractions.Interfaces;
+using LibApp.Domain.Models;
 using LibApp.Services.Abstractions.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 namespace LibApp.Services;
 
-public class AuthorService : IAuthorService
+public class AuthorService(IAuthorRepository authorRepository, IBookRepository bookRepository) : IAuthorService
 {
-    private readonly LibraryContext _context;
-
-    public AuthorService(LibraryContext context)
-    {
-        _context = context;
-    }
-
     public async Task<IEnumerable<Author>> GetAuthorsAsync()
     {
-        var authors = await _context.Authors
-            .Include(a => a.CreatedByUser)
-            .Include(a => a.ModifiedByUser)
-            .AsNoTracking()
-            .ToListAsync();
-
-        return authors;
+        return await authorRepository.GetAllWithUsersAsync();
     }
 
     public async Task<Author?> GetAuthorAsync(int id)
     {
-        var author = await _context.Authors
-            .Include(a => a.CreatedByUser)
-            .Include(a => a.ModifiedByUser)
-            .AsNoTracking()
-            .FirstOrDefaultAsync(a => a.Id == id);
-
-        return author;
+        return await authorRepository.GetByIdWithUsersAsync(id);
     }
 
     public async Task AddAuthorAsync(Author author)
     {
-        _context.Add(author);
-        await _context.SaveChangesAsync();
+        await authorRepository.AddAsync(author);
     }
 
     public async Task UpdateAuthorAsync(Author author)
     {
-        try
-        {
-            author.SetModifiedDateTime(DateTime.UtcNow);
-
-            _context.Update(author);
-            await _context.SaveChangesAsync();
-        }
-        catch (Exception exception)
-        {
-            throw;
-        }
+        author.SetModifiedDateTime(DateTime.UtcNow);
+        await authorRepository.UpdateAsync(author);
     }
 
+    //TODO: Should be just RemoveAsync by id
     public async Task RemoveAuthorAsync(Author author)
     {
-        _context.Authors.Remove(author);
-        await _context.SaveChangesAsync();
+        await authorRepository.RemoveAsync(author);
     }
 
-    public bool AuthorExists(string name)
+    public Task<bool> AuthorExistsAsync(string name)
     {
-        if (name.IsNullOrEmpty())
+        if (string.IsNullOrWhiteSpace(name))
+            return Task.FromResult(false);
+
+        return authorRepository.AnyAsync(author => author.Name.ToLower() == name.ToLower());
+    }
+
+    public async Task<bool> AuthorExistsInOtherAuthorsAsync(int id, string name)
+    {
+        if (id == 0 || string.IsNullOrWhiteSpace(name))
             return false;
 
-        var exists = _context.Authors.Any(a => a.Name.ToLower() == name.ToLower());
-        return exists;
+        return await authorRepository.AnyAsync(author => author.Id != id && author.Name.ToLower() == name.ToLower());
     }
 
-    public bool AuthorExistsInOtherAuthors(int id, string name)
+    public async Task<bool> IsDeletableAsync(int id)
     {
-        var exists = _context.Authors.Any(a => a.Id != id && a.Name.ToLower() == name.ToLower());
-        return exists;
-    }
+        if (id == 0) return false;
 
-    public bool IsDeletable(Author author)
-    {
-        return !_context.Books.Any(b => b.Authors.Contains(author));
+        var isDeletable = !await bookRepository.AnyAsync(book => book.Authors.Any(author => author.Id == id));
+        return isDeletable;
     }
 }

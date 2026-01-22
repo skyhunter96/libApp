@@ -1,79 +1,59 @@
-﻿using LibApp.Domain.Models;
-using LibApp.EfDataAccess;
+﻿using LibApp.Data.Abstractions.Interfaces;
+using LibApp.Domain.Models;
 using LibApp.Services.Abstractions.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 namespace LibApp.Services;
 
-public class CategoryService : ICategoryService
+public class CategoryService(ICategoryRepository categoryRepository) : ICategoryService
 {
-    private readonly LibraryContext _context;
-
-    public CategoryService(LibraryContext context)
-    {
-        _context = context;
-    }
-
     public async Task<IEnumerable<Category>> GetCategoriesAsync()
     {
-        var categories = await _context.Categories
-            .Include(d => d.CreatedByUser)
-            .Include(d => d.ModifiedByUser)
-            .AsNoTracking()
-            .ToListAsync();
-
-        return categories;
+        return await categoryRepository.GetAllWithUsersAsync();
     }
 
     public async Task<Category?> GetCategoryAsync(int id)
     {
-        var category = await _context.Categories
-            .Include(d => d.CreatedByUser)
-            .Include(d => d.ModifiedByUser)
-            .AsNoTracking()
-            .FirstOrDefaultAsync(d => d.Id == id);
-
-        return category;
+        return await categoryRepository.GetByIdWithUsersAsync(id);
     }
 
     public async Task AddCategoryAsync(Category category)
     {
-        _context.Add(category);
-        await _context.SaveChangesAsync();
+        await categoryRepository.AddAsync(category);
     }
 
     public async Task UpdateCategoryAsync(Category category)
     {
-        category.SetModifiedDateTime(DateTime.Now);
-
-        _context.Update(category);
-        await _context.SaveChangesAsync();
+        await categoryRepository.UpdateAsync(category);
     }
 
     public async Task RemoveCategoryAsync(Category category)
     {
-        _context.Remove(category);
-        await _context.SaveChangesAsync();
+        await categoryRepository.RemoveAsync(category);
     }
 
-    public bool CategoryExists(string name)
+    public async Task<bool> CategoryExistsAsync(string name)
     {
-        if (name.IsNullOrEmpty())
+        if (string.IsNullOrWhiteSpace(name))
             return false;
 
-        var exists = _context.Categories.Any(d => d.Name.ToLower() == name.ToLower());
+        return await categoryRepository.AnyAsync(category => category.Name.ToLower() == name.ToLower());
+    }
+
+    public async Task<bool> CategoryExistsInOtherCategoriesAsync(int id, string name)
+    {
+        if (id == 0 || string.IsNullOrWhiteSpace(name))
+            return false;
+
+        var categories = await categoryRepository.GetAllAsync();
+        var exists = categories.Any(category => category.Id != id && string.Equals(category.Name, name, StringComparison.OrdinalIgnoreCase));
         return exists;
     }
 
-    public bool CategoryExistsInOtherCategories(int id, string name)
+    public async Task<bool> IsDeletableAsync(int id)
     {
-        var exists = _context.Categories.Any(d => d.Id != id && d.Name.ToLower() == name.ToLower());
-        return exists;
-    }
+        if (id == 0) return false;
 
-    public bool IsDeletable(Category category)
-    {
-        return !_context.Books.Any(b => b.Category == category);
+        var categories = await categoryRepository.GetAllAsync();
+        return categories.All(category => category.Id != id);
     }
 }

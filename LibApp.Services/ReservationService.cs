@@ -1,92 +1,63 @@
-﻿using LibApp.Domain.Models;
-using LibApp.EfDataAccess;
+﻿using LibApp.Data.Abstractions.Interfaces;
+using LibApp.Domain.Models;
 using LibApp.Services.Abstractions.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace LibApp.Services;
 
-public class ReservationService : IReservationService
+public class ReservationService(IReservationRepository reservationRepository, IBookRepository bookRepository) : IReservationService
 {
-    private readonly LibraryContext _context;
-
-    private const int ReservationNumber = 3;
-
-    public ReservationService(LibraryContext context)
-    {
-        _context = context;
-    }
+    private const int MaxReservationNumber = 3;
 
     public async Task<IEnumerable<Reservation>> GetReservationsAsync()
     {
-        var reservations = await _context.Reservations
-            .Include(r => r.BookReservations)
-            .Include(a => a.ReservedByUser)
-            .Include(a => a.CreatedByUser)
-            .Include(a => a.ModifiedByUser)
-            .AsNoTracking()
-            .ToListAsync();
-
-        return reservations;
+        return await reservationRepository.GetAllWithRelatedEntitiesAsync();
     }
 
     public async Task<Reservation?> GetReservationAsync(int id)
     {
-        var reservation = await _context.Reservations
-            .Include(r => r.BookReservations)
-            .ThenInclude(br => br.Book)
-            .Include(a => a.ReservedByUser)
-            .Include(a => a.CreatedByUser)
-            .Include(a => a.ModifiedByUser)
-            .FirstOrDefaultAsync(r => r.Id == id);
-
-        return reservation;
+        return await reservationRepository.GetByWithRelatedEntitiesAsync(id);
     }
 
     public async Task<int> GetReservationIdForUserAsync(int userId)
     {
-        var reservation = await _context.Reservations
-            .Include(r => r.BookReservations)
-            .ThenInclude(br => br.Book)
-            .Include(a => a.ReservedByUser)
-            .Include(a => a.CreatedByUser)
-            .Include(a => a.ModifiedByUser)
-            .AsNoTracking()
-            .FirstOrDefaultAsync(r => r.ReservedByUserId == userId);
+        var reservation = await reservationRepository.GetReservationForUserAsync(userId);
 
         return reservation?.Id ?? 0;
     }
 
-    public async Task RemoveReservationAsync(Reservation reservation)
+    public async Task RemoveReservationAsync(int id)
     {
-        foreach (var bookReservation in reservation.BookReservations)
-        {
-            bookReservation.Book.ReservedQuantity--;
-            bookReservation.Book.AvailableQuantity++;
-        }
+        var reservation = await GetReservationAsync(id);
 
-        _context.BookReservations.RemoveRange(reservation.BookReservations);
-        _context.Reservations.Remove(reservation);
-        await _context.SaveChangesAsync();
+        if (reservation != null)
+        {
+            foreach (var bookReservation in reservation.BookReservations)
+            {
+                bookReservation.Book.ReservedQuantity--;
+                bookReservation.Book.AvailableQuantity++;
+            }
+
+            await reservationRepository.RemoveReservationAsync(reservation);
+        }
     }
 
     //Reservation can have up to three bookReservations (books)
-    public bool UserCanReserve(int loggedInUserId)
+    public async Task<bool> UserCanReserveAsync(int loggedInUserId)
     {
-        var reservation = _context.Reservations
-            .Include(reservation => reservation.BookReservations)
-            .FirstOrDefault(r => r.CreatedByUserId == loggedInUserId);
+        var reservations = await reservationRepository.GetAllWithRelatedEntitiesAsync();
+        var reservation = reservations.FirstOrDefault(r => r.CreatedByUserId == loggedInUserId);
 
         if (reservation == null)
         {
             return true;
         }
 
-        return reservation.BookReservations.Count < ReservationNumber;
+        return reservation.BookReservations.Count < MaxReservationNumber;
     }
 
-    public bool BookCanBeReserved(int bookId)
+    public async Task<bool> BookCanBeReservedAsync(int bookId)
     {
-        var book = _context.Books.FirstOrDefault(b => b.Id == bookId);
+        var book = await bookRepository.GetByIdAsync(bookId);
 
         if (book == null || book.IsAvailable == false || book.AvailableQuantity == 0)
         {
@@ -96,16 +67,12 @@ public class ReservationService : IReservationService
         return true;
     }
 
-    public void ReserveBook(int bookId, int loggedInUserId)
+    public async Task ReserveBookAsync(int bookId, int loggedInUserId)
     {
         //First create single Reservation entity
-
-        var reservation = _context.Reservations
-            .Include(r => r.BookReservations)
-            .Include(r => r.ReservedByUser)
-            .Include(r=> r.CreatedByUser)
-            .Include(r=> r.ModifiedByUser)
-            .FirstOrDefault(r => r.CreatedByUserId == loggedInUserId);
+        var reservationsAsEnumerable = await reservationRepository.GetAllWithRelatedEntitiesAsync();
+        var reservations = reservationsAsEnumerable.ToList();
+        var reservation = reservations.FirstOrDefault(r => r.CreatedByUserId == loggedInUserId);
 
         if (reservation == null)
         {
@@ -115,27 +82,23 @@ public class ReservationService : IReservationService
                 DueDate = DateTime.Now.AddDays(21)
             };
             reservation.SetCreatedByUserId(loggedInUserId);
-            _context.Reservations.Add(reservation);
+            reservations.Add(reservation);
         }
         reservation.SetModifiedDateTime(DateTime.Now);
         reservation.SetModifiedByUserId(loggedInUserId);
         reservation.IsStarted = false;
 
         //Then add single bookReservation object
-
         var bookReservation = new BookReservation
         {
             CreatedDateTime = DateTime.Now
         };
         bookReservation.SetModifiedDateTime(DateTime.Now);
-
         bookReservation.BookId = bookId;
-
         reservation.AddBookReservations(bookReservation);
 
         //Then adjust book quantities
-
-        var book = _context.Books.FirstOrDefault(b => b.Id == bookId);
+        var book = await bookRepository.GetByIdAsync(bookId);
 
         if (book != null)
         {
@@ -143,18 +106,12 @@ public class ReservationService : IReservationService
             book.AvailableQuantity--;
         }
 
-        _context.SaveChanges();
+        await reservationRepository.UpdateReservationWithBookAsync(reservation, book);
     }
 
-    public void StartReservation(int id, int loggedInUserId)
+    public async Task StartReservationAsync(int id, int loggedInUserId)
     {
-        var reservation = _context.Reservations
-            .Include(r => r.BookReservations)
-            .ThenInclude(br => br.Book)
-            .Include(a => a.ReservedByUser)
-            .Include(a => a.CreatedByUser)
-            .Include(a => a.ModifiedByUser)
-            .FirstOrDefault(r => r.Id == id);
+        var reservation = await GetReservationAsync(id);
 
         if (reservation == null)
         {
@@ -166,33 +123,6 @@ public class ReservationService : IReservationService
         reservation.SetModifiedByUserId(loggedInUserId);
         reservation.IsStarted = true;
 
-        _context.SaveChanges();
-    }
-
-    public void FinishReservation(int id, int loggedInUserId)
-    {
-        var reservation = _context.Reservations
-            .Include(r => r.BookReservations)
-            .ThenInclude(br => br.Book)
-            .Include(a => a.ReservedByUser)
-            .Include(a => a.CreatedByUser)
-            .Include(a => a.ModifiedByUser)
-            .FirstOrDefault(r => r.Id == id);
-
-        if (reservation != null)
-        {
-            foreach (var bookReservation in reservation.BookReservations)
-            {
-                bookReservation.Book.ReservedQuantity--;
-                bookReservation.Book.AvailableQuantity++;
-            }
-
-            if (reservation.BookReservations != null)
-                _context.BookReservations.RemoveRange(reservation.BookReservations);
-
-            _context.Reservations.Remove(reservation);
-
-            _context.SaveChanges();
-        }
+        await reservationRepository.UpdateAsync(reservation);
     }
 }

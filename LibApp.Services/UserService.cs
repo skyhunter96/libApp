@@ -1,75 +1,46 @@
-﻿using LibApp.Domain.Models;
-using LibApp.EfDataAccess;
+﻿using LibApp.Data.Abstractions.Interfaces;
+using LibApp.Domain.Models;
 using LibApp.Services.Abstractions.Interfaces;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace LibApp.Services;
 
-public class UserService : IUserService
+public class UserService(IUserRepository userRepository, UserManager<User> userManager) : IUserService
 {
-    private readonly LibraryContext _context;
-    private readonly UserManager<User> _userManager;
+    private IEnumerable<User>? _cachedUsers;
 
-    public UserService(LibraryContext context, UserManager<User> userManager)
+    private async Task<IEnumerable<User>> GetCachedUsersAsync()
     {
-        _context = context;
-        _userManager = userManager;
+        if (_cachedUsers != null)
+            return _cachedUsers;
+
+        _cachedUsers = (await userRepository.GetAllAsync()).ToList();
+        return _cachedUsers;
     }
 
     public async Task<IEnumerable<User>> GetUsersAsync()
     {
-        var users = await _context.Users
-            .Include(u => u.CreatedByUser)
-            .Include(u => u.ModifiedByUser)
-            .Include(u => u.Role)
-            .AsNoTracking()
-            .ToListAsync();
-
-        return users;
-    }
-
-    public User? GetUser(int id)
-    {
-        var user = _context.Users
-            .Include(u => u.CreatedByUser)
-            .Include(u => u.ModifiedByUser)
-            .Include(u => u.Role)
-            .AsNoTracking()
-            .FirstOrDefault(u => u.Id == id);
-
-        return user;
+        return await userRepository.GetAllWithRolesAsync();
     }
 
     public async Task<User?> GetUserAsync(int id)
     {
-        var user = await _context.Users
-            .Include(u => u.CreatedByUser)
-            .Include(u => u.ModifiedByUser)
-            .Include(u => u.Role)
-            .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Id == id);
-
-        return user;
+        return await userRepository.GetByIdWithRolesAsync(id);
     }
 
     public async Task<User?> GetUserByUserNameAsync(string userName)
     {
-        var user = await _context.Users
-            .Include(u => u.CreatedByUser)
-            .Include(u => u.ModifiedByUser)
-            .Include(u => u.Role)
-            .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.UserName == userName);
+        var users = await userRepository.GetAllWithRolesAsync();
+        var user = users.FirstOrDefault(u => u.UserName == userName);
 
         return user;
     }
 
     public async Task AddUserAsync(User user)
     {
-        user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, user.Password);
+        user.PasswordHash = userManager.PasswordHasher.HashPassword(user, user.Password);
 
-        var result = await _userManager.CreateAsync(user);
+        var result = await userManager.CreateAsync(user);
 
         if (!result.Succeeded)
         {
@@ -82,7 +53,7 @@ public class UserService : IUserService
     {
         user.SetModifiedDateTime(DateTime.Now);
 
-        var result = await _userManager.UpdateAsync(user);
+        var result = await userManager.UpdateAsync(user);
 
         if (!result.Succeeded)
         {
@@ -95,10 +66,8 @@ public class UserService : IUserService
     {
         try
         {
-            await SeverRelationsAsync(user);
-
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
+            await userRepository.SeverRelationsAsync(user);
+            await userRepository.RemoveAsync(user);
         }
         catch (Exception exception)
         {
@@ -107,142 +76,144 @@ public class UserService : IUserService
         }
     }
 
-    private async Task SeverRelationsAsync(User user)
+    public async Task<bool> DocumentIdExistsAsync(string documentId)
     {
-        foreach (var book in _context.Books.Where(b => b.CreatedByUserId == user.Id))
-        {
-            book.SetCreatedByUserId(null);
-        }
+        if (string.IsNullOrEmpty(documentId))
+            return false;
 
-        foreach (var book in _context.Books.Where(b => b.ModifiedByUserId == user.Id))
-        {
-            book.SetModifiedByUserId(null);
-        }
-
-        foreach (var category in _context.Categories.Where(b => b.CreatedByUserId == user.Id))
-        {
-            category.SetCreatedByUserId(null);
-        }
-
-        foreach (var category in _context.Categories.Where(b => b.ModifiedByUserId == user.Id))
-        {
-            category.SetModifiedByUserId(null);
-        }
-
-        foreach (var author in _context.Authors.Where(b => b.CreatedByUserId == user.Id))
-        {
-            author.SetCreatedByUserId(null);
-        }
-
-        foreach (var author in _context.Authors.Where(b => b.ModifiedByUserId == user.Id))
-        {
-            author.SetModifiedByUserId(null);
-        }
-
-        foreach (var publisher in _context.Publishers.Where(b => b.CreatedByUserId == user.Id))
-        {
-            publisher.SetCreatedByUserId(null);
-        }
-
-        foreach (var publisher in _context.Publishers.Where(b => b.ModifiedByUserId == user.Id))
-        {
-            publisher.SetModifiedByUserId(null);
-        }
-
-        foreach (var department in _context.Departments.Where(b => b.CreatedByUserId == user.Id))
-        {
-            department.SetCreatedByUserId(null);
-        }
-
-        foreach (var department in _context.Departments.Where(b => b.ModifiedByUserId == user.Id))
-        {
-            department.SetModifiedByUserId(null);
-        }
-
-        foreach (var reservation in _context.Reservations.Where(b => b.CreatedByUserId == user.Id)
-                     .Include(reservation => reservation.BookReservations))
-        {
-            _context.BookReservations.RemoveRange(reservation.BookReservations);
-            _context.Reservations.Remove(reservation);
-        }
-
-        foreach (var reservation in _context.Reservations.Where(b => b.ModifiedByUserId == user.Id)
-                     .Include(reservation => reservation.BookReservations))
-        {
-            _context.BookReservations.RemoveRange(reservation.BookReservations);
-            _context.Reservations.Remove(reservation);
-        }
-
-        foreach (var userToChange in _context.Users.Where(b => b.CreatedByUserId == user.Id))
-        {
-            userToChange.SetCreatedByUserId(null);
-        }
-
-        foreach (var userToChange in _context.Users.Where(b => b.ModifiedByUserId == user.Id))
-        {
-            userToChange.SetModifiedByUserId(null);
-        }
-
-        await _context.SaveChangesAsync();
+        var users = await GetCachedUsersAsync();
+        return users.Any(u => u.DocumentId == documentId);
     }
 
-    public bool DocumentIdExists(string documentId)
+    
+
+    public async Task<bool> DocumentIdExistsInOtherBooksAsync(int id, string documentId)
     {
-        var exists = _context.Users.Any(u => u.DocumentId == documentId);
-        return exists;
+        if (id == 0 || string.IsNullOrWhiteSpace(documentId))
+            return false;
+
+        var users = await GetCachedUsersAsync();
+        return users.Any(u => u.Id != id && u.DocumentId == documentId);
+    }
+    //public async Task<bool> DocumentIdExistsAsync(string documentId)
+    //{
+    //    if(string.IsNullOrEmpty(documentId))
+    //        return false;
+
+    //    var users = await userRepository.GetAllAsync();
+    //    var exists = users.Any(u => u.DocumentId == documentId);
+    //    return exists;
+    //}
+    //public async Task<bool> DocumentIdExistsInOtherBooksAsync(int id, string documentId)
+    //{
+    //    if (id == 0 || string.IsNullOrWhiteSpace(documentId))
+    //        return false;
+
+    //    var users = await userRepository.GetAllAsync();
+    //    var exists = users.Any(u => u.Id != id && u.DocumentId == documentId);
+    //    return exists;
+    //}
+
+    public async Task<bool> EmailExistsAsync(string email)
+    {
+        if (string.IsNullOrEmpty(email))
+            return false;
+
+        var users = await GetCachedUsersAsync();
+        return users.Any(u => u.Email == email);
     }
 
-    public bool DocumentIdExistsInOtherBooks(int id, string documentId)
+    public async Task<bool> EmailExistsInOtherBooksAsync(int id, string email)
     {
-        var exists = _context.Users.Any(u => u.Id != id && u.DocumentId == documentId);
-        return exists;
+        if (id == 0 || string.IsNullOrWhiteSpace(email))
+            return false;
+
+        var users = await GetCachedUsersAsync();
+        return users.Any(u => u.Id != id && u.Email == email);
     }
 
-    public bool EmailExists(string email)
+    //public async Task<bool> EmailExistsAsync(string email)
+    //{
+    //    if (string.IsNullOrEmpty(email))
+    //        return false;
+
+    //    var users = await userRepository.GetAllAsync();
+    //    var exists = users.Any(u => u.Email == email);
+    //    return exists;
+    //}
+
+    //public async Task<bool> EmailExistsInOtherBooksAsync(int id, string email)
+    //{
+    //    if (id == 0 || string.IsNullOrWhiteSpace(email))
+    //        return false;
+
+    //    var users = await userRepository.GetAllAsync();
+    //    var exists = users.Any(u => u.Id != id && u.Email == email);
+    //    return exists;
+    //}
+
+    public async Task<bool> UserNameExistsAsync(string userName)
     {
-        var exists = _context.Users.Any(u => u.Email == email);
-        return exists;
+        if (string.IsNullOrEmpty(userName))
+            return false;
+
+        var users = await GetCachedUsersAsync();
+        return users.Any(u => u.UserName == userName);
     }
 
-    public bool EmailExistsInOtherBooks(int id, string email)
+    public async Task<bool> UserNameExistsInOtherBooksAsync(int id, string userName)
     {
-        var exists = _context.Users.Any(u => u.Id != id && u.Email == email);
-        return exists;
+        if (id == 0 || string.IsNullOrWhiteSpace(userName))
+            return false;
+
+        var users = await GetCachedUsersAsync();
+        return users.Any(u => u.Id != id && u.UserName == userName);
     }
+    //public async Task<bool> UserNameExistsAsync(string userName)
+    //{
+    //    if (string.IsNullOrEmpty(userName))
+    //        return false;
 
-    public bool UserNameExists(string userName)
+    //    var users = await userRepository.GetAllAsync();
+    //    var exists = users.Any(u => u.UserName == userName);
+    //    return exists;
+    //}
+
+    //public async Task<bool> UserNameExistsInOtherBooksAsync(int id, string userName)
+    //{
+    //    if (id == 0 || string.IsNullOrWhiteSpace(userName))
+    //        return false;
+
+    //    var users = await userRepository.GetAllAsync();
+    //    var exists = users.Any(u => u.Id != id && u.UserName == userName);
+    //    return exists;
+    //}
+
+    public async Task ActivateAsync(int id)
     {
-        var exists = _context.Users.Any(u => u.UserName == userName);
-        return exists;
-    }
-
-    public bool UserNameExistsInOtherBooks(int id, string userName)
-    {
-        var exists = _context.Users.Any(u => u.Id != id && u.UserName == userName);
-        return exists;
-    }
-
-    public void Activate(int id)
-    {
-        var user = _context.Users
-            .FirstOrDefault(u => u.Id == id);
-
+        var user = await GetUserAsync(id);
         if (user == null) return;
 
         user.IsActive = true;
-
-        _context.SaveChanges();
+        await userRepository.UpdateAsync(user);
     }
 
-    public void Deactivate(int id)
+    public async Task DeactivateAsync(int id)
     {
-        var user = _context.Users
-            .FirstOrDefault(u => u.Id == id);
-
+        var user = await GetUserAsync(id);
         if (user == null) return;
 
         user.IsActive = false;
+        await userRepository.UpdateAsync(user);
+    }
 
-        _context.SaveChanges();
+    public async Task<IEnumerable<Role>> GetRolesAsync()
+    {
+        return await userRepository.GetAllRolesAsync();
+    }
+
+    public async Task<Role?> GetRoleForUserIdAsync(int id)
+    {
+        return await userRepository.GetRoleForUserIdAsync(id);
     }
 }

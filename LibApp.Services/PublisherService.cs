@@ -1,79 +1,61 @@
-﻿using LibApp.Domain.Models;
-using LibApp.EfDataAccess;
+﻿using LibApp.Data.Abstractions.Interfaces;
+using LibApp.Domain.Models;
 using LibApp.Services.Abstractions.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace LibApp.Services;
 
-public class PublisherService : IPublisherService
+public class PublisherService(IPublisherRepository publisherRepository) : IPublisherService
 {
-    private readonly LibraryContext _context;
-
-    public PublisherService(LibraryContext context)
-    {
-        _context = context;
-    }
-
     public async Task<IEnumerable<Publisher>> GetPublishersAsync()
     {
-        var publishers = await _context.Publishers
-            .Include(d => d.CreatedByUser)
-            .Include(d => d.ModifiedByUser)
-            .AsNoTracking()
-            .ToListAsync();
-
-        return publishers;
+        return await publisherRepository.GetAllWithUsersAsync();
     }
 
     public async Task<Publisher?> GetPublisherAsync(int id)
     {
-        var publisher = await _context.Publishers
-            .Include(d => d.CreatedByUser)
-            .Include(d => d.ModifiedByUser)
-            .AsNoTracking()
-            .FirstOrDefaultAsync(d => d.Id == id);
-
-        return publisher;
+        return await publisherRepository.GetByIdWithUsersAsync(id);
     }
 
     public async Task AddPublisherAsync(Publisher publisher)
     {
-        _context.Add(publisher);
-        await _context.SaveChangesAsync();
+        await publisherRepository.AddAsync(publisher);
     }
 
     public async Task UpdatePublisherAsync(Publisher publisher)
     {
-        publisher.SetModifiedDateTime(DateTime.Now);
-
-        _context.Update(publisher);
-        await _context.SaveChangesAsync();
+        await publisherRepository.UpdateAsync(publisher);
     }
 
     public async Task RemovePublisherAsync(Publisher publisher)
     {
-        _context.Remove(publisher);
-        await _context.SaveChangesAsync();
+        await publisherRepository.RemoveAsync(publisher);
     }
 
-    public bool PublisherExists(string name)
+    public async Task<bool> PublisherExistsAsync(string name)
     {
         if (name.IsNullOrEmpty())
             return false;
 
-        var exists = _context.Publishers.Any(d => d.Name.ToLower() == name.ToLower());
+        return await publisherRepository.AnyAsync(publisher => publisher.Name.ToLower() == name.ToLower());
+    }
+
+    public async Task<bool> PublisherExistsInOtherPublishersAsync(int id, string name)
+    {
+        if (id == 0 || string.IsNullOrWhiteSpace(name))
+            return false;
+
+        var publishers = await publisherRepository.GetAllAsync();
+
+        var exists = publishers.Any(d => d.Id != id && d.Name.ToLower().Equals(name, StringComparison.OrdinalIgnoreCase));
         return exists;
     }
 
-    public bool PublisherExistsInOtherPublishers(int id, string name)
+    public async Task<bool> IsDeletableAsync(int id)
     {
-        var exists = _context.Publishers.Any(d => d.Id != id && d.Name.ToLower() == name.ToLower());
-        return exists;
-    }
+        if (id == 0) return false;
 
-    public bool IsDeletable(Publisher publisher)
-    {
-        return !_context.Books.Any(b => b.Publisher == publisher);
+        var publishers = await publisherRepository.GetAllAsync();
+        return publishers.All(b => b.Id != id);
     }
 }

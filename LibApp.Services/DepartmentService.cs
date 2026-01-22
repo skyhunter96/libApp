@@ -1,81 +1,62 @@
-﻿using LibApp.Domain.Models;
-using LibApp.EfDataAccess;
+﻿using LibApp.Data.Abstractions.Interfaces;
+using LibApp.Domain.Models;
 using LibApp.Services.Abstractions.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-
 
 namespace LibApp.Services;
 
-public class DepartmentService : IDepartmentService
+public class DepartmentService(IDepartmentRepository departmentRepository) : IDepartmentService
 {
-    private readonly LibraryContext _context;
-
-    public DepartmentService(LibraryContext context)
-    {
-        _context = context;
-    }
-
     public async Task<IEnumerable<Department>> GetDepartmentsAsync()
     {
-
-        var departments = await _context.Departments
-            .Include(d => d.CreatedByUser)
-            .Include(d => d.ModifiedByUser)
-            .AsNoTracking()
-            .ToListAsync();
-
-        return departments;
+        return await departmentRepository.GetAllWithUsersAsync();
     }
 
     public async Task<Department?> GetDepartmentAsync(int id)
     {
-        var department = await _context.Departments
-            .Include(d => d.CreatedByUser)
-            .Include(d => d.ModifiedByUser)
-            .AsNoTracking()
-            .FirstOrDefaultAsync(d => d.Id == id);
-
-        return department;
+        return await departmentRepository.GetByIdWithUsersAsync(id);
     }
 
     public async Task AddDepartmentAsync(Department department)
     {
-        _context.Add(department);
-        await _context.SaveChangesAsync();
+        await departmentRepository.AddAsync(department);
     }
 
     public async Task UpdateDepartmentAsync(Department department)
     {
-        department.SetModifiedDateTime(DateTime.Now);
-
-        _context.Update(department);
-        await _context.SaveChangesAsync();
+        await departmentRepository.UpdateAsync(department);
     }
 
     public async Task RemoveDepartmentAsync(Department department)
     {
-        _context.Remove(department);
-        await _context.SaveChangesAsync();
+        await departmentRepository.RemoveAsync(department);
     }
 
-    public bool DepartmentExists(string name)
+    public async Task<bool> DepartmentExistsAsync(string name)
     {
         if (name.IsNullOrEmpty())
             return false;
 
-        var exists = _context.Departments.Any(d => d.Name.ToLower() == name.ToLower());
+        var departments = await departmentRepository.GetAllAsync();
+        var exists = departments.Any(department => string.Equals(department.Name, name, StringComparison.OrdinalIgnoreCase));
         return exists;
     }
 
-    public bool DepartmentExistsInOtherDepartments(int id, string name)
+    public async Task<bool> DepartmentExistsInOtherDepartmentsAsync(int id, string name)
     {
-        var exists = _context.Departments.Any(d => d.Id != id && d.Name.ToLower() == name.ToLower());
+        if (id == 0 || string.IsNullOrWhiteSpace(name))
+            return false;
+
+        var departments = await departmentRepository.GetAllAsync();
+        var exists = departments.Any(department => department.Id != id && string.Equals(department.Name, name, StringComparison.OrdinalIgnoreCase));
         return exists;
     }
 
-    public bool IsDeletable(Department department)
+    public async Task<bool> IsDeletableAsync(int id)
     {
-        return !_context.Books.Any(b => b.Department == department);
+        if (id == 0) return false;
+
+        var departments = await departmentRepository.GetAllAsync();
+        return departments.All(department => department.Id == id);
     }
 }
