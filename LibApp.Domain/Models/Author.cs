@@ -9,7 +9,8 @@ public class Author : BaseEntity
 
     public void AddBooks(IEnumerable<Book> books)
     {
-        if (books == null) return;
+        ArgumentNullException.ThrowIfNull(books);
+
         foreach (var book in books)
         {
             if (!Books.Contains(book))

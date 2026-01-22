@@ -9,83 +9,83 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     public void Configure(EntityTypeBuilder<User> entity)
     {
         //From BaseEntityConfig
-        entity.HasKey(u => u.Id);
+        entity.HasKey(user => user.Id);
 
-        entity.Property(u => u.Id).ValueGeneratedOnAdd();
+        entity.Property(user => user.Id).ValueGeneratedOnAdd();
 
         entity.ToTable("User");
 
-        entity.Ignore(u => u.Password);
+        entity.Ignore(user => user.Password);
 
-        entity.Property(u => u.DocumentId)
+        entity.Property(user => user.DocumentId)
             .HasMaxLength(13);
 
-        entity.HasIndex(u => u.DocumentId)
+        entity.HasIndex(user => user.DocumentId)
             .IsUnique();
 
-        entity.Property(u => u.FirstName)
+        entity.Property(user => user.FirstName)
             .HasMaxLength(50);
 
-        entity.Property(u => u.LastName)
+        entity.Property(user => user.LastName)
             .HasMaxLength(50);
 
-        entity.Property(u => u.UserName)
+        entity.Property(user => user.UserName)
             .IsRequired();
 
-        entity.Property(u => u.Email)
+        entity.Property(user => user.Email)
             .IsRequired();
 
-        entity.Property(u => u.ImagePath)
+        entity.Property(user => user.ImagePath)
             .HasColumnType("char(255)")
             .IsRequired(false);
 
-        entity.Property(u => u.City)
+        entity.Property(user => user.City)
             .HasMaxLength(50);
 
-        entity.Property(u => u.Address)
+        entity.Property(user => user.Address)
             .HasMaxLength(100)
             .IsRequired(false);
 
-        entity.Property(u => u.PhoneNumber)
+        entity.Property(user => user.PhoneNumber)
             .HasMaxLength(30)
             .IsRequired(false);
 
-        entity.Property(u => u.TotalFee)
+        entity.Property(user => user.TotalFee)
             .HasColumnType("decimal(10,2)");
 
-        entity.Property(u => u.Currency)
+        entity.Property(user => user.Currency)
             .HasColumnType("char(3)")
             .IsRequired(false);
 
-        entity.Property(u => u.Notes)
+        entity.Property(user => user.Notes)
             .HasMaxLength(1000)
             .IsRequired(false);
 
-        entity.Property(u => u.CreatedDateTime)
+        entity.Property(user => user.CreatedDateTime)
             .HasDefaultValueSql("SYSDATETIME()");
 
-        entity.Property(u => u.ModifiedDateTime)
+        entity.Property(user => user.ModifiedDateTime)
             .HasDefaultValueSql("SYSDATETIME()");
 
-        entity.HasOne(e => e.CreatedByUser)
+        entity.HasOne(user => user.CreatedByUser)
             .WithMany()
-            .HasForeignKey(e => e.CreatedByUserId)
+            .HasForeignKey(user => user.CreatedByUserId)
             .IsRequired(false)
             .OnDelete(DeleteBehavior.Restrict);
 
-        entity.HasOne(u => u.ModifiedByUser)
+        entity.HasOne(user => user.ModifiedByUser)
             .WithMany()
-            .HasForeignKey(u => u.ModifiedByUserId)
+            .HasForeignKey(user => user.ModifiedByUserId)
             .IsRequired(false)
             .OnDelete(DeleteBehavior.Restrict);
 
         entity.HasOne(u => u.Role)
-            .WithMany(r => r.Users)
+            .WithMany(role => role.Users)
             .HasForeignKey(u => u.RoleId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        entity.HasMany(u => u.Reservations)
-            .WithOne(r => r.ReservedByUser)
+        entity.HasMany(user => user.Reservations)
+            .WithOne(reservation => reservation.ReservedByUser)
             .IsRequired(false)
             .OnDelete(DeleteBehavior.Restrict);
     }

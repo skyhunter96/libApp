@@ -49,7 +49,10 @@ public class MappingProfile : Profile
                     ReservedQuantity = src.ReservedQuantity,
                     ImagePath = src.ImagePath ?? string.Empty,
                 };
-                book.SetCreatedByUserId((int)createdByUserId!);
+                if (createdByUserId != null)
+                {
+                    book.SetCreatedByUserId((int)createdByUserId);
+                }
                 book.SetModifiedByUserId((int)loggedInUserId);
                 
                 if (src.AuthorIds != null)
@@ -110,7 +113,10 @@ public class MappingProfile : Profile
                     Notes = src.Notes,
                     RoleId = src.RoleId,
                 };
-                user.SetCreatedByUserId((int)createdByUserId!);
+                if (createdByUserId != null)
+                {
+                    user.SetCreatedByUserId((int)createdByUserId);
+                }
                 user.SetModifiedByUserId((int)loggedInUserId);
 
                 return user;
@@ -135,7 +141,10 @@ public class MappingProfile : Profile
                     Id = src.Id,
                     Name = src.Name,
                 };
-                author.SetCreatedByUserId((int)createdByUserId!);
+                if (createdByUserId != null)
+                {
+                    author.SetCreatedByUserId((int)createdByUserId);
+                }
                 author.SetModifiedByUserId((int)loggedInUserId);
                 
                 return author;
@@ -163,7 +172,10 @@ public class MappingProfile : Profile
                     Location = src.Location,
                     Budget = src.Budget,
                 };
-                department.SetCreatedByUserId((int)createdByUserId!);
+                if (createdByUserId != null)
+                {
+                    department.SetCreatedByUserId((int)createdByUserId);
+                }
                 department.SetModifiedByUserId((int)loggedInUserId);
 
                 return department;
@@ -189,7 +201,10 @@ public class MappingProfile : Profile
                     Name = src.Name,
                     Description = src.Description,
                 };
-                category.SetCreatedByUserId((int)createdByUserId!);
+                if (createdByUserId != null)
+                {
+                    category.SetCreatedByUserId((int)createdByUserId);
+                }
                 category.SetModifiedByUserId((int)loggedInUserId);
 
                 return category;
@@ -215,7 +230,10 @@ public class MappingProfile : Profile
                     Name = src.Name,
                     Description = src.Description,
                 };
-                publisher.SetCreatedByUserId((int)createdByUserId!);
+                if (createdByUserId != null)
+                {
+                    publisher.SetCreatedByUserId((int)createdByUserId);
+                }
                 publisher.SetModifiedByUserId((int)loggedInUserId);
 
                 return publisher;

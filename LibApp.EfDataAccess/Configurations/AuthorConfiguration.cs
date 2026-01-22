@@ -10,7 +10,7 @@ public class AuthorConfiguration : BaseEntityConfiguration<Author>
     {
         base.Configure(entity);
 
-        entity.Property(a => a.Name)
+        entity.Property(author => author.Name)
             .HasMaxLength(100);
     }
 }

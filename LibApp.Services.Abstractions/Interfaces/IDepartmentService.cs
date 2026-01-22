@@ -9,7 +9,7 @@ public interface IDepartmentService
     Task AddDepartmentAsync(Department department);
     Task UpdateDepartmentAsync(Department department);
     Task RemoveDepartmentAsync(Department department);
-    bool DepartmentExists(string name);
-    bool DepartmentExistsInOtherDepartments(int id, string name);
-    bool IsDeletable(Department department);
+    Task<bool> DepartmentExistsAsync(string name);
+    Task<bool> DepartmentExistsInOtherDepartmentsAsync(int id, string name);
+    Task<bool> IsDeletableAsync(int id);
 }

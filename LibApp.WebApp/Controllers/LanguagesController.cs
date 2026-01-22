@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using LibApp.Domain.Models;
-using LibApp.EfDataAccess;
 using LibApp.Services.Abstractions.Interfaces;
 using LibApp.WebApp.Utilities;
 using LibApp.WebApp.ViewModels;
@@ -11,28 +10,17 @@ using Microsoft.AspNetCore.Mvc;
 namespace LibApp.WebApp.Controllers;
 
 [Authorize(Roles = AppRoles.Admin + "," + AppRoles.Librarian)]
-public class LanguagesController : Controller
+public class LanguagesController(ILanguageService languageService,UserManager<User> userManager, IMapper mapper) : Controller
 {
-    private readonly LibraryContext _context;
-    private readonly ILanguageService _languageService;
-    private readonly UserManager<User> _userManager;
-    private readonly IMapper _mapper;
-
-    public LanguagesController(LibraryContext context, ILanguageService languageService, UserManager<User> userManager, IMapper mapper)
-    {
-        _context = context;
-        _languageService = languageService;
-        _userManager = userManager;
-        _mapper = mapper;
-    }
+    private readonly UserManager<User> _userManager = userManager;
 
     // GET: Languages
     public async Task<IActionResult> Index()
     {
         try
         {
-            var languages = await _languageService.GetLanguagesAsync();
-            var languageViewModels = _mapper.Map<IEnumerable<LanguageViewModel>>(languages);
+            var languages = await languageService.GetLanguagesAsync();
+            var languageViewModels = mapper.Map<IEnumerable<LanguageViewModel>>(languages);
 
             return View(languageViewModels);
         }
@@ -47,14 +35,14 @@ public class LanguagesController : Controller
     {
         try
         {
-            var language = await _languageService.GetLanguageAsync(id);
+            var language = await languageService.GetLanguageAsync(id);
 
             if (language == null)
             {
                 return NotFound();
             }
 
-            var languageViewModel = _mapper.Map<LanguageViewModel>(language);
+            var languageViewModel = mapper.Map<LanguageViewModel>(language);
 
             return View(languageViewModel);
         }
@@ -84,16 +72,16 @@ public class LanguagesController : Controller
     {
         try
         {
-            if (_languageService.LanguageExists(languageViewModel.Name))
+            if (await languageService.LanguageExistsAsync(languageViewModel.Name))
             {
                 ModelState.AddModelError("Name", "A language with this Name already exists.");
             }
 
             if (ModelState.IsValid)
             {
-                var language = _mapper.Map<Language>(languageViewModel);
+                var language = mapper.Map<Language>(languageViewModel);
 
-                await _languageService.AddLanguageAsync(language);
+                await languageService.AddLanguageAsync(language);
 
                 TempData["SuccessMessage"] = "Language added successfully.";
 
@@ -118,14 +106,14 @@ public class LanguagesController : Controller
 
         try
         {
-            var language = await _context.Languages.FindAsync(id);
+            var language = await languageService.GetLanguageAsync(id);
 
             if (language == null)
             {
                 return NotFound();
             }
 
-            var languageViewModel = _mapper.Map<LanguageViewModel>(language);
+            var languageViewModel = mapper.Map<LanguageViewModel>(language);
 
             return View(languageViewModel);
         }
@@ -147,16 +135,16 @@ public class LanguagesController : Controller
 
         try
         {
-            if (_languageService.LanguageExistsInOtherLanguages(languageViewModel.Id, languageViewModel.Name))
+            if (await languageService.LanguageExistsInOtherLanguagesAsync(languageViewModel.Id, languageViewModel.Name))
             {
                 ModelState.AddModelError("Name", "An language with this Name already exists.");
             }
 
             if (ModelState.IsValid)
             {
-                var language = _mapper.Map<Language>(languageViewModel);
+                var language = mapper.Map<Language>(languageViewModel);
 
-                await _languageService.UpdateLanguageAsync(language);
+                await languageService.UpdateLanguageAsync(language);
 
                 TempData["SuccessMessage"] = "Language updated successfully.";
 
@@ -178,13 +166,13 @@ public class LanguagesController : Controller
     {
         try
         {
-            var language = await _languageService.GetLanguageAsync(id);
+            var language = await languageService.GetLanguageAsync(id);
             if (language != null)
             {
-                var isDeletable = _languageService.IsDeletable(language);
+                var isDeletable = await languageService.IsDeletableAsync(id);
                 if (isDeletable)
                 {
-                    await _languageService.RemoveLanguageAsync(language);
+                    await languageService.RemoveLanguageAsync(language);
                     TempData["SuccessMessage"] = "Language deleted successfully.";
                     return Json(new { success = true, message = "Language deleted successfully." });
                 }

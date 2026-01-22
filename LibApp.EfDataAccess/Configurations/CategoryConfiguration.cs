@@ -11,15 +11,15 @@ public class CategoryConfiguration : BaseEntityConfiguration<Category>
     {
         base.Configure(entity);
 
-        entity.Property(c => c.Name)
+        entity.Property(category => category.Name)
             .HasMaxLength(50);
 
-        entity.Property(c => c.Description)
+        entity.Property(category => category.Description)
             .HasMaxLength(1000)
             .IsRequired(false);
 
-        entity.HasMany(c => c.Books)
-            .WithOne(b => b.Category)
+        entity.HasMany(category => category.Books)
+            .WithOne(book => book.Category)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

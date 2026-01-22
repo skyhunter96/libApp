@@ -1,74 +1,61 @@
-﻿using LibApp.Domain.Models;
-using LibApp.EfDataAccess;
+﻿using LibApp.Data.Abstractions.Interfaces;
+using LibApp.Domain.Models;
 using LibApp.Services.Abstractions.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 namespace LibApp.Services;
 
-public class LanguageService : ILanguageService
+public class LanguageService(ILanguageRepository languageRepository) : ILanguageService
 {
-    private readonly LibraryContext _context;
-
-    public LanguageService(LibraryContext context)
-    {
-        _context = context;
-    }
-
     public async Task<IEnumerable<Language>> GetLanguagesAsync()
     {
-
-        var languages = await _context.Languages
-            .AsNoTracking()
-            .ToListAsync();
-
-        return languages;
+        return await languageRepository.GetAllAsync();
     }
 
     public async Task<Language?> GetLanguageAsync(int id)
     {
-        var language = await _context.Languages
-            .AsNoTracking()
-            .FirstOrDefaultAsync(d => d.Id == id);
-
-        return language;
+        return await languageRepository.GetByIdAsync(id);
     }
 
     public async Task AddLanguageAsync(Language language)
     {
-        _context.Add(language);
-        await _context.SaveChangesAsync();
+        await languageRepository.AddAsync(language);
     }
 
     public async Task UpdateLanguageAsync(Language language)
     {
-        _context.Update(language);
-        await _context.SaveChangesAsync();
+        await languageRepository.UpdateAsync(language);
     }
 
     public async Task RemoveLanguageAsync(Language language)
     {
-        _context.Remove(language);
-        await _context.SaveChangesAsync();
+        await languageRepository.RemoveAsync(language);
     }
 
-    public bool LanguageExists(string name)
+    public async Task<bool> LanguageExistsAsync(string name)
     {
-        if (name.IsNullOrEmpty())
+        if (string.IsNullOrWhiteSpace(name))
+            return false;
+        
+        var languages = await languageRepository.GetAllAsync();
+        var exists = languages.Any(language => string.Equals(language.Name, name, StringComparison.OrdinalIgnoreCase));
+        return exists;
+    }
+
+    public async Task<bool> LanguageExistsInOtherLanguagesAsync(int id, string name)
+    {
+        if (id == 0 || string.IsNullOrWhiteSpace(name))
             return false;
 
-        var exists = _context.Languages.Any(d => d.Name.ToLower() == name.ToLower());
+        var languages = await languageRepository.GetAllAsync();
+        var exists = languages.Any(language => language.Id != id && string.Equals(language.Name, name, StringComparison.CurrentCultureIgnoreCase));
         return exists;
     }
 
-    public bool LanguageExistsInOtherLanguages(int id, string name)
+    public async Task<bool> IsDeletableAsync(int id)
     {
-        var exists = _context.Languages.Any(d => d.Id != id && d.Name.ToLower() == name.ToLower());
-        return exists;
-    }
+        if (id == 0) return false;
 
-    public bool IsDeletable(Language language)
-    {
-        return !_context.Books.Any(b => b.Language == language);
+        var languages = await languageRepository.GetAllAsync();
+        return languages.All(language => language.Id != id);
     }
 }

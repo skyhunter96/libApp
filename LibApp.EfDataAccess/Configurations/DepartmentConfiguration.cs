@@ -11,22 +11,22 @@ public class DepartmentConfiguration : BaseEntityConfiguration<Department>
     {
         base.Configure(entity);
 
-        entity.Property(d => d.Name)
+        entity.Property(department => department.Name)
             .HasMaxLength(50);
 
-        entity.Property(d => d.Description)
+        entity.Property(department => department.Description)
             .HasMaxLength(1000)
             .IsRequired(false);
 
-        entity.Property(d => d.Location)
+        entity.Property(department => department.Location)
             .HasMaxLength(100)
             .IsRequired(false);
 
-        entity.Property(d => d.Budget)
+        entity.Property(department => department.Budget)
             .HasColumnType("decimal(10,2)");
 
-        entity.HasMany(d => d.Books)
-            .WithOne(b => b.Department)
+        entity.HasMany(department => department.Books)
+            .WithOne(book => book.Department)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

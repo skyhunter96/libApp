@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using LibApp.Domain.Models;
-using LibApp.EfDataAccess;
 using LibApp.Services.Abstractions.Interfaces;
 using LibApp.WebApp.Utilities;
 using LibApp.WebApp.ViewModels;
@@ -13,23 +12,10 @@ using X.PagedList;
 namespace LibApp.WebApp.Controllers;
 
 [Authorize(Roles = AppRoles.Admin + "," + AppRoles.Librarian)]
-public class PublishersController : Controller
+public class PublishersController(IPublisherService publisherService, IUserService userService, UserManager<User> userManager, IMapper mapper) : Controller
 {
-    private readonly LibraryContext _context;
-    private readonly IPublisherService _publisherService;
-    private readonly UserManager<User> _userManager;
-    private readonly IMapper _mapper;
-
     private const int PageSize = 10;
     private const string SortNameOrder = "name_desc";
-
-    public PublishersController(LibraryContext context, IPublisherService publisherService, UserManager<User> userManager, IMapper mapper)
-    {
-        _context = context;
-        _publisherService = publisherService;
-        _userManager = userManager;
-        _mapper = mapper;
-    }
 
     // GET: Publishers
     public async Task<IActionResult> Index(string sortNameOrder, string currentNameFilter, string searchNameString,
@@ -51,8 +37,8 @@ public class PublishersController : Controller
 
         try
         {
-            var publishers = await _publisherService.GetPublishersAsync();
-            var publisherViewModels = _mapper.Map<IEnumerable<PublisherViewModel>>(publishers);
+            var publishers = await publisherService.GetPublishersAsync();
+            var publisherViewModels = mapper.Map<IEnumerable<PublisherViewModel>>(publishers);
 
             if (!string.IsNullOrEmpty(searchNameString))
             {
@@ -81,14 +67,14 @@ public class PublishersController : Controller
     {
         try
         {
-            var publisher = await _publisherService.GetPublisherAsync(id);
+            var publisher = await publisherService.GetPublisherAsync(id);
 
             if (publisher == null)
             {
                 return NotFound();
             }
 
-            var publisherViewModel = _mapper.Map<PublisherViewModel>(publisher);
+            var publisherViewModel = mapper.Map<PublisherViewModel>(publisher);
 
             return View(publisherViewModel);
         }
@@ -99,12 +85,14 @@ public class PublishersController : Controller
     }
 
     // GET: Publishers/Create
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
         try
         {
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name");
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name");
+            var users = await userService.GetUsersAsync();
+
+            ViewData["CreatedByUserId"] = new SelectList(users, "Id", "Name");
+            ViewData["ModifiedByUserId"] = new SelectList(users, "Id", "Name");
 
             return View();
         }
@@ -121,16 +109,16 @@ public class PublishersController : Controller
     {
         try
         {
-            if (_publisherService.PublisherExists(publisherViewModel.Name))
+            if (await publisherService.PublisherExistsAsync(publisherViewModel.Name))
             {
                 ModelState.AddModelError("Name", "A Publisher with this Name already exists.");
             }
 
             if (ModelState.IsValid)
             {
-                var loggedInUserId = Convert.ToInt32(_userManager.GetUserId(User));
+                var loggedInUserId = Convert.ToInt32(userManager.GetUserId(User));
 
-                var publisher = _mapper.Map<Publisher>(
+                var publisher = mapper.Map<Publisher>(
                     publisherViewModel,
                     options =>
                     {
@@ -138,14 +126,17 @@ public class PublishersController : Controller
                         options.Items["CreatedByUserId"] = loggedInUserId;
                     });
 
-                await _publisherService.AddPublisherAsync(publisher);
+                await publisherService.AddPublisherAsync(publisher);
 
                 TempData["SuccessMessage"] = "Publisher added successfully.";
 
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", publisherViewModel.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", publisherViewModel.ModifiedByUserId);
+            
+            var users = await userService.GetUsersAsync();
+
+            ViewData["CreatedByUserId"] = new SelectList(users, "Id", "Name", publisherViewModel.CreatedByUserId);
+            ViewData["ModifiedByUserId"] = new SelectList(users, "Id", "Name", publisherViewModel.ModifiedByUserId);
 
             return View(publisherViewModel);
         }
@@ -165,17 +156,19 @@ public class PublishersController : Controller
 
         try
         {
-            var publisher = await _context.Publishers.FindAsync(id);
+            var publisher = await publisherService.GetPublisherAsync(id);
 
             if (publisher == null)
             {
                 return NotFound();
             }
 
-            var publisherViewModel = _mapper.Map<PublisherViewModel>(publisher);
+            var publisherViewModel = mapper.Map<PublisherViewModel>(publisher);
 
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", publisher.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", publisher.ModifiedByUserId);
+            var users = await userService.GetUsersAsync();
+
+            ViewData["CreatedByUserId"] = new SelectList(users, "Id", "Name", publisher.CreatedByUserId);
+            ViewData["ModifiedByUserId"] = new SelectList(users, "Id", "Name", publisher.ModifiedByUserId);
             return View(publisherViewModel);
         }
         catch (Exception exception)
@@ -196,17 +189,17 @@ public class PublishersController : Controller
 
         try
         {
-            if (_publisherService.PublisherExistsInOtherPublishers(publisherViewModel.Id, publisherViewModel.Name))
+            if (await publisherService.PublisherExistsInOtherPublishersAsync(publisherViewModel.Id, publisherViewModel.Name))
             {
                 ModelState.AddModelError("Name", "An Publisher with this Name already exists.");
             }
 
             if (ModelState.IsValid)
             {
-                var loggedInUserId = Convert.ToInt32(_userManager.GetUserId(User));
+                var loggedInUserId = Convert.ToInt32(userManager.GetUserId(User));
                 var createdByUserId = publisherViewModel.CreatedByUserId;
 
-                var publisher = _mapper.Map<Publisher>(
+                var publisher = mapper.Map<Publisher>(
                     publisherViewModel, 
                     options =>
                     {
@@ -214,14 +207,17 @@ public class PublishersController : Controller
                         options.Items["CreatedByUserId"] = createdByUserId;
                     });
 
-                await _publisherService.UpdatePublisherAsync(publisher);
+                await publisherService.UpdatePublisherAsync(publisher);
 
                 TempData["SuccessMessage"] = "Publisher updated successfully.";
 
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", publisherViewModel.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", publisherViewModel.ModifiedByUserId);
+
+            var users = await userService.GetUsersAsync();
+
+            ViewData["CreatedByUserId"] = new SelectList(users, "Id", "Name", publisherViewModel.CreatedByUserId);
+            ViewData["ModifiedByUserId"] = new SelectList(users, "Id", "Name", publisherViewModel.ModifiedByUserId);
             return View(publisherViewModel);
         }
         catch (Exception exception)
@@ -237,13 +233,13 @@ public class PublishersController : Controller
     {
         try
         {
-            var publisher = await _publisherService.GetPublisherAsync(id);
+            var publisher = await publisherService.GetPublisherAsync(id);
             if (publisher != null)
             {
-                var isDeletable = _publisherService.IsDeletable(publisher);
+                var isDeletable = await publisherService.IsDeletableAsync(id);
                 if (isDeletable)
                 {
-                    await _publisherService.RemovePublisherAsync(publisher);
+                    await publisherService.RemovePublisherAsync(publisher);
                     TempData["SuccessMessage"] = "Publisher deleted successfully.";
                     return Json(new { success = true, message = "Publisher deleted successfully." });
                 }

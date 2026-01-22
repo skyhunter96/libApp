@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using LibApp.Domain.Models;
-using LibApp.EfDataAccess;
 using LibApp.Services.Abstractions.Interfaces;
 using LibApp.WebApp.Utilities;
 using LibApp.WebApp.ViewModels;
@@ -12,28 +11,15 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace LibApp.WebApp.Controllers;
 
 [Authorize(Roles = AppRoles.Admin + "," + AppRoles.Librarian)]
-public class CategoriesController : Controller
+public class CategoriesController(UserManager<User> userManager, IMapper mapper, ICategoryService categoryService, IUserService userService) : Controller
 {
-    private readonly LibraryContext _context;
-    private readonly ICategoryService _categoryService;
-    private readonly UserManager<User> _userManager;
-    private readonly IMapper _mapper;
-
-    public CategoriesController(LibraryContext context, UserManager<User> userManager, IMapper mapper, ICategoryService categoryService)
-    {
-        _context = context;
-        _userManager = userManager;
-        _mapper = mapper;
-        _categoryService = categoryService;
-    }
-
     // GET: Categories
     public async Task<IActionResult> Index()
     {
         try
         {
-            var categories = await _categoryService.GetCategoriesAsync();
-            var categoryViewModels = _mapper.Map<IEnumerable<CategoryViewModel>>(categories);
+            var categories = await categoryService.GetCategoriesAsync();
+            var categoryViewModels = mapper.Map<IEnumerable<CategoryViewModel>>(categories);
 
             return View(categoryViewModels);
         }
@@ -48,14 +34,14 @@ public class CategoriesController : Controller
     {
         try
         {
-            var category = await _categoryService.GetCategoryAsync(id);
+            var category = await categoryService.GetCategoryAsync(id);
 
             if (category == null)
             {
                 return NotFound();
             }
 
-            var categoryViewModel = _mapper.Map<CategoryViewModel>(category);
+            var categoryViewModel = mapper.Map<CategoryViewModel>(category);
 
             return View(categoryViewModel);
         }
@@ -66,12 +52,14 @@ public class CategoriesController : Controller
     }
 
     // GET: Categories/Create
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
         try
         {
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name");
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name");
+            var users = await userService.GetUsersAsync();
+
+            ViewData["CreatedByUserId"] = new SelectList(users, "Id", "Name");
+            ViewData["ModifiedByUserId"] = new SelectList(users, "Id", "Name");
 
             return View();
         }
@@ -88,17 +76,17 @@ public class CategoriesController : Controller
     {
         try
         {
-            if (_categoryService.CategoryExists(categoryViewModel.Name))
+            if (await categoryService.CategoryExistsAsync(categoryViewModel.Name))
             {
                 ModelState.AddModelError("Name", "A category with this Name already exists.");
             }
 
             if (ModelState.IsValid)
             {
-                var loggedInUserId = Convert.ToInt32(_userManager.GetUserId(User));
+                var loggedInUserId = Convert.ToInt32(userManager.GetUserId(User));
                 var createdByUserId = categoryViewModel.CreatedByUserId;
 
-                var category = _mapper.Map<Category>(
+                var category = mapper.Map<Category>(
                     categoryViewModel,
                     options =>
                     {
@@ -106,14 +94,17 @@ public class CategoriesController : Controller
                         options.Items["CreatedByUserId"] = createdByUserId;
                     });
 
-                await _categoryService.AddCategoryAsync(category);
+                await categoryService.AddCategoryAsync(category);
 
                 TempData["SuccessMessage"] = "Category added successfully.";
 
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", categoryViewModel.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", categoryViewModel.ModifiedByUserId);
+
+            var users = await userService.GetUsersAsync();
+
+            ViewData["CreatedByUserId"] = new SelectList(users, "Id", "Name", categoryViewModel.CreatedByUserId);
+            ViewData["ModifiedByUserId"] = new SelectList(users, "Id", "Name", categoryViewModel.ModifiedByUserId);
 
             return View(categoryViewModel);
         }
@@ -133,17 +124,19 @@ public class CategoriesController : Controller
 
         try
         {
-            var category = await _context.Categories.FindAsync(id);
+            var category = await categoryService.GetCategoryAsync(id);
 
             if (category == null)
             {
                 return NotFound();
             }
 
-            var categoryViewModel = _mapper.Map<CategoryViewModel>(category);
+            var categoryViewModel = mapper.Map<CategoryViewModel>(category);
 
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", category.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", category.ModifiedByUserId);
+            var users = await userService.GetUsersAsync();
+
+            ViewData["CreatedByUserId"] = new SelectList(users, "Id", "Name", category.CreatedByUserId);
+            ViewData["ModifiedByUserId"] = new SelectList(users, "Id", "Name", category.ModifiedByUserId);
             return View(categoryViewModel);
         }
         catch (Exception exception)
@@ -164,17 +157,17 @@ public class CategoriesController : Controller
 
         try
         {
-            if (_categoryService.CategoryExistsInOtherCategories(categoryViewModel.Id, categoryViewModel.Name))
+            if (await categoryService.CategoryExistsInOtherCategoriesAsync(categoryViewModel.Id, categoryViewModel.Name))
             {
                 ModelState.AddModelError("Name", "An Category with this Name already exists.");
             }
 
             if (ModelState.IsValid)
             {
-                var loggedInUserId = Convert.ToInt32(_userManager.GetUserId(User));
+                var loggedInUserId = Convert.ToInt32(userManager.GetUserId(User));
                 var createdByUserId = categoryViewModel.CreatedByUserId;
 
-                var category = _mapper.Map<Category>(
+                var category = mapper.Map<Category>(
                     categoryViewModel,
                     options =>
                     {
@@ -182,14 +175,17 @@ public class CategoriesController : Controller
                         options.Items["CreatedByUserId"] = createdByUserId;
                     });
 
-                await _categoryService.UpdateCategoryAsync(category);
+                await categoryService.UpdateCategoryAsync(category);
 
                 TempData["SuccessMessage"] = "Category updated successfully.";
 
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", categoryViewModel.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", categoryViewModel.ModifiedByUserId);
+
+            var users = await userService.GetUsersAsync();
+
+            ViewData["CreatedByUserId"] = new SelectList(users, "Id", "Name", categoryViewModel.CreatedByUserId);
+            ViewData["ModifiedByUserId"] = new SelectList(users, "Id", "Name", categoryViewModel.ModifiedByUserId);
             return View(categoryViewModel);
         }
         catch (Exception exception)
@@ -205,13 +201,13 @@ public class CategoriesController : Controller
     {
         try
         {
-            var category = await _categoryService.GetCategoryAsync(id);
+            var category = await categoryService.GetCategoryAsync(id);
             if (category != null)
             {
-                var isDeletable = _categoryService.IsDeletable(category);
+                var isDeletable = await categoryService.IsDeletableAsync(id);
                 if (isDeletable)
                 {
-                    await _categoryService.RemoveCategoryAsync(category);
+                    await categoryService.RemoveCategoryAsync(category);
                     TempData["SuccessMessage"] = "Category deleted successfully.";
                     return Json(new { success = true, message = "Category deleted successfully." });
                 }

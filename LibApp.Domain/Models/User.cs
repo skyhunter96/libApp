@@ -34,10 +34,10 @@ public class User : IdentityUser<int>
     public virtual ICollection<Reservation> Reservations { get; protected set; } = new List<Reservation>();
     public virtual Role Role { get; set; } = null!;
 
-    public void SetModifiedDateTime(DateTime dt) => ModifiedDateTime = dt;
+    public void SetModifiedDateTime(DateTime dateTime) => ModifiedDateTime = dateTime;
     public void SetCreatedByUserId(int? userId)
     {
-        ModifiedByUserId = userId;
+        CreatedByUserId = userId;
     }
     public void SetModifiedByUserId(int? userId)
     {

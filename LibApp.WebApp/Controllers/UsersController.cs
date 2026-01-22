@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using LibApp.Domain.Models;
-using LibApp.EfDataAccess;
 using LibApp.Services.Abstractions.Interfaces;
 using LibApp.WebApp.Utilities;
 using LibApp.WebApp.ViewModels;
@@ -13,23 +12,10 @@ using X.PagedList;
 namespace LibApp.WebApp.Controllers;
 
 [Authorize(Roles = AppRoles.Admin + "," + AppRoles.Librarian)]
-public class UsersController : Controller
+public class UsersController(IUserService userService, IMapper mapper, UserManager<User> userManager) : Controller
 {
-    private readonly LibraryContext _context;
-    private readonly IUserService _userService;
-    private readonly UserManager<User> _userManager;
-    private readonly IMapper _mapper;
-
     private const int PageSize = 10;
     private const string SortNameOrder = "name_desc";
-
-    public UsersController(LibraryContext context, IUserService userService, IMapper mapper, UserManager<User> userManager)
-    {
-        _context = context;
-        _userService = userService;
-        _mapper = mapper;
-        _userManager = userManager;
-    }
 
     // GET: Users
     public async Task<IActionResult> Index(string sortNameOrder, string currentNameFilter, string searchNameString, 
@@ -39,7 +25,9 @@ public class UsersController : Controller
         ViewBag.CurrentSortName = sortNameOrder;
         ViewBag.SortNameParm = String.IsNullOrEmpty(sortNameOrder) ? SortNameOrder : "";
 
-        ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name");
+        var roles = await userService.GetRolesAsync();
+
+        ViewData["RoleId"] = new SelectList(roles, "Id", "Name");
 
         if (searchNameString != null)
         {
@@ -54,14 +42,14 @@ public class UsersController : Controller
 
         try
         {
-            var users = await _userService.GetUsersAsync();
-            var userViewModels = _mapper.Map<IEnumerable<UserViewModel>>(users);
+            var users = await userService.GetUsersAsync();
+            var userViewModels = mapper.Map<IEnumerable<UserViewModel>>(users);
 
             if (!string.IsNullOrEmpty(searchNameString))
             {
-                userViewModels = userViewModels.Where(u => u.FullName.ToLower().Contains(searchNameString.ToLower()) || 
-                                                           u.UserName.ToLower().Contains(searchNameString.ToLower()) ||
-                                                           u.Email.ToLower().Contains(searchNameString.ToLower()));
+                userViewModels = userViewModels.Where(userViewModel => userViewModel.FullName.ToLower().Contains(searchNameString.ToLower()) || 
+                                                           userViewModel.UserName.ToLower().Contains(searchNameString.ToLower()) ||
+                                                           userViewModel.Email.ToLower().Contains(searchNameString.ToLower()));
             }
 
             if (roleId != null)
@@ -93,14 +81,14 @@ public class UsersController : Controller
     {
         try
         {
-            var user = await _userService.GetUserAsync(id);
+            var user = await userService.GetUserAsync(id);
 
             if (user == null)
             {
                 return NotFound();
             }
 
-            var userViewModel = _mapper.Map<UserViewModel>(user);
+            var userViewModel = mapper.Map<UserViewModel>(user);
 
             return View(userViewModel);
         }
@@ -111,13 +99,16 @@ public class UsersController : Controller
     }
 
     // GET: Users/Create
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
         try
         {
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name");
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name");
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name");
+            var users = await userService.GetUsersAsync();
+            var roles = await userService.GetRolesAsync();
+
+            ViewData["CreatedByUserId"] = new SelectList(users, "Id", "Name");
+            ViewData["ModifiedByUserId"] = new SelectList(users, "Id", "Name");
+            ViewData["RoleId"] = new SelectList(roles, "Id", "Name");
 
             return View();
         }
@@ -134,26 +125,26 @@ public class UsersController : Controller
     {
         try
         {
-            if (_userService.DocumentIdExists(userViewModel.DocumentId))
+            if (await userService.DocumentIdExistsAsync(userViewModel.DocumentId))
             {
                 ModelState.AddModelError("DocumentId", "An user with this DocumentId already exists.");
             }
 
-            if (_userService.EmailExists(userViewModel.Email))
+            if (await userService.EmailExistsAsync(userViewModel.Email))
             {
                 ModelState.AddModelError("Email", "An user with this Email already exists.");
             }
 
-            if (_userService.UserNameExists(userViewModel.UserName))
+            if (await userService.UserNameExistsAsync(userViewModel.UserName))
             {
                 ModelState.AddModelError("UserName", "An user with this UserName already exists.");
             }
 
             if (ModelState.IsValid)
             {
-                var loggedInUserId = Convert.ToInt32(_userManager.GetUserId(User));
+                var loggedInUserId = Convert.ToInt32(userManager.GetUserId(User));
 
-                var user = _mapper.Map<User>(
+                var user = mapper.Map<User>(
                     userViewModel,
                     options =>
                     {
@@ -161,15 +152,19 @@ public class UsersController : Controller
                         options.Items["CreatedByUserId"] = loggedInUserId;
                     });
 
-                await _userService.AddUserAsync(user);
+                await userService.AddUserAsync(user);
 
                 TempData["SuccessMessage"] = "User added successfully.";
 
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", userViewModel.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", userViewModel.ModifiedByUserId);
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name", userViewModel.RoleId);
+
+            var users = await userService.GetUsersAsync();
+            var roles = await userService.GetRolesAsync();
+
+            ViewData["CreatedByUserId"] = new SelectList(users, "Id", "Name", userViewModel.CreatedByUserId);
+            ViewData["ModifiedByUserId"] = new SelectList(users, "Id", "Name", userViewModel.ModifiedByUserId);
+            ViewData["RoleId"] = new SelectList(roles, "Id", "Name", userViewModel.RoleId);
 
             return View(userViewModel);
         }
@@ -189,18 +184,21 @@ public class UsersController : Controller
                 return NotFound();
             }
 
-            var user = await _userService.GetUserAsync(id);
+            var user = await userService.GetUserAsync(id);
 
             if (user == null)
             {
                 return NotFound();
             }
 
-            var userViewModel = _mapper.Map<UserViewModel>(user);
+            var userViewModel = mapper.Map<UserViewModel>(user);
 
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", user.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", user.ModifiedByUserId);
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name", user.RoleId);
+            var users = await userService.GetUsersAsync();
+            var roles = await userService.GetRolesAsync();
+
+            ViewData["CreatedByUserId"] = new SelectList(users, "Id", "Name", user.CreatedByUserId);
+            ViewData["ModifiedByUserId"] = new SelectList(users, "Id", "Name", user.ModifiedByUserId);
+            ViewData["RoleId"] = new SelectList(roles, "Id", "Name", user.RoleId);
 
             return View(userViewModel);
         }
@@ -224,27 +222,27 @@ public class UsersController : Controller
         {
             ViewData.ModelState.Remove("Password");
 
-            if (_userService.DocumentIdExistsInOtherBooks(userViewModel.Id, userViewModel.DocumentId))
+            if (await userService.DocumentIdExistsInOtherBooksAsync(userViewModel.Id, userViewModel.DocumentId))
             {
                 ModelState.AddModelError("DocumentId", "An user with this DocumentId already exists.");
             }
 
-            if (_userService.EmailExistsInOtherBooks(userViewModel.Id, userViewModel.Email))
+            if (await userService.EmailExistsInOtherBooksAsync(userViewModel.Id, userViewModel.Email))
             {
                 ModelState.AddModelError("Email", "An user with this Email already exists.");
             }
 
-            if (_userService.UserNameExistsInOtherBooks(userViewModel.Id, userViewModel.UserName))
+            if (await userService.UserNameExistsInOtherBooksAsync(userViewModel.Id, userViewModel.UserName))
             {
                 ModelState.AddModelError("UserName", "An user with this UserName already exists.");
             }
 
             if (ModelState.IsValid)
             {
-                var loggedInUserId = Convert.ToInt32(_userManager.GetUserId(User));
+                var loggedInUserId = Convert.ToInt32(userManager.GetUserId(User));
                 var createdByUserId = userViewModel.CreatedByUserId;
-                
-                var user = await _userManager.FindByIdAsync(userViewModel.Id.ToString());
+
+                var user = await userManager.FindByIdAsync(userViewModel.Id.ToString());
 
                 if (user == null)
                 {
@@ -253,7 +251,7 @@ public class UsersController : Controller
 
                 //TODO: This needs to be checked
 
-                _mapper.Map(
+                mapper.Map(
                     userViewModel, 
                     user,
                     options =>
@@ -262,16 +260,19 @@ public class UsersController : Controller
                         options.Items["CreatedByUserId"] = createdByUserId;
                     });
 
-                await _userService.UpdateUserAsync(user);
+                await userService.UpdateUserAsync(user);
 
                 TempData["SuccessMessage"] = "User updated successfully.";
 
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["CreatedByUserId"] = new SelectList(_context.Users, "Id", "Name", userViewModel.CreatedByUserId);
-            ViewData["ModifiedByUserId"] = new SelectList(_context.Users, "Id", "Name", userViewModel.ModifiedByUserId);
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name", userViewModel.RoleId);
+            var users = await userService.GetUsersAsync();
+            var roles = await userService.GetRolesAsync();
+
+            ViewData["CreatedByUserId"] = new SelectList(users, "Id", "Name", userViewModel.CreatedByUserId);
+            ViewData["ModifiedByUserId"] = new SelectList(users, "Id", "Name", userViewModel.ModifiedByUserId);
+            ViewData["RoleId"] = new SelectList(roles, "Id", "Name", userViewModel.RoleId);
 
             return View(userViewModel);
         }
@@ -289,12 +290,14 @@ public class UsersController : Controller
     {
         try
         {
-            if (_context.Users == null)
+            var users = await userService.GetUsersAsync();
+
+            if (users == null)
             {
                 return RedirectToAction("ServerError", "Error");
             }
 
-            var loggedInUserId = Convert.ToInt32(_userManager.GetUserId(User));
+            var loggedInUserId = Convert.ToInt32(userManager.GetUserId(User));
 
             if (loggedInUserId == id)
             {
@@ -302,11 +305,11 @@ public class UsersController : Controller
                 return Json(new { success = false, message = "User currently logged in." });
             }
 
-            var user = await _userService.GetUserAsync(id);
+            var user = await userService.GetUserAsync(id);
 
             if (user != null)
             {
-                await _userService.RemoveUserAsync(user);
+                await userService.RemoveUserAsync(user);
                 TempData["SuccessMessage"] = "User deleted successfully.";
                 return Json(new { success = true, message = "User deleted successfully." });
             }
@@ -323,7 +326,7 @@ public class UsersController : Controller
     [Authorize(Roles = AppRoles.Admin)]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Activate(int id)
+    public async Task<IActionResult> ActivateAsync(int id)
     {
         try
         {
@@ -332,7 +335,7 @@ public class UsersController : Controller
                 return NotFound();
             }
 
-            _userService.Activate(id);
+            await userService.ActivateAsync(id);
 
             TempData["SuccessMessage"] = "User activated successfully.";
 
@@ -347,7 +350,7 @@ public class UsersController : Controller
     [Authorize(Roles = AppRoles.Admin)]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Deactivate(int id)
+    public async Task<IActionResult> DeactivateAsync(int id)
     {
         try
         {
@@ -356,7 +359,7 @@ public class UsersController : Controller
                 return NotFound();
             }
 
-            _userService.Deactivate(id);
+            await userService.DeactivateAsync(id);
 
             TempData["SuccessMessage"] = "User deactivated successfully.";
 

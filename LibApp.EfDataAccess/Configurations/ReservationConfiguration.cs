@@ -11,20 +11,20 @@ public class ReservationConfiguration : BaseEntityConfiguration<Reservation>
     {
         base.Configure(entity);
 
-        entity.Property(r => r.LoanDate)
+        entity.Property(reservation => reservation.LoanDate)
             .HasColumnType("date");
 
-        entity.Property(r => r.DueDate)
+        entity.Property(reservation => reservation.DueDate)
             .HasColumnType("date");
 
-        entity.Property(r => r.ActualReturnDate)
+        entity.Property(reservation => reservation.ActualReturnDate)
             .HasColumnType("date");
 
-        entity.Property(r => r.LateFee)
+        entity.Property(reservation => reservation.LateFee)
             .HasColumnType("decimal(10,2)");
 
-        entity.HasOne(r => r.ReservedByUser)
-            .WithMany(u => u.Reservations)
+        entity.HasOne(reservation => reservation.ReservedByUser)
+            .WithMany(user => user.Reservations)
             .IsRequired(false)
             .OnDelete(DeleteBehavior.Restrict);
     }

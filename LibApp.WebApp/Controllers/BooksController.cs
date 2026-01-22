@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using LibApp.Domain.Models;
-using LibApp.EfDataAccess;
 using LibApp.Services.Abstractions.Interfaces;
 using LibApp.WebApp.Utilities;
 using LibApp.WebApp.ViewModels;
@@ -13,23 +12,19 @@ using X.PagedList;
 
 namespace LibApp.WebApp.Controllers;
 
-public class BooksController : Controller
+public class BooksController(
+    IBookService bookService,
+    IAuthorService authorService,
+    IPublisherService publisherService,
+    ICategoryService categoryService,
+    IDepartmentService departmentService,
+    ILanguageService languageService,
+    IMapper mapper,
+    UserManager<User> userManager)
+    : Controller
 {
-    private readonly LibraryContext _context;
-    private readonly IBookService _bookService;
-    private readonly IMapper _mapper;
-    private readonly UserManager<User> _userManager;
-
     private const int PageSize = 10;
     private const string SortTitleOrder = "title_desc";
-
-    public BooksController(LibraryContext context, IBookService bookService, IMapper mapper, UserManager<User> userManager)
-    {
-        _context = context;
-        _bookService = bookService;
-        _mapper = mapper;
-        _userManager = userManager;
-    }
 
     //TODO: Sort by released, qty, created, modified
     //TODO: Filter by isAvailable
@@ -44,11 +39,22 @@ public class BooksController : Controller
         ViewBag.CurrentSortTitle = sortTitleOrder;
         ViewBag.SortTitleParm = String.IsNullOrEmpty(sortTitleOrder) ? SortTitleOrder : "";
 
-        ViewData["AuthorId"] = new SelectList(_context.Authors, "Id", "Name");
-        ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name");
-        ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
-        ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name");
-        ViewData["LanguageId"] = new SelectList(_context.Languages, "Id", "Name");
+        var authorsAsEnumerable = await authorService.GetAuthorsAsync();
+        var authors = authorsAsEnumerable.ToList();
+        var publishersAsEnumerable = await publisherService.GetPublishersAsync();
+        var publishers = publishersAsEnumerable.ToList();
+        var categoriesAsEnumerable = await categoryService.GetCategoriesAsync();
+        var categories = categoriesAsEnumerable.ToList();
+        var departmentsAsEnumerable = await departmentService.GetDepartmentsAsync();
+        var departments = departmentsAsEnumerable.ToList();
+        var languagesAsEnumerable = await languageService.GetLanguagesAsync();
+        var languages = languagesAsEnumerable.ToList();
+
+        ViewData["AuthorId"] = new SelectList(authors, "Id", "Name");
+        ViewData["PublisherId"] = new SelectList(publishers, "Id", "Name");
+        ViewData["CategoryId"] = new SelectList(categories, "Id", "Name");
+        ViewData["DepartmentId"] = new SelectList(departments, "Id", "Name");
+        ViewData["LanguageId"] = new SelectList(languages, "Id", "Name");
 
         if (searchTitleString != null)
         {
@@ -63,8 +69,8 @@ public class BooksController : Controller
 
         try
         {
-            var books = await _bookService.GetBooksAsync();
-            var bookViewModels = _mapper.Map<IEnumerable<BookViewModel>>(books);
+            var books = await bookService.GetBooksAsync();
+            var bookViewModels = mapper.Map<IEnumerable<BookViewModel>>(books);
 
             if (!string.IsNullOrEmpty(searchTitleString))
             {
@@ -73,7 +79,7 @@ public class BooksController : Controller
 
             if (authorId != null)
             {
-                var bookIdsWithAuthor = _bookService.GetBookIdsByAuthorId(authorId.Value);
+                var bookIdsWithAuthor = await bookService.GetBookIdsByAuthorIdAsync(authorId.Value);
                 bookViewModels = bookViewModels.Where(b => bookIdsWithAuthor.Contains(b.Id));
                 ViewBag.CurrentAuthorId = authorId;
             }
@@ -125,14 +131,14 @@ public class BooksController : Controller
     {
         try
         {
-            var book = await _bookService.GetBookAsync(id);
+            var book = await bookService.GetBookAsync(id);
 
             if (book == null)
             {
                 return NotFound();
             }
 
-            var bookViewModel = _mapper.Map<BookViewModel>(book);
+            var bookViewModel = mapper.Map<BookViewModel>(book);
 
             return View(bookViewModel);
         }
@@ -144,15 +150,26 @@ public class BooksController : Controller
 
     // GET: Books/Create
     [Authorize(Roles = AppRoles.Admin + "," + AppRoles.Librarian)]
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
         try
         {
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
-            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name");
-            ViewData["LanguageId"] = new SelectList(_context.Languages, "Id", "Name");
-            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name");
-            ViewData["AuthorIds"] = new MultiSelectList(_context.Authors, "Id", "Name");
+            var authorsAsEnumerable = await authorService.GetAuthorsAsync();
+            var authors = authorsAsEnumerable.ToList();
+            var publishersAsEnumerable = await publisherService.GetPublishersAsync();
+            var publishers = publishersAsEnumerable.ToList();
+            var categoriesAsEnumerable = await categoryService.GetCategoriesAsync();
+            var categories = categoriesAsEnumerable.ToList();
+            var departmentsAsEnumerable = await departmentService.GetDepartmentsAsync();
+            var departments = departmentsAsEnumerable.ToList();
+            var languagesAsEnumerable = await languageService.GetLanguagesAsync();
+            var languages = languagesAsEnumerable.ToList();
+
+            ViewData["CategoryId"] = new SelectList(categories, "Id", "Name");
+            ViewData["DepartmentId"] = new SelectList(departments, "Id", "Name");
+            ViewData["LanguageId"] = new SelectList(languages, "Id", "Name");
+            ViewData["PublisherId"] = new SelectList(publishers, "Id", "Name");
+            ViewData["AuthorIds"] = new MultiSelectList(authors, "Id", "Name");
 
             return View();
         }
@@ -170,7 +187,7 @@ public class BooksController : Controller
     {
         try
         {
-            if (_bookService.IsbnExists(bookViewModel.Isbn))
+            if (await bookService.IsbnExistsAsync(bookViewModel.Isbn))
             {
                 ModelState.AddModelError("Isbn", "A book with this ISBN already exists.");
             }
@@ -202,9 +219,9 @@ public class BooksController : Controller
                     bookViewModel.ImagePath = "/img/books/" + fileName;
                 }
 
-                var loggedInUserId = Convert.ToInt32(_userManager.GetUserId(User));
+                var loggedInUserId = Convert.ToInt32(userManager.GetUserId(User));
 
-                var book = _mapper.Map<Book>(
+                var book = mapper.Map<Book>(
                     bookViewModel,
                     options =>
                     {
@@ -212,7 +229,7 @@ public class BooksController : Controller
                         options.Items["CreatedByUserId"] = loggedInUserId;
                     });
 
-                await _bookService.AddBookAsync(book, bookViewModel.AuthorIds, bookViewModel.NewAuthor);
+                await bookService.AddBookAsync(book, bookViewModel.AuthorIds, bookViewModel.NewAuthor);
 
                 TempData["SuccessMessage"] = "Book added successfully.";
 
@@ -233,11 +250,22 @@ public class BooksController : Controller
                 }
             }
 
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", bookViewModel.CategoryId);
-            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name", bookViewModel.DepartmentId);
-            ViewData["LanguageId"] = new SelectList(_context.Languages, "Id", "Name", bookViewModel.LanguageId);
-            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", bookViewModel.PublisherId);
-            ViewData["AuthorIds"] = new MultiSelectList(_context.Authors, "Id", "Name", bookViewModel.AuthorIds);
+            var authorsAsEnumerable = await authorService.GetAuthorsAsync();
+            var authors = authorsAsEnumerable.ToList();
+            var publishersAsEnumerable = await publisherService.GetPublishersAsync();
+            var publishers = publishersAsEnumerable.ToList();
+            var categoriesAsEnumerable = await categoryService.GetCategoriesAsync();
+            var categories = categoriesAsEnumerable.ToList();
+            var departmentsAsEnumerable = await departmentService.GetDepartmentsAsync();
+            var departments = departmentsAsEnumerable.ToList();
+            var languagesAsEnumerable = await languageService.GetLanguagesAsync();
+            var languages = languagesAsEnumerable.ToList();
+
+            ViewData["CategoryId"] = new SelectList(categories, "Id", "Name", bookViewModel.CategoryId);
+            ViewData["DepartmentId"] = new SelectList(departments, "Id", "Name", bookViewModel.DepartmentId);
+            ViewData["LanguageId"] = new SelectList(languages, "Id", "Name", bookViewModel.LanguageId);
+            ViewData["PublisherId"] = new SelectList(publishers, "Id", "Name", bookViewModel.PublisherId);
+            ViewData["AuthorIds"] = new MultiSelectList(authors, "Id", "Name", bookViewModel.AuthorIds);
 
             return View(bookViewModel);
         }
@@ -253,25 +281,31 @@ public class BooksController : Controller
     {
         try
         {
-            if (id == 0 || !_context.Books.Any())
-            {
-                return NotFound();
-            }
-
-            var book = await _bookService.GetBookAsync(id);
+            var book = await bookService.GetBookAsync(id);
 
             if (book == null)
             {
                 return NotFound();
             }
 
-            var bookViewModel = _mapper.Map<BookViewModel>(book);
+            var bookViewModel = mapper.Map<BookViewModel>(book);
 
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", bookViewModel.CategoryId);
-            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name", bookViewModel.DepartmentId);
-            ViewData["LanguageId"] = new SelectList(_context.Languages, "Id", "Name", bookViewModel.LanguageId);
-            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", bookViewModel.PublisherId);
-            ViewData["AuthorIds"] = new MultiSelectList(_context.Authors, "Id", "Name", bookViewModel.AuthorIds);
+            var authorsAsEnumerable = await authorService.GetAuthorsAsync();
+            var authors = authorsAsEnumerable.ToList();
+            var publishersAsEnumerable = await publisherService.GetPublishersAsync();
+            var publishers = publishersAsEnumerable.ToList();
+            var categoriesAsEnumerable = await categoryService.GetCategoriesAsync();
+            var categories = categoriesAsEnumerable.ToList();
+            var departmentsAsEnumerable = await departmentService.GetDepartmentsAsync();
+            var departments = departmentsAsEnumerable.ToList();
+            var languagesAsEnumerable = await languageService.GetLanguagesAsync();
+            var languages = languagesAsEnumerable.ToList();
+
+            ViewData["CategoryId"] = new SelectList(categories, "Id", "Name", bookViewModel.CategoryId);
+            ViewData["DepartmentId"] = new SelectList(departments, "Id", "Name", bookViewModel.DepartmentId);
+            ViewData["LanguageId"] = new SelectList(languages, "Id", "Name", bookViewModel.LanguageId);
+            ViewData["PublisherId"] = new SelectList(publishers, "Id", "Name", bookViewModel.PublisherId);
+            ViewData["AuthorIds"] = new MultiSelectList(authors, "Id", "Name", bookViewModel.AuthorIds);
 
             return View(bookViewModel);
         }
@@ -294,7 +328,7 @@ public class BooksController : Controller
 
         try
         {
-            if (_bookService.IsbnExistsInOtherBooks(bookViewModel.Id, bookViewModel.Isbn))
+            if (await bookService.IsbnExistsInOtherBooksAsync(bookViewModel.Id, bookViewModel.Isbn))
             {
                 ModelState.AddModelError("Isbn", "A book with this ISBN already exists.");
             }
@@ -337,10 +371,10 @@ public class BooksController : Controller
                     bookViewModel.ImagePath = "/img/books/" + fileName;
                 }
 
-                var loggedInUserId = Convert.ToInt32(_userManager.GetUserId(User));
+                var loggedInUserId = Convert.ToInt32(userManager.GetUserId(User));
                 var createdByUserId = bookViewModel.CreatedByUserId;
 
-                var book = _mapper.Map<Book>(
+                var book = mapper.Map<Book>(
                     bookViewModel,
                     options =>
                     {
@@ -348,18 +382,29 @@ public class BooksController : Controller
                         options.Items["CreatedByUserId"] = createdByUserId;
                     });
 
-                await _bookService.UpdateBookAsync(book, bookViewModel.AuthorIds, bookViewModel.NewAuthor);
+                await bookService.UpdateBookAsync(book, bookViewModel.AuthorIds, bookViewModel.NewAuthor);
 
                 TempData["SuccessMessage"] = "Book updated successfully.";
 
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", bookViewModel.CategoryId);
-            ViewData["DepartmentId"] = new SelectList(_context.Departments, "Id", "Name", bookViewModel.DepartmentId);
-            ViewData["LanguageId"] = new SelectList(_context.Languages, "Id", "Name", bookViewModel.LanguageId);
-            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", bookViewModel.PublisherId);
-            ViewData["AuthorIds"] = new MultiSelectList(_context.Authors, "Id", "Name", bookViewModel.AuthorIds);
+            var authorsAsEnumerable = await authorService.GetAuthorsAsync();
+            var authors = authorsAsEnumerable.ToList();
+            var publishersAsEnumerable = await publisherService.GetPublishersAsync();
+            var publishers = publishersAsEnumerable.ToList();
+            var categoriesAsEnumerable = await categoryService.GetCategoriesAsync();
+            var categories = categoriesAsEnumerable.ToList();
+            var departmentsAsEnumerable = await departmentService.GetDepartmentsAsync();
+            var departments = departmentsAsEnumerable.ToList();
+            var languagesAsEnumerable = await languageService.GetLanguagesAsync();
+            var languages = languagesAsEnumerable.ToList();
+
+            ViewData["CategoryId"] = new SelectList(categories, "Id", "Name", bookViewModel.CategoryId);
+            ViewData["DepartmentId"] = new SelectList(departments, "Id", "Name", bookViewModel.DepartmentId);
+            ViewData["LanguageId"] = new SelectList(languages, "Id", "Name", bookViewModel.LanguageId);
+            ViewData["PublisherId"] = new SelectList(publishers, "Id", "Name", bookViewModel.PublisherId);
+            ViewData["AuthorIds"] = new MultiSelectList(authors, "Id", "Name", bookViewModel.AuthorIds);
 
             return View(bookViewModel);
         }
@@ -377,15 +422,10 @@ public class BooksController : Controller
     {
         try
         {
-            if (_context.Books == null)
-            {
-                return RedirectToAction("ServerError", "Error");
-            }
-
-            var book = await _bookService.GetBookAsync(id);
+            var book = await bookService.GetBookAsync(id);
             if (book != null)
             {
-                await _bookService.RemoveBookAsync(book);
+                await bookService.RemoveBookAsync(book);
                 TempData["SuccessMessage"] = "Book deleted successfully.";
                 return Json(new { success = true, message = "Book deleted successfully." });
             }
