@@ -9,7 +9,7 @@ public interface ICategoryService
     Task AddCategoryAsync(Category category);
     Task UpdateCategoryAsync(Category category);
     Task RemoveCategoryAsync(Category category);
-    bool CategoryExists(string name);
-    bool CategoryExistsInOtherCategories(int id, string name);
-    bool IsDeletable(Category category);
+    Task<bool> CategoryExistsAsync(string name);
+    Task<bool> CategoryExistsInOtherCategoriesAsync(int id, string name);
+    Task<bool> IsDeletableAsync(int id);
 }

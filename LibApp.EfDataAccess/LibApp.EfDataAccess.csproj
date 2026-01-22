@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LibApp.Data.Abstractions\LibApp.Data.Abstractions.csproj" />
     <ProjectReference Include="..\LibApp.Domain\LibApp.Domain.csproj" />
   </ItemGroup>
   <ItemGroup>

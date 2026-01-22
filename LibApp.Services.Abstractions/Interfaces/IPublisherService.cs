@@ -9,7 +9,7 @@ public interface IPublisherService
     Task AddPublisherAsync(Publisher publisher);
     Task UpdatePublisherAsync(Publisher publisher);
     Task RemovePublisherAsync(Publisher publisher);
-    bool PublisherExists(string name);
-    bool PublisherExistsInOtherPublishers(int id, string name);
-    bool IsDeletable(Publisher publisher);
+    Task<bool> PublisherExistsAsync(string name);
+    Task<bool> PublisherExistsInOtherPublishersAsync(int id, string name);
+    Task<bool> IsDeletableAsync(int id);
 }

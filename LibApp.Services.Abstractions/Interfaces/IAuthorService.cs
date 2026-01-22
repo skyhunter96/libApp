@@ -9,7 +9,7 @@ public interface IAuthorService
     Task AddAuthorAsync(Author author);
     Task UpdateAuthorAsync(Author author);
     Task RemoveAuthorAsync(Author author);
-    bool AuthorExists(string name);
-    bool AuthorExistsInOtherAuthors(int id, string name);
-    bool IsDeletable(Author author);
+    Task<bool> AuthorExistsAsync(string name);
+    Task<bool> AuthorExistsInOtherAuthorsAsync(int id, string name);
+    Task<bool> IsDeletableAsync(int id);
 }

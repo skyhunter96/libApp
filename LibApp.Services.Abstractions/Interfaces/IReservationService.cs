@@ -7,10 +7,9 @@ public interface IReservationService
     Task<IEnumerable<Reservation>> GetReservationsAsync();
     Task<Reservation?> GetReservationAsync(int id);
     Task<int> GetReservationIdForUserAsync(int userId);
-    Task RemoveReservationAsync(Reservation reservation);
-    bool UserCanReserve(int loggedInUserId);
-    bool BookCanBeReserved(int bookId);
-    void ReserveBook(int bookId, int loggedInUserId);
-    void StartReservation(int id, int loggedInUserId);
-    void FinishReservation(int id, int loggedInUserId);
+    Task RemoveReservationAsync(int id);
+    Task<bool> UserCanReserveAsync(int loggedInUserId);
+    Task<bool> BookCanBeReservedAsync(int bookId);
+    Task ReserveBookAsync(int bookId, int loggedInUserId);
+    Task StartReservationAsync(int id, int loggedInUserId);
 }

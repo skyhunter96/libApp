@@ -5,18 +5,19 @@ namespace LibApp.Services.Abstractions.Interfaces;
 public interface IUserService
 {
     Task<IEnumerable<User>> GetUsersAsync();
-    User? GetUser(int id);
     Task<User?> GetUserAsync(int id);
     Task<User?> GetUserByUserNameAsync(string userName);
     Task AddUserAsync(User user);
     Task UpdateUserAsync(User user);
     Task RemoveUserAsync(User user);
-    bool DocumentIdExists(string documentId);
-    bool DocumentIdExistsInOtherBooks(int id, string documentId);
-    bool EmailExists(string email);
-    bool EmailExistsInOtherBooks(int id, string email);
-    bool UserNameExists(string userName);
-    bool UserNameExistsInOtherBooks(int id, string userName);
-    void Activate(int id);
-    void Deactivate(int id);
+    Task<bool> DocumentIdExistsAsync(string documentId);
+    Task<bool> DocumentIdExistsInOtherBooksAsync(int id, string documentId);
+    Task<bool> EmailExistsAsync(string email);
+    Task<bool> EmailExistsInOtherBooksAsync(int id, string email);
+    Task<bool> UserNameExistsAsync(string userName);
+    Task<bool> UserNameExistsInOtherBooksAsync(int id, string userName);
+    Task ActivateAsync(int id);
+    Task DeactivateAsync(int id);
+    Task<IEnumerable<Role>> GetRolesAsync();
+    Task<Role?> GetRoleForUserIdAsync(int id);
 }
