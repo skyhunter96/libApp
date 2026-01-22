@@ -14,7 +14,7 @@ public abstract class BaseEntity
     public void SetModifiedDateTime(DateTime dt) => ModifiedDateTime = dt;
     public void SetCreatedByUserId(int? userId)
     {
-        ModifiedByUserId = userId;
+        CreatedByUserId = userId;
     }
     public void SetModifiedByUserId(int? userId)
     {

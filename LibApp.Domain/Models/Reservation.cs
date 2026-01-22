@@ -16,8 +16,9 @@ public class Reservation : BaseEntity
 
     public void AddBookReservations(BookReservation bookReservation)
     {
-        if (bookReservation == null) return;
-            if (!BookReservations.Contains(bookReservation))
+        ArgumentNullException.ThrowIfNull(bookReservation);
+
+        if (!BookReservations.Contains(bookReservation))
                 BookReservations.Add(bookReservation);
     }
 }
