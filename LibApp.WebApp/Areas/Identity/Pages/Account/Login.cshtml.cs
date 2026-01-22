@@ -67,56 +67,66 @@ namespace LibApp.WebApp.Areas.Identity.Pages.Account
         {
             returnUrl ??= Url.Content("~/");
 
-            if (ModelState.IsValid)
+            try
             {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-
-                var user = await _userService.GetUserByUserNameAsync(Input.UserName);
-
-                if (user == null)
+                if (ModelState.IsValid)
                 {
-                    ModelState.AddModelError(string.Empty, "The user with chosen credentials does not exist");
-                    return Page();
-                }
+                    // This doesn't count login failures towards account lockout
+                    // To enable password failures to trigger account lockout, set lockoutOnFailure: true
 
-                if (user.IsActive == false)
-                {
-                    ModelState.AddModelError(string.Empty, "Cannot login with inactive user");
-                    return Page();
-                }
+                    var user = await _userManager.FindByNameAsync(Input.UserName);
 
-                // Fetch user roles and add them to claims
-                var role = user.Role.ToString();
-                var roleClaim = new Claim(ClaimTypes.Role, role);
+                    if (user == null)
+                    {
+                        ModelState.AddModelError(string.Empty, "The user with chosen credentials does not exist");
+                        return Page();
+                    }
 
-                // Add role claims to user's identity
-                await _userManager.AddClaimsAsync(user, new[] { roleClaim });
+                    if (user.IsActive == false)
+                    {
+                        ModelState.AddModelError(string.Empty, "Cannot login with inactive user");
+                        return Page();
+                    }
 
-                var result = await _signInManager.PasswordSignInAsync(user.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation("User logged in.");
-                    return LocalRedirect(returnUrl);
-                }
-                if (result.RequiresTwoFactor)
-                {
-                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
-                }
-                if (result.IsLockedOut)
-                {
-                    _logger.LogWarning("User account locked out.");
-                    return RedirectToPage("./Lockout");
-                }
-                else
-                {
+                    //Fetch user roles and add them to claims
+                    var role = await _userService.GetRoleForUserIdAsync(user.Id);
+                    var roleString = role?.ToString();
+                    if (role == null)
+                        throw new ArgumentNullException(roleString);
+
+                    var roleClaim = new Claim(ClaimTypes.Role, roleString);
+
+                    // Add role claims to user's identity
+                    await _userManager.AddClaimsAsync(user, [roleClaim]);
+
+                    var result = await _signInManager.PasswordSignInAsync(user.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+                    if (result.Succeeded)
+                    {
+                        _logger.LogInformation("User logged in.");
+                        return LocalRedirect(returnUrl);
+                    }
+                    if (result.RequiresTwoFactor)
+                    {
+                        return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
+                    }
+                    if (result.IsLockedOut)
+                    {
+                        _logger.LogWarning("User account locked out.");
+                        return RedirectToPage("./Lockout");
+                    }
+
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                     return Page();
                 }
-            }
 
-            // If we got this far, something failed, redisplay form
-            return Page();
+                // If we got this far, something failed, redisplay form
+                return Page();
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+                throw;
+            }
         }
     }
 }
